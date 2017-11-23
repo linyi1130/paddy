@@ -20,4 +20,7 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^club/', club_list),
     url(r'^club_add/', club_add),
+    url(r'^checkclub/', checkclub),
+    url(r'^user/',user_list),
+    url(r'^user_add/',user_add),
 ]
