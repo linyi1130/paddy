@@ -5,6 +5,7 @@ from django.template import loader
 from django.http import HttpResponseRedirect
 from sdt.models import *
 from sdt.sdt_func import *
+from .form import *
 # Create your views here.
 def club_list(request):
 
@@ -25,15 +26,19 @@ def club_add(request):
 
 def checkclub(request):
     club_name=request.POST['club_name']
-    message="俱乐部名可用"
+    message=False
     try:
-        tmp=ucs_subs_club.objects.filter(club_name=club_name).get(inactive_time="2037-01-01")
+        t=ucs_subs_club.objects.filter(club_name=club_name).exists()
+        if t==True:
+            message=False
+        else:
+            message=True
         return HttpResponse(message)
     except Exception as e:
-        message="俱乐部已存在"
-        return HttpResponse(message)
 
-    return None
+        message=False
+
+    return HttpResponse(message)
 
 def user_add(request):
     t_user_name=request.POST['user_name']
@@ -60,3 +65,4 @@ def user_list(request):
     tb_user= SQL_user_list()
     tb_club=ucs_subs_club.objects.all()
     return render(request,'user.html',{'tb_user':tb_user,'tb_club':tb_club})
+
