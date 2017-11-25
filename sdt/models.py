@@ -35,6 +35,7 @@ class ucs_club_user(models.Model):
 class ucs_account(models.Model):
     account_id = models.IntegerField(null=True)
     user_id = models.IntegerField(null=True)
+    club_id=models.IntegerField(null=True)
     active_time = models.DateTimeField(auto_now_add=True)
     inactive_time = models.DateTimeField(default='2037-1-1')
 
@@ -61,6 +62,7 @@ class tmp_result(models.Model):
 class ucs_balance(models.Model):
     account_id = models.IntegerField(null=True)
     user_id = models.IntegerField(null=True)
+    club_id=models.IntegerField(null=True)
     balance = models.IntegerField(null=True)
     chance = models.IntegerField(null=True)
     chance_desc = models.CharField(null=False, max_length=20)

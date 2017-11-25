@@ -46,17 +46,21 @@ def user_add(request):
     #t_club_name = request.POST['club_name']
     t_note = request.POST['note']
     t_club_id = request.POST['club_id']
+    flag=False
     try:
         #filterresult = real_user.objects.filter(user_name=t_user_name)
-        filterresult = ucs_subs_user.objects.filter(inactive_time="2037-01-01")
-        #filterresult.filter(user_name=t_user_name)
-        if  len(filterresult.filter(user_name=t_user_name))>0:
-            return HttpResponse(filterresult.values())
+        #filterresult = ucs_subs_user.objects.filter(inactive_time="2037-01-01")
+        #tmp=filterresult.filter(user_name=t_user_name)
+        old_user_id=ucs_subs_user.objects.filter(inactive_time="2037-01-01").get(user_name=t_user_name).user_id
+        result=user_old_reg(old_user_id,t_club_id)
+        if result==True:
+            flag=True
         else:
-            user_reg(t_user_name,t_wx_name,t_club_id,t_note)
-            return HttpResponseRedirect('/user')
+            return HttpResponse("用户已存在")
     except Exception as e:
-        return HttpResponse(e)
+        user_reg(t_user_name, t_wx_name, t_club_id, t_note)
+        flag=True
+
     return HttpResponseRedirect('/user')
 
 def user_list(request):
@@ -66,3 +70,64 @@ def user_list(request):
     tb_club=ucs_subs_club.objects.all()
     return render(request,'user.html',{'tb_user':tb_user,'tb_club':tb_club})
 
+def cash(request):
+    tb_user = SQL_user_list()
+    try:
+        acc_list=request.POST['acc_list']
+    except Exception as e:
+        acc_list=None
+    return render(request,'cash.html',{'acc_list':acc_list,'tb_user':tb_user})
+
+def getbalance(request):
+    try: user_id=request.POST['user_id']
+    except Exception as e:
+        return  e
+
+    #获取账户id
+    account_id=ucs_subs_user.objects.filter(user_id=user_id).get(inactive_time='2037-01-01').account_id
+    try:#暂时用第一个俱乐部当现有俱乐部
+        balancenum=ucs_balance.objects.filter(account_id=account_id).filter(inactive_time='2037-01-01') \
+                       .filter(club_id="1000").order_by('-updatetime')[0].balance/1000
+    except Exception as e:
+        balancenum=0
+    return HttpResponse(balancenum)
+
+def cashin(request):
+
+    if request.POST.get('cashInOut',0)==0:
+        isCashin="off"
+    else:
+        isCashin="on"
+    chance=int(float(request.POST['cash_num'])*1000)
+    #account_id=getaccIDwithUserid(request.POST['account_id'])
+    user_id=request.POST['user_id']
+    tmp=getBalancebyuid(user_id)
+    balance=tmp[0]
+    account_id=tmp[1]
+    if isCashin=='on':
+        chance=chance*-1
+        chance_desc="客服结算"
+    else:
+        chance_desc="客服存款"
+
+    if balance is not None:
+        t=ucs_balance(account_id=account_id,
+                    user_id=request.POST['user_id'],
+                    club_id="1000",
+                    balance=balance+chance,
+                    chance=chance,
+                    chance_desc=chance_desc
+                  )
+    else:
+        t = ucs_balance(account_id=account_id,
+                        user_id=request.POST['user_id'],
+                        club_id='1000',
+                        balance=chance,
+                        chance=chance,
+                        chance_desc=chance_desc
+                        )
+    t.save()
+    acc_list = getBalanceList(account_id)
+    tb_user = SQL_user_list()
+    #return HttpResponseRedirect('/cash', {'acc_list':acc_list,'tb_user':tb_user})
+    return render(request, 'cash.html', {'acc_list':acc_list,'tb_user':tb_user})

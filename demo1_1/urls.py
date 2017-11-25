@@ -23,4 +23,7 @@ urlpatterns = [
     url(r'^checkclub/', checkclub),
     url(r'^user/',user_list),
     url(r'^user_add/',user_add),
+    url(r'^cash/',cash),
+    url(r'^getbalance/',getbalance),
+    url(r'^cashin/',cashin),
 ]
