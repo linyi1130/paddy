@@ -26,17 +26,17 @@ def club_add(request):
 
 def checkclub(request):
     club_name=request.POST['club_name']
-    message=False
+    message=0
     try:
         t=ucs_subs_club.objects.filter(club_name=club_name).exists()
         if t==True:
-            message=False
+            message=0
         else:
-            message=True
+            message=1
         return HttpResponse(message)
     except Exception as e:
 
-        message=False
+        message=0
 
     return HttpResponse(message)
 
