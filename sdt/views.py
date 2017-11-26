@@ -152,3 +152,18 @@ def result_pretreat_step1(request):
     newuser=result_regNewUser(gameno)
     t_club = ucs_subs_club.objects.all().order_by('-active_time')
     return render(request,'result_newuser.html',{'newuser':newuser,'t_club':t_club})
+
+def show(request):
+    tmp=request.POST
+    newuser=[]
+    for key in tmp:
+        newuser.append(tmp[key])
+    lenlist=len(newuser)
+    i=0
+    while(i<lenlist):
+        if user_reg(newuser[i],newuser[i],newuser[i+1],"")==True:
+            i=i+2
+
+
+
+    HttpResponse(tmp)

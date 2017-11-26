@@ -28,4 +28,5 @@ urlpatterns = [
     url(r'^cashin/',cashin),
     url(r'^result/', result),
     url(r'^result_pretreat_step1/', result_pretreat_step1),
+    url(r'^show/', show),
 ]
