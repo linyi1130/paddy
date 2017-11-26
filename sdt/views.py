@@ -131,3 +131,24 @@ def cashin(request):
     tb_user = SQL_user_list()
     #return HttpResponseRedirect('/cash', {'acc_list':acc_list,'tb_user':tb_user})
     return render(request, 'cash.html', {'acc_list':acc_list,'tb_user':tb_user})
+
+def result(request):
+    t=loader.get_template('result.html')
+    web_page=t.render()
+    return HttpResponse(web_page)
+
+def result_split(request):
+    strResult=request.POST['result']
+    gameno=request.POST['gameno']
+    tb_result=result_reg(strResult,gameno)
+
+    return render(request,'result_preview.html',{'tb_result':tb_result})
+
+def result_pretreat_step1(request):
+    strResult=request.POST['result']
+    gameno=request.POST['gameno']
+    result_preload(strResult,gameno)
+    #返回新未注册玩家名单
+    newuser=result_regNewUser(gameno)
+    t_club = ucs_subs_club.objects.all().order_by('-active_time')
+    return render(request,'result_newuser.html',{'newuser':newuser,'t_club':t_club})
