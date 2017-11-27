@@ -30,4 +30,5 @@ urlpatterns = [
     url(r'^result_pretreat_step1/', result_pretreat_step1),
     url(r'^result_newuser/', result_newuser),
     url(r'^result_attachclub/', result_acctachclub),
+    url(r'^table/',loadtabletype),
 ]

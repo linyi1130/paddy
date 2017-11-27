@@ -148,8 +148,9 @@ def result_pretreat_step1(request):
     result_preload(strResult, gameno)
     # 返回新未注册玩家名单
     newuser = result_regNewUser(gameno)
-    t_club = ucs_subs_club.objects.all().order_by('-active_time')
-    return render(request,'result_newuser.html',{'newuser':newuser,'t_club':t_club})
+    if len(newuser) > 0:
+        t_club = ucs_subs_club.objects.all().order_by('-active_time')
+        return render(request,'result_newuser.html',{'newuser':newuser,'t_club':t_club})
 
 def result_newuser(request):
     tmp = request.POST
@@ -166,3 +167,11 @@ def result_newuser(request):
 def result_acctachclub(resquest):
 
     return None
+
+def loadtabletype(request):
+    gametype=pm_gametype.objects.all()
+    blind=pm_blind.objects.all()
+    gametime=pm_gametime.objects.all()
+    gamepeople=pm_gamepeople.objects.all()
+
+    return render(request, 'table.html', {'gametype':gametype,'blind':blind,"gametime":gametime,"gamepeople":gamepeople})

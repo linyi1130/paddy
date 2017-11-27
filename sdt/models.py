@@ -165,3 +165,12 @@ class tmp_result_step_3(models.Model):
     up_total = models.IntegerField(null=False)
     delivery = models.IntegerField(null=False)
     game_no = models.CharField(max_length=40)
+
+class tmp_result_attachclub(models.Model):
+    gameno = models.CharField(max_length=40)
+    user_id = models.IntegerField(null=False)
+    user_name = models.CharField(max_length=20)
+    club_id = models.IntegerField(null=False)
+    club_id_name = models.CharField(max_length=20)
+    income_rate = models.IntegerField(null=False)
+    insure_rate = models.IntegerField(null=False)
