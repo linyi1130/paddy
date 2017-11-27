@@ -145,12 +145,17 @@ def result_split(request):
 def result_pretreat_step1(request):
     strResult = request.POST['result']
     gameno = request.POST['gameno']
+    delte_resultWithGameno(gameno)
     result_preload(strResult, gameno)
     # 返回新未注册玩家名单
     newuser = result_regNewUser(gameno)
     if len(newuser) > 0:
         t_club = ucs_subs_club.objects.all().order_by('-active_time')
         return render(request,'result_newuser.html',{'newuser':newuser,'t_club':t_club})
+    else:
+        split_club=result_attachclub(gameno)
+        if len(split_club) > 0:
+            return render(request, 'result_attachclub.html', {'row': split_club})
 
 def result_newuser(request):
     tmp = request.POST
@@ -164,7 +169,7 @@ def result_newuser(request):
             i=i+2
     return HttpResponse(tmp)
 
-def result_acctachclub(resquest):
+def result_club(resquest):
 
     return None
 
