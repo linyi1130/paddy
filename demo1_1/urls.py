@@ -28,5 +28,6 @@ urlpatterns = [
     url(r'^cashin/',cashin),
     url(r'^result/', result),
     url(r'^result_pretreat_step1/', result_pretreat_step1),
-    url(r'^show/', show),
+    url(r'^result_newuser/', result_newuser),
+    url(r'^result_attachclub/', result_acctachclub),
 ]

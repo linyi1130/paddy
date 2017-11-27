@@ -8,16 +8,14 @@ from sdt.sdt_func import *
 from .form import *
 # Create your views here.
 def club_list(request):
-
     t_club = ucs_subs_club.objects.all().order_by('-active_time')
-
-    return render(request,'club.html',{'t_club':t_club})
+    return render(request, 'club.html', {'t_club': t_club})
 
 
 def club_add(request):
-    tmp=ucs_subs_club(club_name=request.POST['club_name'],
+    tmp = ucs_subs_club(club_name=request.POST['club_name'],
                       club_shortname=request.POST['short_name'],
-                      income_rate=request.POST['income_rate'],
+                      income_rate =request.POST['income_rate'],
                       club_desc=request.POST['club_desc'],
                       insure_rate=request.POST['insure_rate'],
                       )
@@ -73,10 +71,10 @@ def user_list(request):
 def cash(request):
     tb_user = SQL_user_list()
     try:
-        acc_list=request.POST['acc_list']
-    except Exception as e:
-        acc_list=None
-    return render(request,'cash.html',{'acc_list':acc_list,'tb_user':tb_user})
+        acc_list = request.POST['acc_list']
+    except:
+        acc_list = None
+    return render(request, 'cash.html', {'acc_list': acc_list, 'tb_user': tb_user})
 
 def getbalance(request):
     try: user_id=request.POST['user_id']
@@ -138,32 +136,33 @@ def result(request):
     return HttpResponse(web_page)
 
 def result_split(request):
-    strResult=request.POST['result']
-    gameno=request.POST['gameno']
+    strResult = request.POST['result']
+    gameno = request.POST['gameno']
     tb_result=result_reg(strResult,gameno)
 
-    return render(request,'result_preview.html',{'tb_result':tb_result})
+    return render(request, 'result_preview.html', {'tb_result': tb_result})
 
 def result_pretreat_step1(request):
-    strResult=request.POST['result']
-    gameno=request.POST['gameno']
-    result_preload(strResult,gameno)
-    #返回新未注册玩家名单
-    newuser=result_regNewUser(gameno)
+    strResult = request.POST['result']
+    gameno = request.POST['gameno']
+    result_preload(strResult, gameno)
+    # 返回新未注册玩家名单
+    newuser = result_regNewUser(gameno)
     t_club = ucs_subs_club.objects.all().order_by('-active_time')
     return render(request,'result_newuser.html',{'newuser':newuser,'t_club':t_club})
 
-def show(request):
-    tmp=request.POST
-    newuser=[]
+def result_newuser(request):
+    tmp = request.POST
+    newuser = []
     for key in tmp:
         newuser.append(tmp[key])
-    lenlist=len(newuser)
-    i=0
-    while(i<lenlist):
-        if user_reg(newuser[i],newuser[i],newuser[i+1],"")==True:
+    lenlist = len(newuser)
+    i = 0
+    while (i < lenlist):
+        if user_reg(newuser[i],newuser[i],newuser[i+1],"") == True :
             i=i+2
+    return HttpResponse(tmp)
 
+def result_acctachclub(resquest):
 
-
-    HttpResponse(tmp)
+    return None
