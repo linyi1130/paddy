@@ -152,7 +152,7 @@ def result_split(request):
 def result_pretreat_step1(request):
     strResult = request.POST['result']
     gameno = request.POST['gameno']
-    delte_resultWithGameno(gameno)
+    tmp_result.objects.filter(game_no=gameno).delete()
     result_preload(strResult, gameno)
     # 返回新未注册玩家名单
     newuser = result_regNewUser(gameno)
@@ -163,7 +163,7 @@ def result_pretreat_step1(request):
         return render_to_response('result_newuser.html',{'newuser':newuser,'t_club':t_club,'gameno':gameno})
     else:
         split_club=result_attachclub(gameno)
-        if not split_club :
+        if len(split_club)>0 :
             return render(request, 'result_attachclub.html', {'row': split_club, 'gameno': gameno})
     #没有新增玩家和待选择俱乐部，直接进入战绩预览
     return None
