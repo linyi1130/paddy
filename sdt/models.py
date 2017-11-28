@@ -171,6 +171,12 @@ class tmp_result_attachclub(models.Model):
     user_id = models.IntegerField(null=False)
     user_name = models.CharField(max_length=20)
     club_id = models.IntegerField(null=False)
-    club_id_name = models.CharField(max_length=20)
+    club_name = models.CharField(max_length=20)
     income_rate = models.IntegerField(null=False)
     insure_rate = models.IntegerField(null=False)
+
+class tmp_result_attachclub_pre(models.Model):
+    gameno = models.CharField(max_length=40)
+    user_id = models.IntegerField(null=False)
+    user_name = models.CharField(max_length=20)
+    club_id = models.IntegerField(null=False)

@@ -1,8 +1,10 @@
 from django.shortcuts import render
+from django.shortcuts import render_to_response
 from django.shortcuts import render,HttpResponse
 from django.template import Context,Template
 from django.template import loader
 from django.http import HttpResponseRedirect
+from django.core.urlresolvers import reverse
 from sdt.models import *
 from sdt.sdt_func import *
 from .form import *
@@ -13,11 +15,16 @@ def club_list(request):
 
 
 def club_add(request):
-    tmp = ucs_subs_club(club_name=request.POST['club_name'],
-                      club_shortname=request.POST['short_name'],
-                      income_rate =request.POST['income_rate'],
-                      club_desc=request.POST['club_desc'],
-                      insure_rate=request.POST['insure_rate'],
+    club_name=request.POST['club_name']
+    club_shortname = request.POST['short_name']
+    income_rate = request.POST['income_rate']
+    club_desc = request.POST['club_desc']
+    insure_rate = request.POST['insure_rate']
+    tmp = ucs_subs_club(club_name = club_name.strip(),
+                      club_shortname = club_shortname.strip(),
+                      income_rate = income_rate.strip(),
+                      club_desc = club_desc.strip(),
+                      insure_rate = insure_rate.strip()
                       )
     tmp.save()
     return HttpResponseRedirect('/club/')
@@ -56,7 +63,7 @@ def user_add(request):
         else:
             return HttpResponse("用户已存在")
     except Exception as e:
-        user_reg(t_user_name, t_wx_name, t_club_id, t_note)
+        user_reg(t_user_name.strip(), t_wx_name.strip(), t_club_id, t_note)
         flag=True
 
     return HttpResponseRedirect('/user')
@@ -151,28 +158,51 @@ def result_pretreat_step1(request):
     newuser = result_regNewUser(gameno)
     if len(newuser) > 0:
         t_club = ucs_subs_club.objects.all().order_by('-active_time')
-        return render(request,'result_newuser.html',{'newuser':newuser,'t_club':t_club})
+
+        #return HttpResponseRedirect(request,'/result_newuser/',{'newuser':newuser,'t_club':t_club,'gameno':gameno})
+        return render_to_response('result_newuser.html',{'newuser':newuser,'t_club':t_club,'gameno':gameno})
     else:
         split_club=result_attachclub(gameno)
-        if len(split_club) > 0:
-            return render(request, 'result_attachclub.html', {'row': split_club})
-
+        if not split_club :
+            return render(request, 'result_attachclub.html', {'row': split_club, 'gameno': gameno})
+    #没有新增玩家和待选择俱乐部，直接进入战绩预览
+    return None
 def result_newuser(request):
     tmp = request.POST
     newuser = []
+    gameno=request.POST['gameno']
+
     for key in tmp:
-        newuser.append(tmp[key])
+        if key != "gameno" :
+            newuser.append(tmp[key])
     lenlist = len(newuser)
     i = 0
     while (i < lenlist):
         if user_reg(newuser[i],newuser[i],newuser[i+1],"") == True :
             i=i+2
-    return HttpResponse(tmp)
+        i=i+2
+    split_club = result_attachclub(gameno)
+    if len(split_club) > 0:
+        return render(request, 'result_attachclub.html', {'row': split_club, 'gameno': gameno})
 
-def result_club(resquest):
+    return HttpResponseRedirect('/result_club/', {'gameno' : gameno })  #要进入战绩预览，这里要改
 
-    return None
+def result_club(request):  #处理多俱乐部玩家
+    tmp_split=request.POST
+    gamono=request.POST['gameno']
+    flag = split_club(tmp_split)
+    if flag==True:
+        #url=reverse(result_preview,kwargs={'gameno':gamono})
+        url="/result_preview/?gameno=" + gamono
+        #render(request, "/result_preview/", {'gamono':gamono})
+        return HttpResponseRedirect(url)
+    else:
+        return HttpResponse("出错啦！")
 
+def result_preview(request):
+    gamono = request.GET.get('gameno')
+    result=result_reg(gamono)
+    return render(request,'result_preview.html',{'tb_result':result})
 def loadtabletype(request):
     gametype=pm_gametype.objects.all()
     blind=pm_blind.objects.all()
@@ -180,3 +210,4 @@ def loadtabletype(request):
     gamepeople=pm_gamepeople.objects.all()
 
     return render(request, 'table.html', {'gametype':gametype,'blind':blind,"gametime":gametime,"gamepeople":gamepeople})
+
