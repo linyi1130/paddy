@@ -30,6 +30,7 @@ urlpatterns = [
     url(r'^result_pretreat_step1/', result_pretreat_step1),
     url(r'^result_newuser/', result_newuser),
     url(r'^result_club/', result_club),
-    url(r'^table/',loadtabletype),
-    url(r'^result_preview/$',result_preview),
+    url(r'^table/', loadtabletype),
+    url(r'^result_preview/$', result_preview),
+    url(r'^result_view/', result_view),
 ]

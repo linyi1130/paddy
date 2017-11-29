@@ -202,7 +202,7 @@ def result_club(request):  #处理多俱乐部玩家
 def result_preview(request):
     gamono = request.GET.get('gameno')
     result=result_reg(gamono)
-    return render(request,'result_preview.html',{'tb_result':result})
+    return render(request,'result_preview.html',{'tb_result':result, 'gameno':gamono})
 def loadtabletype(request):
     gametype=pm_gametype.objects.all()
     blind=pm_blind.objects.all()
@@ -211,3 +211,8 @@ def loadtabletype(request):
 
     return render(request, 'table.html', {'gametype':gametype,'blind':blind,"gametime":gametime,"gamepeople":gamepeople})
 
+def result_view(request):
+    t_club = ucs_subs_club.objects.all().order_by('-active_time')
+    t_game_list=gamenolist()
+
+    return render(request,"resultview.html", {'t_club': t_club,'t_game_list': t_game_list})
