@@ -1,1 +1,162 @@
-<!DOCTYPE html>{% load static %}<html lang="en"><head>    <meta charset="UTF-8">    <title>战绩查询</title>    <!--<link rel="stylesheet" href="../semantic/semantic.min.css">-->    <link rel="stylesheet" href="{% static 'semantic/semantic.css'%}">    <script src="https://code.jquery.com/jquery-1.12.4.js"></script><script src="https://cdn.bootcss.com/datatables/1.10.16/js/jquery.dataTables.min.js"></script><script src="https://cdn.bootcss.com/datatables/1.10.16/js/dataTables.semanticui.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.13/semantic.min.js"></script></head><body><div id="sidebar" ></div><div class="dimmed pusher"><div class="ui labeled icon button" id="menu">		<i class="sidebar icon"></i>		导航		</div>    <div class="ui doubling stackable container" style="padding: 50px">        <div class="ui five item inverted menu">		<a class="item" id="a">出纳台</a>		<a class="item" id="b">玩家管理</a>		<a class="item" id="c">牌局管理</a>		<a class="item" id="d">实时报表</a>		<a class="item" id="e">俱乐部管理</a>		</div>    	<div class="ui horizontal divider">	战绩查询	</div>    <div class="ui form">    <div class="four fields">        <div class="field">            <label>俱乐部</label>            <select class="ui fluid search dropdown" id="club_id">            <option value="">请选择俱乐部</option>                {% for t in t_club %}            <option value={{ t.club_id }}>{{ t.club_name }}</option>                {% endfor %}        </select>        </div>        <div class="field">            <label>牌局号</label>            <select class="ui fluid search dropdown">            <option value="">请选择牌局号</option>                {% for t in t_game_list %}                    <option value={{ t.game_no }}>{{ t.game_no }}</option>                {% endfor %}        </select>        </div>        <div class="field">            <label>开始日期</label>            <select class="ui fluid search dropdown">            <option value="">请选择日期</option>        </select>        </div>        <div class="field">            <label>截止日期</label>            <select class="ui fluid search dropdown">            <option value="">请选择日期</option>        </select>        </div>    </div>        <div class="ui button primary">查询</div>    </div>    <div name="result_l1" id="result_l1"></div>        <table class="ui selectable celled small table">            <thead>            <tr>                <th colspan="9" align="center">俱乐部名称</th>            </tr>            <tr>                <th>牌局号</th>                <th>记录日期</th>                <th>玩家输赢合计</th>                <th>玩家数量</th>                <th>水钱收益</th>                <th>保险收益</th>                <th>收益小计</th>                <th>上交小计</th>                <th>客服交收</th>            </tr>            </thead>        </table>    </div></div><script>	$(document).ready(function(){		$("#menu").click(function(){		    $('.ui.sidebar').sidebar('toggle');	});		$("#sidebar").load("{% static 'template/sidebar.html'%}");        $("#d").addClass('active red item');    	$(".ui.dropdown").dropdown()    ;	}					 )</script></body></html>
+<!DOCTYPE html>
+{% load static %}
+{% load staticfiles %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>战绩查询</title>
+    <!--<link rel="stylesheet" href="../semantic/semantic.min.css">-->
+    <link rel="stylesheet" href="{%static 'semantic/semantic.css' %} ">
+    <link rel="stylesheet" href="{%static 'semantic/calendar.css' %} ">
+    <script src="https://code.jquery.com/jquery-1.12.4.js">$.ajaxSetup({cache : false })</script>
+<script src="https://cdn.bootcss.com/datatables/1.10.16/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.bootcss.com/datatables/1.10.16/js/dataTables.semanticui.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.13/semantic.min.js"></script>
+<script src="https://cdn.bootcss.com/semantic-ui-calendar/0.0.8/calendar.js"></script>
+</head>
+<body>
+<div id="sidebar" ></div>
+<div class="dimmed pusher">
+<div class="ui labeled icon button" id="menu">
+		<i class="sidebar icon"></i>
+		导航
+		</div>
+    <div class="ui doubling stackable container" style="padding: 50px">
+        <div class="ui five item inverted menu">
+		<a class="item" id="a">出纳台</a>
+		<a class="item" id="b">玩家管理</a>
+		<a class="item" id="c">牌局管理</a>
+		<a class="item" id="d">实时报表</a>
+		<a class="item" id="e">俱乐部管理</a>
+		</div>
+    	<div class="ui horizontal divider">
+	战绩查询
+	</div>
+    <div class="ui form">
+    <div class="four fields">
+        <div class="field">
+            <label>俱乐部</label>
+            <select class="ui fluid search dropdown" id="club_id" name="club_id">
+            <option value="">请选择俱乐部</option>
+                {% for t in t_club %}
+            <option value={{ t.club_id }}>{{ t.club_name }}</option>
+                {% endfor %}
+        </select>
+        </div>
+        <div class="field">
+            <label>牌局号</label>
+            <select class="ui fluid search dropdown">
+            <option value="">请选择牌局号</option>
+                {% for t in t_game_list %}
+                    <option value={{ t.game_no }}>{{ t.game_no }}</option>
+                {% endfor %}
+        </select>
+        </div>
+        <div class="field">
+            <label>开始日期</label>
+            <div class="ui calendar" name="startdate" id="startdate">
+                <div class="ui input left icon">
+                    <i class="calendar icon"></i>
+                    <input type="text" placeholder="请选择开始日期"  >
+                </div>
+            </div>
+        </div>
+        <div class="field">
+            <label>截止日期</label>
+            <div class="ui calendar" name="enddate" id="enddate">
+                <div class="ui input left icon">
+                    <i class="calendar icon"></i>
+                    <input type="text" placeholder="请选择截止日期"  >
+                </div>
+            </div>
+        </div>
+    </div>
+        <button class="ui button primary" onclick="aa()">查询</button>
+    </div>
+    <div name="result_l1" id="result_l1"></div>
+
+    </div>
+</div>
+
+<script>
+	$(document).ready(function(){
+
+		$("#menu").click(function(){
+		    $('.ui.sidebar').sidebar('toggle');
+
+	});
+		$("#sidebar").load("{% static 'template/sidebar.html'%}");
+
+        $("#d").addClass('active red item');
+    	$(".ui.dropdown").dropdown()    ;
+	}
+
+					 )
+
+</script>
+	<script>
+	$(document).ready(function() {
+        $.ajaxSetup({
+            cache : false
+        })
+    	var str_club_id
+		str_club_id=$("#club_id").dropdown('get value')
+		$("#club_id").value=str_club_id
+        $('.ui.calendar').calendar({
+            type: 'date',
+            formatter : {
+                date: function (date, settings) {
+                    if(!date) return '';
+                    var year = date.getFullYear();
+                    var month = date.getMonth() + 1;
+                    var day = date.getDate();
+                    month = month < 10 ? '0' + month : month;
+                    day = day < 10 ? '0' + day : day;
+                    return year + '-' + month + '-' + day ;
+                }
+            },
+            text : {
+                days: ['日','一','二','三','四','五','六'],
+                months: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
+                monthsShort: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                today: '今天',
+                now: '现在',
+                am: 'AM',
+                pm: 'PM'
+            },
+            today : true ,
+            disableYear : false,
+	    })
+
+	});
+	</script>
+
+<script>
+
+</script>
+<script>
+    function aa() {
+        var club_id=$("#club_id").dropdown('get value');
+        var club_name=$("#club_id").find("option:selected").text();
+        var start =$("#startdate").calendar('get date');
+        var end = $("#enddate").calendar('get date');
+        var year = start.getFullYear();
+        var month = start.getMonth() + 1;
+        var day = start.getDate();
+        month = month < 10 ? '0' + month : month;
+        day = day < 10 ? '0' + day : day;
+
+        var s= year+'-' + month +'-'+ day +' '+ start.getHours()+':'+start.getMinutes()+':'+start.getSeconds();
+        year=end.getFullYear();
+        month=end.getMonth()+1;
+        day=end.getDate();
+        var e=year+'-' + month +'-'+ day +' '+ end.getHours()+':'+end.getMinutes()+':'+end.getSeconds();
+
+        $('#result_l1').load("/result_l1/",
+            {'club_id' : club_id, 'club_name': club_name,'start':s,'end': e}
+        )
+        $.ajaxSetup ({ cache: false });
+    }
+</script>
+</body>
+</html>

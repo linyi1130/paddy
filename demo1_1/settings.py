@@ -55,7 +55,7 @@ ROOT_URLCONF = 'demo1_1.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['sdt/static/template']
+        'DIRS': [os.path.join(BASE_DIR, "sdt/static/template")]
         ,
         'APP_DIRS': True,
         'OPTIONS': {
@@ -123,3 +123,6 @@ USE_TZ = False
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_URL = '/static/'
+STATICFILES_DIR = (
+    os.path.join(BASE_DIR, 'sdt/static'),
+)

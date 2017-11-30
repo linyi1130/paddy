@@ -33,4 +33,6 @@ urlpatterns = [
     url(r'^table/', loadtabletype),
     url(r'^result_preview/$', result_preview),
     url(r'^result_view/', result_view),
+    url(r'^result_l1/', result_l1),
+    url(r'^result_post', result_post),
 ]

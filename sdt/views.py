@@ -216,3 +216,20 @@ def result_view(request):
     t_game_list=gamenolist()
 
     return render(request,"resultview.html", {'t_club': t_club,'t_game_list': t_game_list})
+
+def result_l1(request):
+    club_id=request.POST['club_id']
+    club_name=request.POST['club_name']
+    startdate=request.POST['start']
+    enddate=request.POST['end']
+    tb_result=result_searchByclub(club_id,startdate,enddate)
+    tb_sum = result_searchByclubSum(club_id)
+    return  render(request,'result_l1.html',{'tb_result':tb_result, 'club_name': club_name,'tb_sum' : tb_sum } )
+
+def result_post(request):
+    gameno= request.POST['gameno']
+    flag=result_record(gameno)
+    if flag:
+        return HttpResponse('/result_l1/')
+    else :
+        return HttpResponse("添加失败")
