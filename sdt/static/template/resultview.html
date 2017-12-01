@@ -11,8 +11,9 @@
     <script src="https://code.jquery.com/jquery-1.12.4.js">$.ajaxSetup({cache : false })</script>
 <script src="https://cdn.bootcss.com/datatables/1.10.16/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.bootcss.com/datatables/1.10.16/js/dataTables.semanticui.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.13/semantic.min.js"></script>
 <script src="https://cdn.bootcss.com/semantic-ui-calendar/0.0.8/calendar.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.13/semantic.min.js"></script>
+
 </head>
 <body>
 <div id="sidebar" ></div>
@@ -57,7 +58,7 @@
             <div class="ui calendar" name="startdate" id="startdate">
                 <div class="ui input left icon">
                     <i class="calendar icon"></i>
-                    <input type="text" placeholder="请选择开始日期"  >
+                    <input type="text" placeholder="请选择开始日期" id="start"  >
                 </div>
             </div>
         </div>
@@ -66,12 +67,13 @@
             <div class="ui calendar" name="enddate" id="enddate">
                 <div class="ui input left icon">
                     <i class="calendar icon"></i>
-                    <input type="text" placeholder="请选择截止日期"  >
+                    <input type="text" placeholder="请选择截止日期"  id="end" >
                 </div>
             </div>
         </div>
     </div>
         <button class="ui button primary" onclick="aa()">查询</button>
+        <button class="ui button" onclick="bb()">测试</button>
     </div>
     <div name="result_l1" id="result_l1"></div>
 
@@ -97,7 +99,8 @@
 	<script>
 	$(document).ready(function() {
         $.ajaxSetup({
-            cache : false
+            cache : false,
+            async: true
         })
     	var str_club_id
 		str_club_id=$("#club_id").dropdown('get value')
@@ -138,22 +141,10 @@
     function aa() {
         var club_id=$("#club_id").dropdown('get value');
         var club_name=$("#club_id").find("option:selected").text();
-        var start =$("#startdate").calendar('get date');
-        var end = $("#enddate").calendar('get date');
-        var year = start.getFullYear();
-        var month = start.getMonth() + 1;
-        var day = start.getDate();
-        month = month < 10 ? '0' + month : month;
-        day = day < 10 ? '0' + day : day;
-
-        var s= year+'-' + month +'-'+ day +' '+ start.getHours()+':'+start.getMinutes()+':'+start.getSeconds();
-        year=end.getFullYear();
-        month=end.getMonth()+1;
-        day=end.getDate();
-        var e=year+'-' + month +'-'+ day +' '+ end.getHours()+':'+end.getMinutes()+':'+end.getSeconds();
-
+        var start =$("#start").val();
+        var end = $("#end").val();
         $('#result_l1').load("/result_l1/",
-            {'club_id' : club_id, 'club_name': club_name,'start':s,'end': e}
+            {'club_id' : club_id, 'club_name': club_name,'start':start,'end': end}
         )
         $.ajaxSetup ({ cache: false });
     }

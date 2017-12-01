@@ -223,7 +223,7 @@ def result_l1(request):
     startdate=request.POST['start']
     enddate=request.POST['end']
     tb_result=result_searchByclub(club_id,startdate,enddate)
-    tb_sum = result_searchByclubSum(club_id)
+    tb_sum = result_searchByclubSum(club_id,startdate,enddate)
     return  render(request,'result_l1.html',{'tb_result':tb_result, 'club_name': club_name,'tb_sum' : tb_sum } )
 
 def result_post(request):
