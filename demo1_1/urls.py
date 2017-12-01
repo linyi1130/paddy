@@ -34,5 +34,7 @@ urlpatterns = [
     url(r'^result_preview/$', result_preview),
     url(r'^result_view/', result_view),
     url(r'^result_l1/', result_l1),
-    url(r'^result_post', result_post),
+    url(r'^result_post/', result_post),
+    url(r'^result_union/', result_union),
+    url(r'^result_unionbyclub/', result_unionbyclub),
 ]

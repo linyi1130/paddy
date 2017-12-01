@@ -233,3 +233,14 @@ def result_post(request):
         return HttpResponse('/result_l1/')
     else :
         return HttpResponse("添加失败")
+
+def result_union(request):
+
+    return render(request, "result_union.html")
+
+def result_unionbyclub(request):
+    startime=request.POST['start']
+    endtime=request.POST['end']
+    tb_result=result_searchUnionbyclub(startime,endtime)
+    tb_result_sum = result_searchUnionbyclubsum(startime,endtime)
+    return  render(request, "result_unionbyclubl1.html", {'tb_result': tb_result,'starttime':startime,'endtime':endtime,'tb_result_sum': tb_result_sum })
