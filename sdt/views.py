@@ -77,11 +77,7 @@ def user_list(request):
 
 def cash(request):
     tb_user = SQL_user_list()
-    try:
-        acc_list = request.POST['acc_list']
-    except:
-        acc_list = None
-    return render(request, 'cash.html', {'acc_list': acc_list, 'tb_user': tb_user})
+    return render(request, 'cash.html', {'tb_user': tb_user})
 
 def getbalance(request):
     try: user_id=request.POST['user_id']
@@ -244,3 +240,35 @@ def result_unionbyclub(request):
     tb_result=result_searchUnionbyclub(startime,endtime)
     tb_result_sum = result_searchUnionbyclubsum(startime,endtime)
     return  render(request, "result_unionbyclubl1.html", {'tb_result': tb_result,'starttime':startime,'endtime':endtime,'tb_result_sum': tb_result_sum })
+
+def useraccountview(request):
+    account_id=request.POST['account_id']
+    user_name=request.POST['user_name']
+    club_id='1000'
+    tb_result=getUserAccountInfo(account_id,club_id)
+    tb_balance_list=getUserBalenceList(account_id,club_id)
+    club_name="荣耀联盟"
+    return render(request, 'user_account_info.html',{'user_name':user_name,'tb_result':tb_result,
+                                                     'club_name':club_name,'tb_balance_list':tb_balance_list})
+
+def usercash(request):
+    user_id=request.POST['user_id']
+    account_id=request.POST['account_id']
+    club_id='1000'
+    operator_id='3001'
+    club_name = "荣耀联盟"
+    user_name=request.POST['user_name']
+    change_num=int(float(request.POST['change_num'])*1000)
+    chang_type=request.POST['change_type'],
+    note=request.POST['note']
+    if chang_type[0] == "false":
+        cashtype=0
+    else: cashtype=1
+    result=userCashReg(account_id, user_id, club_id, cashtype, operator_id,change_num,note)
+    if result==True:
+        tb_result = getUserAccountInfo(account_id, club_id)
+        tb_balance_list = getUserBalenceList(account_id, club_id)
+        return render(request, 'user_account_info.html',{'user_name':user_name,'tb_result':tb_result,
+                                                     'club_name':club_name,'tb_balance_list':tb_balance_list})
+    else: HttpResponse("出错啦！")
+    return HttpResponse("/cash/")

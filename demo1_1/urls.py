@@ -37,4 +37,6 @@ urlpatterns = [
     url(r'^result_post/', result_post),
     url(r'^result_union/', result_union),
     url(r'^result_unionbyclub/', result_unionbyclub),
+    url(r'^useraccountview/', useraccountview),
+    url(r'^usercash/', usercash),
 ]
