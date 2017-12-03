@@ -26,16 +26,17 @@ class ucs_subs_user(models.Model):
 
 
 class ucs_club_user(models.Model):
-    club_id = models.IntegerField(null=True)
-    user_id = models.IntegerField(null=True)
+    club_id = models.IntegerField(null=False)
+    user_id = models.IntegerField(null=False)
     active_time = models.DateTimeField(auto_now_add=True)
     inactive_time = models.DateTimeField(default="2037-1-1")
 
 
 class ucs_account(models.Model):
-    account_id = models.IntegerField(null=True)
-    user_id = models.IntegerField(null=True)
-    club_id=models.IntegerField(null=True)
+    account_id = models.IntegerField(null=False)
+    user_id = models.IntegerField(null=False)
+    club_id = models.IntegerField(null=False)
+    account_level = models.IntegerField(null=True)
     active_time = models.DateTimeField(auto_now_add=True)
     inactive_time = models.DateTimeField(default='2037-1-1')
 
@@ -69,6 +70,7 @@ class ucs_balance(models.Model):
     updatetime = models.DateTimeField(auto_now_add=True)
     inactive_time = models.DateTimeField(default='2037-1-1')
     operator_id = models.IntegerField(null=True)
+    note = models.CharField(max_length=80)
 
 
 class pm_op_type(models.Model):
@@ -201,5 +203,25 @@ class ucs_result_table_l1(models.Model):
     game_no = models.CharField(max_length=40)
     operator_id = models.IntegerField(null=True)
     active_time = models.DateTimeField(auto_now= True)
+    inactive_time = models.DateTimeField(default='2037-01-01')
+    note = models.CharField(max_length=80)
+
+class ucs_credit_account(models.Model):
+    account_id = models.IntegerField(null=False)
+    user_id = models.IntegerField(null=False)
+    club_id=models.IntegerField(null=False)
+    credit_num = models.IntegerField(null = False)
+    operator_id = models.IntegerField(null= False)
+    active_time = models.DateTimeField(auto_now=True)
+    inactive_time = models.DateTimeField()
+    note = models.CharField(max_length=80)
+
+class ucs_game_freeze_record(models.Model):
+    account_id = models.IntegerField(null=False)
+    user_id = models.IntegerField(null=False)
+    club_id = models.IntegerField(null=False)
+    freeze_num = models.IntegerField(null=False)
+    operator_id = models.IntegerField(null= False)
+    active_time = models.DateTimeField(auto_now=True)
     inactive_time = models.DateTimeField(default='2037-01-01')
     note = models.CharField(max_length=80)
