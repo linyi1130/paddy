@@ -3,7 +3,7 @@ from django.shortcuts import render_to_response
 from django.shortcuts import render,HttpResponse
 from django.template import Context,Template
 from django.template import loader
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect,HttpResponse
 from django.core.urlresolvers import reverse
 from sdt.models import *
 from sdt.sdt_func import *
@@ -77,7 +77,9 @@ def user_list(request):
 
 def cash(request):
     tb_user = SQL_user_list()
-    return render(request, 'cash.html', {'tb_user': tb_user})
+    operator_name=request.session['operator_name']
+    club_name=request.session['club_name']
+    return render(request, 'cash.html', {'tb_user': tb_user,'operator_name':operator_name,'club_name':club_name})
 
 def getbalance(request):
     try: user_id=request.POST['user_id']
@@ -272,3 +274,19 @@ def usercash(request):
                                                      'club_name':club_name,'tb_balance_list':tb_balance_list})
     else: HttpResponse("出错啦！")
     return HttpResponse("/cash/")
+
+def login(request):
+    operator_name=request.POST['user_name']
+    op_info=ucs_operator.objects.get(operator_name=operator_name)
+    operator_id=op_info.operator_id
+    club_id=op_info.club_id
+    club_name=ucs_subs_club.objects.filter(inactive_time='2037-01-01').get(club_id=club_id).club_name
+    request.session['operator_id']=operator_id
+    request.session['club_id']=club_id
+    request.session['club_name']=club_name
+    request.session['operator_name']=operator_name
+    return HttpResponseRedirect("/cash/")
+
+def default(request):
+
+    return render(request,"login.html")

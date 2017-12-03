@@ -225,3 +225,9 @@ class ucs_game_freeze_record(models.Model):
     active_time = models.DateTimeField(auto_now=True)
     inactive_time = models.DateTimeField(default='2037-01-01')
     note = models.CharField(max_length=80)
+
+class ucs_operator(models.Model):
+    operator_id = models.IntegerField(null=False)
+    operator_name = models.CharField(max_length=20)
+    club_id=models.IntegerField(null=False)
+    password=models.CharField(max_length=20)
