@@ -8,6 +8,7 @@ from django.core.urlresolvers import reverse
 from sdt.models import *
 from sdt.sdt_func import *
 from .form import *
+import datetime
 # Create your views here.
 def club_list(request):
     t_club = ucs_subs_club.objects.all().order_by('-active_time')
@@ -290,3 +291,78 @@ def login(request):
 def default(request):
 
     return render(request,"login.html")
+
+def report_view(request):
+
+    return render(request,"report_navigate.html")
+
+def operator(request):
+    #group_list=ucs_operator_group.objects.all()
+    return render(request,'manage/operator_manage.html')
+
+def operator_setup(request):
+    club_id='1000'
+    tb_group_list = ucs_operator_group.objects.filter(inactive_time='2037-01-01').filter(club_id=club_id)
+    tb_operator_list = ucs_operator.objects.filter(inactive_time='2037-01-01').filter(club_id=club_id)
+    return render(request, 'manage/operator_setup.html',{'tb_group_list':tb_group_list,'tb_operator_list':tb_operator_list})
+
+def operator_group_list(request):
+    club_id='1000'
+    tb_group_list = ucs_operator_group.objects.filter(inactive_time='2037-01-01').filter(club_id=club_id)
+    return render(request, 'manage/group_list.html', {'tb_group_list':tb_group_list})
+
+def add_operator_group(request):
+    group_name=request.POST['group_name']
+    club_id='1000'
+    message=add_group(group_name,club_id)
+    tb_group_list = ucs_operator_group.objects.filter(inactive_time='2037-01-01').filter(club_id=club_id)
+    return render(request,'manage/group_list.html',{'message':message})
+
+def operator_list(request):
+    club_id='1000'
+    tb_operator_list = ucs_operator.objects.filter(inactive_time='2037-01-01').filter(club_id=club_id)
+    return render(request,'manage/operator_list.html', {'tb_operator_list' : tb_operator_list})
+
+def add_operator(request):
+    operator_name=request.POST['operator_name']
+    club_id='1000'
+    message=add_operator_func(operator_name,club_id)
+    return  render(request, 'manage/operator_list.html')
+
+def operator_relation(request):
+    club_id='1000'
+    tb_group_list = ucs_operator_group.objects.filter(inactive_time='2037-01-01').filter(club_id=club_id)
+    tb_operator_list = ucs_operator.objects.filter(inactive_time='2037-01-01').filter(club_id=club_id).filter(group_id=None)
+    tb_relation = operator_relation_list(club_id)
+    return render(request, 'manage/operator_relation.html', {'tb_group_list':tb_group_list,
+                                                             'tb_operator_list':tb_operator_list})
+
+def relation_list(request):
+    club_id='1000'
+    tb_relation = operator_relation_list(club_id)
+    return render(request, 'manage/relation_list.html',{'tb_relation':tb_relation})
+
+
+def operator_relation_setup(request):
+    operator_id_list = request.POST['operator_id']
+    group_id = request.POST['group_id']
+    operator_id=operator_id_list.split(",")
+    for t in operator_id:
+        if t != "":
+            try:
+                t=ucs_operator.objects.filter(inactive_time='2037-01-01').get(operator_id=t)
+                t_operator_id=t.operator_id
+                t_operator_name=t.operator_name
+                t_club_id=t.club_id
+                t.inactive_time=datetime.datetime.now()
+                t.save()
+                p=ucs_operator(operator_id=t_operator_id,
+                               operator_name=t_operator_name,
+                               club_id=t_club_id,
+                               group_id=group_id,
+                               active_time=datetime.datetime.now())
+                p.save()
+            except Exception as e:
+                return e
+    return HttpResponseRedirect('/operator_relation/')
+

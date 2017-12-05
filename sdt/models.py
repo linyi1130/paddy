@@ -226,8 +226,35 @@ class ucs_game_freeze_record(models.Model):
     inactive_time = models.DateTimeField(default='2037-01-01')
     note = models.CharField(max_length=80)
 
+
+class pm_account_type(models.Model):
+    type_id = models.AutoField(primary_key=True)
+    type = models.CharField(max_length=20)
+    inactive_time = models.DateTimeField(default='2037-01-01')
+
+
+class ucs_cash_account(models.Model):
+    account_id = models.IntegerField(null=False)
+    type_id = models.IntegerField(null=False)
+    account_name = models.CharField(max_length=20)
+    group_id = models.IntegerField(null=True)
+    club_id = models.IntegerField(null=True)
+    inactive_time = models.DateTimeField(default='2037-01-01')
+
+
+class ucs_operator_group(models.Model):
+    group_id = models.AutoField(primary_key=True)
+    group_name = models.CharField(max_length=20)
+    club_id = models.IntegerField(null=False)
+    active_time = models.DateTimeField(auto_now_add=True)
+    inactive_time = models.DateTimeField(default='2037-01-01')
+
+
 class ucs_operator(models.Model):
     operator_id = models.IntegerField(null=False)
     operator_name = models.CharField(max_length=20)
-    club_id=models.IntegerField(null=False)
-    password=models.CharField(max_length=20)
+    club_id=models.IntegerField(null=True)
+    group_id = models.IntegerField(null=True)
+    active_time= models.DateTimeField(auto_now_add=True)
+    inactive_time=models.DateTimeField(default='2037-01-01')
+
