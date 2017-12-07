@@ -78,9 +78,12 @@ def user_list(request):
 
 def cash(request):
     tb_user = SQL_user_list()
-    operator_name=request.session['operator_name']
-    club_name=request.session['club_name']
-    return render(request, 'cash.html', {'tb_user': tb_user,'operator_name':operator_name,'club_name':club_name})
+    operator_info=request.session['operator_info']
+    operator_name=operator_info['operator_name']
+    club_name=operator_info['club_name']
+    group_name=operator_info['group_name']
+    return render(request, 'cash.html', {'tb_user': tb_user,'operator_name':operator_name,
+                                         'club_name':club_name, 'group_name':group_name})
 
 def getbalance(request):
     try: user_id=request.POST['user_id']
@@ -276,20 +279,10 @@ def usercash(request):
     else: HttpResponse("出错啦！")
     return HttpResponse("/cash/")
 
-def login(request):
-    operator_name=request.POST['user_name']
-    op_info=ucs_operator.objects.get(operator_name=operator_name)
-    operator_id=op_info.operator_id
-    club_id=op_info.club_id
-    club_name=ucs_subs_club.objects.filter(inactive_time='2037-01-01').get(club_id=club_id).club_name
-    request.session['operator_id']=operator_id
-    request.session['club_id']=club_id
-    request.session['club_name']=club_name
-    request.session['operator_name']=operator_name
-    return HttpResponseRedirect("/cash/")
 
 def default(request):
-
+    request.session.set_expiry(0)
+    request.session.clear_expired()
     return render(request,"login.html")
 
 def report_view(request):
@@ -304,7 +297,7 @@ def operator_setup(request):
     club_id='1000'
     tb_group_list = ucs_operator_group.objects.filter(inactive_time='2037-01-01').filter(club_id=club_id)
     tb_operator_list = ucs_operator.objects.filter(inactive_time='2037-01-01').filter(club_id=club_id)
-    return render(request, 'manage/operator_setup.html',{'tb_group_list':tb_group_list,'tb_operator_list':tb_operator_list})
+    return render(request, 'manage/operator_setup.html', {'tb_group_list':tb_group_list, 'tb_operator_list':tb_operator_list})
 
 def operator_group_list(request):
     club_id='1000'
@@ -314,9 +307,15 @@ def operator_group_list(request):
 def add_operator_group(request):
     group_name=request.POST['group_name']
     club_id='1000'
-    message=add_group(group_name,club_id)
-    tb_group_list = ucs_operator_group.objects.filter(inactive_time='2037-01-01').filter(club_id=club_id)
-    return render(request,'manage/group_list.html',{'message':message})
+    message=add_group(group_name, club_id)
+    if message:
+        cnt = 1
+        while cnt <= 3:
+            account_id=create_club_accountID(club_id)
+            if create_club_account(account_id,club_id,cnt,message):
+                cnt = cnt + 1
+    return render(request, 'manage/group_list.html')
+
 
 def operator_list(request):
     club_id='1000'
@@ -325,9 +324,10 @@ def operator_list(request):
 
 def add_operator(request):
     operator_name=request.POST['operator_name']
+    login_id=request.POST['login_id']
     club_id='1000'
-    message=add_operator_func(operator_name,club_id)
-    return  render(request, 'manage/operator_list.html')
+    message=add_operator_func(operator_name, login_id, club_id)
+    return render(request, 'manage/operator_list.html')
 
 def operator_relation(request):
     club_id='1000'
@@ -354,15 +354,29 @@ def operator_relation_setup(request):
                 t_operator_id=t.operator_id
                 t_operator_name=t.operator_name
                 t_club_id=t.club_id
+                t_login_id=t.login_id
+                t_password=t.password
                 t.inactive_time=datetime.datetime.now()
                 t.save()
                 p=ucs_operator(operator_id=t_operator_id,
                                operator_name=t_operator_name,
                                club_id=t_club_id,
                                group_id=group_id,
+                               login_id=t_login_id,
+                               password=t_password,
                                active_time=datetime.datetime.now())
                 p.save()
             except Exception as e:
                 return e
     return HttpResponseRedirect('/operator_relation/')
+
+def login(request):
+    login_id=request.POST['login_id']
+    password=request.POST['password']
+    result =operator_login (login_id, password)
+    if result:
+        request.session['operator_info']=result
+        return HttpResponseRedirect('/cash/')
+    else:
+        return HttpResponse("用户名或密码不匹配")
 

@@ -253,8 +253,31 @@ class ucs_operator_group(models.Model):
 class ucs_operator(models.Model):
     operator_id = models.IntegerField(null=False)
     operator_name = models.CharField(max_length=20)
-    club_id=models.IntegerField(null=True)
+    login_id = models.CharField(max_length=20)
+    password = models.CharField(max_length=80)
+    club_id = models.IntegerField(null=True)
     group_id = models.IntegerField(null=True)
-    active_time= models.DateTimeField(auto_now_add=True)
+    active_time = models.DateTimeField(auto_now_add=True)
+    inactive_time = models.DateTimeField(default='2037-01-01')
+
+
+class ucs_club_account(models.Model):
+    account_id = models.IntegerField(null=False)
+    club_id=models.IntegerField(null=False)
+    type_id=models.IntegerField(null=False)
+    group_id=models.IntegerField(null=False)
+    active_time=models.DateTimeField(auto_now_add=True)
     inactive_time=models.DateTimeField(default='2037-01-01')
+
+
+class ucs_club_balance(models.Model):
+    account_id = models.IntegerField(null=False)
+    balance=models.IntegerField(null=False)
+    chance=models.IntegerField(null=False)
+    type=models.IntegerField(null=True)
+    chance_desc=models.CharField(max_length=20)
+    update_time =models.DateTimeField(auto_now_add=True)
+    inactive_time=models.DateTimeField(default='2037-01-01')
+    note=models.CharField(max_length=80)
+
 
