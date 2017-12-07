@@ -51,4 +51,6 @@ urlpatterns = [
     url(r'^operator_relation/', operator_relation),
     url(r'^operator_relation_setup/', operator_relation_setup),
     url(r'^relation_list/', relation_list),
+    url(r'^club_account_info/', club_account_info),
+    url(r'^check_balance/', check_balance),
 ]

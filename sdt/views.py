@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.shortcuts import render_to_response
 from django.shortcuts import render,HttpResponse
-from django.template import Context,Template
+from django.template import Context,Template,RequestContext
 from django.template import loader
 from django.http import HttpResponseRedirect,HttpResponse
 from django.core.urlresolvers import reverse
@@ -9,6 +9,7 @@ from sdt.models import *
 from sdt.sdt_func import *
 from .form import *
 import datetime
+from django.contrib import messages
 # Create your views here.
 def club_list(request):
     t_club = ucs_subs_club.objects.all().order_by('-active_time')
@@ -82,8 +83,9 @@ def cash(request):
     operator_name=operator_info['operator_name']
     club_name=operator_info['club_name']
     group_name=operator_info['group_name']
+    tb_type_list=club_account_list()
     return render(request, 'cash.html', {'tb_user': tb_user,'operator_name':operator_name,
-                                         'club_name':club_name, 'group_name':group_name})
+                                         'club_name':club_name, 'group_name':group_name, 'tb_type_list': tb_type_list})
 
 def getbalance(request):
     try: user_id=request.POST['user_id']
@@ -248,35 +250,57 @@ def result_unionbyclub(request):
     return  render(request, "result_unionbyclubl1.html", {'tb_result': tb_result,'starttime':startime,'endtime':endtime,'tb_result_sum': tb_result_sum })
 
 def useraccountview(request):
+    operator_info = request.session['operator_info']
     account_id=request.POST['account_id']
     user_name=request.POST['user_name']
-    club_id='1000'
+    club_id=operator_info['club_id']
     tb_result=getUserAccountInfo(account_id,club_id)
     tb_balance_list=getUserBalenceList(account_id,club_id)
-    club_name="荣耀联盟"
+    club_name=operator_info['club_name']
     return render(request, 'user_account_info.html',{'user_name':user_name,'tb_result':tb_result,
                                                      'club_name':club_name,'tb_balance_list':tb_balance_list})
 
 def usercash(request):
     user_id=request.POST['user_id']
     account_id=request.POST['account_id']
-    club_id='1000'
-    operator_id='3001'
-    club_name = "荣耀联盟"
+    operator_info=request.session['operator_info']
+    club_id=operator_info['club_id']
+    operator_id=operator_info['operator_id']
+    group_id=operator_info['group_id']
+    club_name = operator_info['club_name']
     user_name=request.POST['user_name']
     change_num=int(float(request.POST['change_num'])*1000)
-    chang_type=request.POST['change_type'],
+    chang_type=request.POST['change_type']
     note=request.POST['note']
-    if chang_type[0] == "false":
-        cashtype=0
-    else: cashtype=1
-    result=userCashReg(account_id, user_id, club_id, cashtype, operator_id,change_num,note)
-    if result==True:
-        tb_result = getUserAccountInfo(account_id, club_id)
-        tb_balance_list = getUserBalenceList(account_id, club_id)
-        return render(request, 'user_account_info.html',{'user_name':user_name,'tb_result':tb_result,
-                                                     'club_name':club_name,'tb_balance_list':tb_balance_list})
-    else: HttpResponse("出错啦！")
+    type_id=request.POST['pay_account']
+    operator_account_id = get_operator_accountID(club_id, group_id, type_id)
+    if chang_type == "false":
+        cashtype=1001  #客服充值
+        result=userCashReg(account_id, user_id, club_id, cashtype, operator_id, change_num, note)
+        if result: #用户充值成功
+            flag=operator_cash(operator_account_id, change_num, cashtype, operator_id, note)
+            if flag:
+                tb_result = getUserAccountInfo(account_id, club_id)
+                tb_balance_list = getUserBalenceList(account_id, club_id)
+                return render(request, 'user_account_info.html', {'user_name': user_name, 'tb_result': tb_result,
+                                                    'club_name':club_name, 'tb_balance_list': tb_balance_list})
+            return HttpResponse("出错了")
+        else: return HttpResponse("出错了")
+    elif chang_type=='true':
+        cashtype = 2001
+        result = userCashReg(account_id, user_id, club_id, cashtype, operator_id, change_num, note)
+        if result:  # 用户充值成功
+            flag = operator_cash(operator_account_id, change_num, cashtype, operator_id, note)
+            if flag:
+                tb_result = getUserAccountInfo(account_id, club_id)
+                tb_balance_list = getUserBalenceList(account_id, club_id)
+                return render(request, 'user_account_info.html', {'user_name': user_name, 'tb_result': tb_result,
+                                                                  'club_name': club_name,
+                                                                  'tb_balance_list': tb_balance_list})
+            return HttpResponse("出错了")
+        else:
+            return HttpResponse("出错了")
+
     return HttpResponse("/cash/")
 
 
@@ -313,6 +337,7 @@ def add_operator_group(request):
         while cnt <= 3:
             account_id=create_club_accountID(club_id)
             if create_club_account(account_id,club_id,cnt,message):
+                operator_cash(account_id, 0, 9999, 9999, "初始化")
                 cnt = cnt + 1
     return render(request, 'manage/group_list.html')
 
@@ -370,6 +395,7 @@ def operator_relation_setup(request):
                 return e
     return HttpResponseRedirect('/operator_relation/')
 
+
 def login(request):
     login_id=request.POST['login_id']
     password=request.POST['password']
@@ -380,3 +406,36 @@ def login(request):
     else:
         return HttpResponse("用户名或密码不匹配")
 
+
+def club_account_info(request):
+    operator_info=request.session['operator_info']
+    club_id = operator_info['club_id']
+    group_id = operator_info['group_id']
+    tb_result=get_club_account_infoByGroup(club_id,group_id)
+    return render(request, 'account_info.html', {'tb_result': tb_result})
+
+
+def check_balance(request):
+    operator_info = request.session['operator_info']
+    account_id = request.POST['account_id']
+    club_id = operator_info['club_id']
+    group_id = operator_info['group_id']
+    chang_type = request.POST['change_type']
+    type_id = request.POST['pay_account']
+    user_id = request.POST['user_id']
+    note = request.POST['note']
+    user_name = request.POST['user_name']
+    club_name = operator_info['club_name']
+    operator_id = operator_info['operator_id']
+    change_num = int(float(request.POST['change_num']) * 1000)
+    operator_account_id = get_operator_accountID(club_id, group_id, type_id)
+    user_balance = getBalancebyaid(account_id)
+    if change_num>user_balance:
+        msg=1
+        return HttpResponse(msg)
+    type_balance = get_club_balance_byType(operator_account_id)
+    if change_num>type_balance:
+        msg=2
+        return HttpResponse(msg)
+    msg=True
+    return HttpResponse(msg)

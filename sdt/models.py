@@ -274,10 +274,12 @@ class ucs_club_balance(models.Model):
     account_id = models.IntegerField(null=False)
     balance=models.IntegerField(null=False)
     chance=models.IntegerField(null=False)
-    type=models.IntegerField(null=True)
+    chance_type=models.IntegerField(null=True)
     chance_desc=models.CharField(max_length=20)
+    operator_id=models.IntegerField(null=False)
     update_time =models.DateTimeField(auto_now_add=True)
     inactive_time=models.DateTimeField(default='2037-01-01')
     note=models.CharField(max_length=80)
+
 
 
