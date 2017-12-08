@@ -438,5 +438,29 @@ def check_balance(request):
     return HttpResponse(msg)
 
 def test(request):
-    msg=createSerialNo(1001,1,2)
-    return HttpResponse(msg)
+
+    return render(request,'user_account_manage_loading.html')
+
+def searchUser(request):
+    user_name=request.POST['user_name']
+    t=request.session['operator_info']
+    club_id=t['club_id']
+    tb_result=getUserInfoByName(user_name,club_id)
+    if tb_result:
+        return render(request,'user_account_manage.html',{'tb_result':tb_result, 'user_name':user_name})
+    else:
+        message="没有匹配到玩家"
+        return HttpResponse(message)
+def modifyUserInfo(request):
+    t=request.session['operator_info']
+    club_id=t['club_id']
+    user_id=request.POST['user_id']
+    new_name=request.POST['user_name']
+    new_wx_name=request.POST['wx_name']
+    new_note=request.POST['note']
+    result=modifyUserInfoFunc(user_id, new_name, new_wx_name, new_note)
+    if result:
+        tb_result = getUserInfoByName(new_name, club_id)
+        return render(request,'user_account_manage.html',{'tb_result':tb_result, 'user_name':new_name})
+    else:
+        return HttpResponse("修改失败")

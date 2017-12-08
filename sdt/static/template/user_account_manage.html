@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>玩家信息修改</title>
+    <!--<link rel="stylesheet" href="../semantic/semantic.min.css">-->
+<link rel="stylesheet" href="{% static 'semantic/semantic.min.css'%}">
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.13/semantic.min.js"></script>
+</head>
+<body>
+
+    <div class="ui small modal">
+        <h2 class="header">处理结果</h2>
+        <div class="content">
+            <p id="msg1"></p>
+        </div>
+        <div class="actions">
+            <button class="ui negative button" onclick="messageconfirm()">返回</button>
+        </div>
+
+    </div>
+  <div class="ui form" id="content" name="content">
+      <table class="ui celled fixed red table">
+          <thead>
+            <tr>
+                <th colspan="2">基本资料</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+                <td>玩家名称</td>
+                <td><div class="ui fluid input"><input id="new_name" name="new_name" type="text" value={{ user_name }}></div></td>
+            </tr>
+            <tr>
+                <td>微信名称</td>
+                <td><div class="ui fluid input"><input id="wx_name" name="wx_name" type="text" value={{ tb_result.wx_name }}></div></td>
+            </tr>
+            <tr>
+                <td>主账户</td>
+                <td><div class="ui fluid input"><input  type="text" readonly="true" value={{ tb_result.main_account }}></div></td>
+            </tr>
+            <tr>
+                <td>同账户玩家</td>
+                <td><div class="ui fluid input"><input type="text" readonly="true" value={{ tb_result.tb_account_list }}></div></td>
+            </tr>
+            <tr>
+                <td>归属俱乐部</td>
+                <td><div class="ui fluid input"><input type="text" readonly="true" value={{ tb_result.club_list }}></div></td>
+            </tr>
+            <tr>
+                <td>备注</td>
+                <td><div class="ui fluid input"><input id="note" name="note" type="text" value={{ tb_result.note }}></div></td>
+            </tr>
+          </tbody>
+      </table>
+      <input type="hidden" id="user_id" value={{ tb_result.user_id }}>
+      <input type="hidden" id="old_name" type="text" value={{ user_name }}>
+      <input  type="hidden" id="old_wx_name" type="text" value={{ tb_result.wx_name }}>
+      <input type="hidden" id="old_note" type="text" value={{ tb_result.note }}>
+
+      <div class="ui right floated items">
+      <button class="ui  button primary" type="submit" onclick="modifyuser()">确认</button>
+      <button class="ui negative button" type="reset">取消</button>
+          <div class="ui error message"></div>
+      </div>
+
+      <script>
+
+
+        function modifyuser() {
+            //$.ajaxSetup({async: true});
+            var new_name=$.trim($('#new_name').val());
+            var user_id=$.trim($('#user_id').val());
+            var wx_name=$.trim($('#wx_name').val());
+            var note=$.trim($('#note').val());
+            var old_name=$('#old_name').val();
+            var pp=(new_name==old_name && wx_name==$('#old_wx_name').val()) && note==$('#old_note').val();
+            alert(pp);
+            if (pp)
+            {
+                $('#msg1').text("没有任何修改");
+                $('.ui.modal').modal('show');
+            }
+            else{
+                $.ajax({
+                    type:'post',
+                    url:'/modifyUserInfo/',
+                    data:{'user_name': new_name, 'user_id':user_id, 'wx_name':wx_name,'note':note},
+                    success: function (result) {
+                        if (result!="False")
+                        {
+                            $('#msg1').text("修改成功");
+                            $('.ui.modal').modal('show');
+                        }
+                        else{
+                            $('#msg1').text("修改失败");
+                            $('.ui.modal').modal('show');
+                        }
+
+                    }
+            })
+            }
+
+        }
+        function messageconfirm() {
+            location.reload();
+        };
+$('#content').form({
+    on:'blur',
+    inline:true,
+    fields:{
+        new_name:{
+            identifier:'new_name',
+            rules:[{
+                type:'empty',
+                prompt:'玩家名不能为空'
+            }]
+        },
+        wx_name:{
+            identifier: 'wx_name',
+            rules:[{
+                type:'empty',
+                prompt:'微信名不能为空'
+            }]
+        }
+    }
+})
+       </script>
+  </div>
+
+
+</body>
+</html>

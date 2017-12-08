@@ -54,4 +54,6 @@ urlpatterns = [
     url(r'^club_account_info/', club_account_info),
     url(r'^check_balance/', check_balance),
     url(r'^test/', test),
+    url(r'^searchUser/', searchUser),
+    url(r'^modifyUserInfo/', modifyUserInfo)
 ]
