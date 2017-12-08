@@ -420,13 +420,7 @@ def check_balance(request):
     account_id = request.POST['account_id']
     club_id = operator_info['club_id']
     group_id = operator_info['group_id']
-    chang_type = request.POST['change_type']
     type_id = request.POST['pay_account']
-    user_id = request.POST['user_id']
-    note = request.POST['note']
-    user_name = request.POST['user_name']
-    club_name = operator_info['club_name']
-    operator_id = operator_info['operator_id']
     change_num = int(float(request.POST['change_num']) * 1000)
     operator_account_id = get_operator_accountID(club_id, group_id, type_id)
     user_balance = getBalancebyaid(account_id)
