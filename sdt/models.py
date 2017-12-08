@@ -60,17 +60,7 @@ class tmp_result(models.Model):
     game_no = models.CharField(max_length=40)
 
 
-class ucs_balance(models.Model):
-    account_id = models.IntegerField(null=True)
-    user_id = models.IntegerField(null=True)
-    club_id=models.IntegerField(null=True)
-    balance = models.IntegerField(null=True)
-    chance = models.IntegerField(null=True)
-    chance_desc = models.CharField(null=False, max_length=20)
-    updatetime = models.DateTimeField(auto_now_add=True)
-    inactive_time = models.DateTimeField(default='2037-1-1')
-    operator_id = models.IntegerField(null=True)
-    note = models.CharField(max_length=80)
+
 
 
 class pm_op_type(models.Model):
@@ -269,8 +259,8 @@ class ucs_club_account(models.Model):
     active_time=models.DateTimeField(auto_now_add=True)
     inactive_time=models.DateTimeField(default='2037-01-01')
 
-
 class ucs_club_balance(models.Model):
+    serial_no = models.CharField(max_length=25, primary_key=True)
     account_id = models.IntegerField(null=False)
     balance=models.IntegerField(null=False)
     chance=models.IntegerField(null=False)
@@ -281,5 +271,17 @@ class ucs_club_balance(models.Model):
     inactive_time=models.DateTimeField(default='2037-01-01')
     note=models.CharField(max_length=80)
 
+class ucs_balance(models.Model):
+    account_id = models.IntegerField(null=True)
+    user_id = models.IntegerField(null=True)
+    club_id=models.IntegerField(null=True)
+    balance = models.IntegerField(null=True)
+    chance = models.IntegerField(null=True)
+    chance_desc = models.CharField(null=False, max_length=20)
+    serial_no = models.CharField(max_length=25)
+    updatetime = models.DateTimeField(auto_now_add=True)
+    inactive_time = models.DateTimeField(default='2037-1-1')
+    operator_id = models.IntegerField(null=True)
+    note = models.CharField(max_length=80)
 
 

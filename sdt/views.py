@@ -276,9 +276,10 @@ def usercash(request):
     operator_account_id = get_operator_accountID(club_id, group_id, type_id)
     if chang_type == "false":
         cashtype=1001  #客服充值
-        result=userCashReg(account_id, user_id, club_id, cashtype, operator_id, change_num, note)
+        serial_no = createSerialNo(club_id, group_id, type_id)
+        result=userCashReg(account_id, user_id, club_id, cashtype, operator_id, change_num, note,serial_no)
         if result: #用户充值成功
-            flag=operator_cash(operator_account_id, change_num, cashtype, operator_id, note)
+            flag=operator_cash(operator_account_id, change_num, cashtype, operator_id, note,serial_no)
             if flag:
                 tb_result = getUserAccountInfo(account_id, club_id)
                 tb_balance_list = getUserBalenceList(account_id, club_id)
@@ -288,9 +289,10 @@ def usercash(request):
         else: return HttpResponse("出错了")
     elif chang_type=='true':
         cashtype = 2001
-        result = userCashReg(account_id, user_id, club_id, cashtype, operator_id, change_num, note)
+        serial_no=createSerialNo(club_id, group_id,type_id)
+        result = userCashReg(account_id, user_id, club_id, cashtype, operator_id, change_num, note, serial_no)
         if result:  # 用户充值成功
-            flag = operator_cash(operator_account_id, change_num, cashtype, operator_id, note)
+            flag = operator_cash(operator_account_id, change_num, cashtype, operator_id, note, serial_no)
             if flag:
                 tb_result = getUserAccountInfo(account_id, club_id)
                 tb_balance_list = getUserBalenceList(account_id, club_id)
@@ -336,8 +338,9 @@ def add_operator_group(request):
         cnt = 1
         while cnt <= 3:
             account_id=create_club_accountID(club_id)
+            serial_no=createSerialNo(club_id,1,1)
             if create_club_account(account_id,club_id,cnt,message):
-                operator_cash(account_id, 0, 9999, 9999, "初始化")
+                operator_cash(account_id, 0, 9999, 9999, "初始化",serial_no)
                 cnt = cnt + 1
     return render(request, 'manage/group_list.html')
 
@@ -432,4 +435,8 @@ def check_balance(request):
         msg=2
         return HttpResponse(msg)
     msg=True
+    return HttpResponse(msg)
+
+def test(request):
+    msg=createSerialNo(1001,1,2)
     return HttpResponse(msg)
