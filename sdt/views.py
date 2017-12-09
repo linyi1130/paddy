@@ -10,6 +10,7 @@ from sdt.sdt_func import *
 from .form import *
 import datetime
 import json
+import django.core.serializers.json
 from django.contrib import messages
 # Create your views here.
 def club_list(request):
@@ -79,11 +80,12 @@ def user_list(request):
     return render(request,'user.html',{'tb_user':tb_user,'tb_club':tb_club})
 
 def cash(request):
-    tb_user = SQL_user_list()
     operator_info=request.session['operator_info']
     operator_name=operator_info['operator_name']
     club_name=operator_info['club_name']
+    club_id = operator_info['club_id']
     group_name=operator_info['group_name']
+    tb_user = SQL_user_list(club_id)
     tb_type_list=club_account_list()
     return render(request, 'cash.html', {'tb_user': tb_user,'operator_name':operator_name,
                                          'club_name':club_name, 'group_name':group_name, 'tb_type_list': tb_type_list})
@@ -478,3 +480,39 @@ def modifyUserInfo(request):
         result = modifyUserInfoFunc(user_id, new_name, new_wx_name, new_note)
         if result:
             return HttpResponse(result)
+
+def modify_user(request):
+    operator_info=request.session['operator_info']
+    club_id=operator_info['club_id']
+
+    tb_user = getUserListByClubId(club_id)
+    return render(request,'user_modify.html', {'tb_user':tb_user,'club_id': club_id})
+
+def user_account_group(request):
+    operator_info=request.session['operator_info']
+    club_id=operator_info['club_id']
+
+    tb_user = getUserListByClubId(club_id)
+    return render(request, 'user_account_group.html', {'tb_user': tb_user, 'club_id': club_id})
+
+
+def user_group_search(request):
+    account_id=request.POST['account_id']
+    operator_info = request.session['operator_info']
+    club_id = operator_info['club_id']
+    tb_account_info=getUserAccountInfo(account_id, club_id)
+    result=json.dumps(tb_account_info, cls=django.core.serializers.json.DjangoJSONEncoder)
+    return HttpResponse(result)
+
+
+def account_migrate(request):
+    o_account_id=request.POST['o_account_id']
+    t_account_id=request.POST['t_account_id']
+    t_user_id=request.POST['t_user_id']
+    t_account_name=request.POST['t_account_name']
+    t=request.session['operator_info']
+    club_id=t['club_id']
+    operator_id=t['operator_id']
+    result=userAccountMigrate(o_account_id,t_account_id,t_account_name, t_user_id,club_id,operator_id)
+
+    return HttpResponse(result)

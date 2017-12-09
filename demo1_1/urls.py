@@ -55,5 +55,9 @@ urlpatterns = [
     url(r'^check_balance/', check_balance),
     url(r'^test/', test),
     url(r'^searchUser/', searchUser),
-    url(r'^modifyUserInfo/', modifyUserInfo)
+    url(r'^modify_user/', modify_user),
+    url(r'^modifyUserInfo/', modifyUserInfo),
+    url(r'^user_account_group/', user_account_group),
+    url(r'^user_group_search/', user_group_search),
+    url(r'^account_migrate/', account_migrate),
 ]
