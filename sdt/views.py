@@ -9,6 +9,7 @@ from sdt.models import *
 from sdt.sdt_func import *
 from .form import *
 import datetime
+import json
 from django.contrib import messages
 # Create your views here.
 def club_list(request):
@@ -438,8 +439,11 @@ def check_balance(request):
     return HttpResponse(msg)
 
 def test(request):
+    operator_info=request.session['operator_info']
+    club_id=operator_info['club_id']
 
-    return render(request,'user_account_manage_loading.html')
+    tb_user = getUserListByClubId(club_id)
+    return render(request,'user_modify.html', {'tb_user':tb_user,'club_id': club_id})
 
 def searchUser(request):
     user_name=request.POST['user_name']
@@ -447,7 +451,10 @@ def searchUser(request):
     club_id=t['club_id']
     tb_result=getUserInfoByName(user_name,club_id)
     if tb_result:
-        return render(request,'user_account_manage.html',{'tb_result':tb_result, 'user_name':user_name})
+        #return HttpResponse(tb_result)
+        tmp=json.dumps(tb_result)
+        return HttpResponse(tmp)
+        #return render(request,'user_modify.html',{'tb_result':tmp, 'user_name':user_name})
     else:
         message="没有匹配到玩家"
         return HttpResponse(message)
@@ -461,6 +468,6 @@ def modifyUserInfo(request):
     result=modifyUserInfoFunc(user_id, new_name, new_wx_name, new_note)
     if result:
         tb_result = getUserInfoByName(new_name, club_id)
-        return render(request,'user_account_manage.html',{'tb_result':tb_result, 'user_name':new_name})
+        return render(request,'user_modify.html',{'tb_result':tb_result, 'user_name':new_name})
     else:
-        return HttpResponse("修改失败")
+        return HttpResponse(result)
