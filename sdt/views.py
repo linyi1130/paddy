@@ -465,9 +465,16 @@ def modifyUserInfo(request):
     new_name=request.POST['user_name']
     new_wx_name=request.POST['wx_name']
     new_note=request.POST['note']
-    result=modifyUserInfoFunc(user_id, new_name, new_wx_name, new_note)
-    if result:
-        tb_result = getUserInfoByName(new_name, club_id)
-        return render(request,'user_modify.html',{'tb_result':tb_result, 'user_name':new_name})
+    old_name = request.POST['old_name']
+    if old_name!=new_name:
+        if checkUserNameExist(new_name):
+            result=modifyUserInfoFunc(user_id, new_name, new_wx_name, new_note)
+            if result:
+                return HttpResponse(result)
+        else:
+            result="玩家名字已存在"
+            return HttpResponse(result)
     else:
-        return HttpResponse(result)
+        result = modifyUserInfoFunc(user_id, new_name, new_wx_name, new_note)
+        if result:
+            return HttpResponse(result)
