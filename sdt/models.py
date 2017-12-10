@@ -2,7 +2,7 @@ from django.db import models
 
 # Create your models here.
 class ucs_subs_club(models.Model):
-    club_id = models.AutoField(primary_key=True)
+    club_id = models.IntegerField(null=False)
     club_name = models.CharField(max_length=20)
     club_shortname = models.CharField(max_length=4)
     club_desc = models.CharField(max_length=80)
@@ -10,7 +10,6 @@ class ucs_subs_club(models.Model):
     insure_rate = models.IntegerField(null=False)
     active_time = models.DateTimeField(auto_now_add=True)
     inactive_time = models.DateTimeField(default='2037-1-1')
-
 
 class ucs_subs_user(models.Model):
     num = models.AutoField(primary_key=True)

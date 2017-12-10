@@ -60,4 +60,7 @@ urlpatterns = [
     url(r'^user_account_group/', user_account_group),
     url(r'^user_group_search/', user_group_search),
     url(r'^account_migrate/', account_migrate),
+    url(r'^club_manage/', club_manage),
+    url(r'^club_info/', club_info),
+    url(r'^modify_club/', modify_club),
 ]

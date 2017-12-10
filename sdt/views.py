@@ -12,9 +12,10 @@ import datetime
 import json
 import django.core.serializers.json
 from django.contrib import messages
+from django.forms.models import model_to_dict
 # Create your views here.
 def club_list(request):
-    t_club = ucs_subs_club.objects.all().order_by('-active_time')
+    t_club = getCLubList()
     return render(request, 'club.html', {'t_club': t_club})
 
 
@@ -24,14 +25,12 @@ def club_add(request):
     income_rate = request.POST['income_rate']
     club_desc = request.POST['club_desc']
     insure_rate = request.POST['insure_rate']
-    tmp = ucs_subs_club(club_name = club_name.strip(),
-                      club_shortname = club_shortname.strip(),
-                      income_rate = income_rate.strip(),
-                      club_desc = club_desc.strip(),
-                      insure_rate = insure_rate.strip()
-                      )
-    tmp.save()
-    return HttpResponseRedirect('/club/')
+    result=club_reg(club_name, club_shortname,club_desc, income_rate, insure_rate )
+    if result:
+        return HttpResponseRedirect('/club/')
+    else:
+        result=False
+        return HttpResponse(result)
 
 def checkclub(request):
     club_name=request.POST['club_name']
@@ -514,5 +513,27 @@ def account_migrate(request):
     club_id=t['club_id']
     operator_id=t['operator_id']
     result=userAccountMigrate(o_account_id,t_account_id,t_account_name, t_user_id,club_id,operator_id)
+
+    return HttpResponse(result)
+
+
+def club_manage(request):
+    tb_club_list=getClubListMini()
+    return render(request,'club_manage.html',{'tb_club_list': tb_club_list})
+
+def club_info(request):
+    club_id=request.POST['club_id']
+    tb_club_list=getClubInfoById(club_id)
+    result=json.dumps(model_to_dict(tb_club_list), cls=django.core.serializers.json.DjangoJSONEncoder)
+    return HttpResponse(result)
+
+def modify_club(request):
+    club_id=request.POST['club_id']
+    club_name=request.POST['club_name']
+    club_shortname = request.POST['club_shortname']
+    club_desc=request.POST['club_desc']
+    income_rate=request.POST['income_rate']
+    insure_rate=request.POST['insure_rate']
+    result=modifyClubInfo(club_id, club_name,club_shortname, club_desc, income_rate, insure_rate)
 
     return HttpResponse(result)
