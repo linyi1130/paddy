@@ -35,6 +35,8 @@ urlpatterns = [
     url(r'^result_club/', result_club),
     url(r'^table/', loadtabletype),
     url(r'^getante/', getante),
+    url(r'^table_list/', table_list),
+    url(r'^game_reg/', game_reg),
     url(r'^result_preview/$', result_preview),
     url(r'^result_view/', result_view),
     url(r'^result_l1/', result_l1),

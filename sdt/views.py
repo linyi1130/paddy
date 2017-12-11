@@ -227,8 +227,8 @@ def loadtabletype(request):
     blind=pm_blind.objects.all()
     gametime=pm_gametime.objects.all()
     gamepeople=pm_gamepeople.objects.all()
-
-    return render(request, 'table.html', {'gametype':gametype,'blind':blind,"gametime":gametime,"gamepeople":gamepeople})
+    ante=pm_ante.objects.filter(blind_id=1).order_by('id')
+    return render(request, 'table.html', {'gametype':gametype,'blind':blind,"gametime":gametime,"gamepeople":gamepeople, "ante":ante})
 
 def getante(request):
     blind_id=request.POST['blind_id']
@@ -236,6 +236,30 @@ def getante(request):
     ante_list = json.dumps(tmp, cls=django.core.serializers.json.DjangoJSONEncoder)
     return HttpResponse(ante_list)
 
+def table_list(request):
+
+    tb_result=getTableList()
+    return render(request,'table_list.html', {'table_list': tb_result})
+
+
+def game_reg(request):
+    operator_info = request.session['operator_info']
+    operator_id=operator_info['operator_id']
+    group_name=operator_info['group_name']
+    blind=request.POST['blind']
+    gametype=request.POST['gametype']
+    ante=request.POST['ante']
+    duration=request.POST['duration']
+    straddle_tmp=request.POST['straddle']
+    if straddle_tmp=="true":
+        straddle=1
+    else:straddle=0
+    game_no=createGameNo(gametype,blind,ante)
+    if game_no:
+        result=gameRegFunc(game_no,gametype,blind,ante,straddle,0,duration,now(),1,"进行中",operator_id,group_name)
+        return HttpResponse(result)
+    result=False
+    return HttpResponse(result)
 
 def result_view(request):
     t_club = getClubListMini()

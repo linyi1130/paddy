@@ -71,18 +71,19 @@ class pm_op_type(models.Model):
 class pm_gametype(models.Model):
     type_id = models.IntegerField(null=True)
     type_name = models.CharField(max_length=10)
+    type_desc=models.CharField(max_length=2)
 
 
 class pm_blind(models.Model):
     blind_id = models.IntegerField(null=True)
     bigblind = models.CharField(max_length=20)
     blind_desc = models.CharField(max_length=20)
-
+    type_desc = models.CharField(max_length=2)
 
 class pm_ante(models.Model):
     blind_id = models.IntegerField(null=True)
     ante = models.IntegerField(null=True)
-
+    type_desc = models.CharField(max_length=2)
 
 class pm_gametime(models.Model):
     time_id = models.IntegerField(null=True)
@@ -92,6 +93,11 @@ class pm_gametime(models.Model):
 class pm_gamepeople(models.Model):
     type_id = models.IntegerField(null=True)
     type_name = models.CharField(max_length=10)
+
+
+class pm_game_status(models.Model):
+    status_id=models.IntegerField(null=True)
+    status=models.CharField(max_length=10)
 
 
 class ucs_gameno(models.Model):
@@ -113,6 +119,8 @@ class ucs_gamerecord(models.Model):
     status = models.CharField(max_length=10)
     operator_id = models.IntegerField(null=True)
     inactivetime = models.DateTimeField(default='2037-01-01')
+    straddle=models.IntegerField(default=0)
+    group_name=models.CharField(max_length=10)
 
 
 class tmp_result_step_1(models.Model):
