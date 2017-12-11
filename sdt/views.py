@@ -230,6 +230,13 @@ def loadtabletype(request):
 
     return render(request, 'table.html', {'gametype':gametype,'blind':blind,"gametime":gametime,"gamepeople":gamepeople})
 
+def getante(request):
+    blind_id=request.POST['blind_id']
+    tmp=getAnteList(blind_id)
+    ante_list = json.dumps(tmp, cls=django.core.serializers.json.DjangoJSONEncoder)
+    return HttpResponse(ante_list)
+
+
 def result_view(request):
     t_club = getClubListMini()
     t_game_list=gamenolist()
@@ -453,8 +460,8 @@ def check_balance(request):
     return HttpResponse(msg)
 
 def test(request):
-    tb_user=getUserListUnion()
-    return render(request,'user_list.html', {'tb_user':tb_user})
+
+    return render(request,'test01.html')
 
 def searchUser(request):
     user_name=request.POST['user_name']
