@@ -71,12 +71,18 @@ def user_add(request):
 
     return HttpResponseRedirect('/user')
 
-def user_list(request):
+def user(request):
     #t = loader.get_template('user_reg.html')
     #t_user = ucs_subs_user.objects.all()
-    tb_user= SQL_user_list()
-    tb_club=ucs_subs_club.objects.all()
-    return render(request,'user.html',{'tb_user':tb_user,'tb_club':tb_club})
+    operator_info = request.session['operator_info']
+    club_id=operator_info['club_id']
+    tb_club=ucs_subs_club.objects.filter(inactive_time='2037-01-01').filter(club_id=club_id)
+    return render(request,'user.html',{'tb_club':tb_club})
+
+def user_list(request):
+    club_id=request.POST['club_id']
+    tb_result=getUserListByClubId(club_id)
+    return render(request, 'user_list.html',{'tb_user': tb_result})
 
 def cash(request):
     operator_info=request.session['operator_info']
@@ -218,7 +224,7 @@ def loadtabletype(request):
     return render(request, 'table.html', {'gametype':gametype,'blind':blind,"gametime":gametime,"gamepeople":gamepeople})
 
 def result_view(request):
-    t_club = ucs_subs_club.objects.all().order_by('-active_time')
+    t_club = getClubListMini()
     t_game_list=gamenolist()
 
     return render(request,"resultview.html", {'t_club': t_club,'t_game_list': t_game_list})
@@ -440,11 +446,8 @@ def check_balance(request):
     return HttpResponse(msg)
 
 def test(request):
-    operator_info=request.session['operator_info']
-    club_id=operator_info['club_id']
-
-    tb_user = getUserListByClubId(club_id)
-    return render(request,'user_modify.html', {'tb_user':tb_user,'club_id': club_id})
+    tb_user=getUserListUnion()
+    return render(request,'user_list.html', {'tb_user':tb_user})
 
 def searchUser(request):
     user_name=request.POST['user_name']

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 {% load static %}
 {% load staticfiles %}
-<html lang="en">
+<html lang="zh">
 <head>
     <meta charset="UTF-8">
     <title>战绩查询</title>
@@ -40,7 +40,7 @@
             <select class="ui fluid search dropdown" id="club_id" name="club_id">
             <option value="">请选择俱乐部</option>
                 {% for t in t_club %}
-            <option value={{ t.club_id }}>{{ t.club_name }}</option>
+            <option value={{ t.0 }}>{{ t.1 }}</option>
                 {% endfor %}
         </select>
         </div>
