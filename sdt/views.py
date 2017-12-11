@@ -48,28 +48,35 @@ def checkclub(request):
 
     return HttpResponse(message)
 
-def user_add(request):
-    t_user_name=request.POST['user_name']
-    t_wx_name = request.POST['wx_name']
-    #t_club_name = request.POST['club_name']
-    t_note = request.POST['note']
-    t_club_id = request.POST['club_id']
-    flag=False
-    try:
-        #filterresult = real_user.objects.filter(user_name=t_user_name)
-        #filterresult = ucs_subs_user.objects.filter(inactive_time="2037-01-01")
-        #tmp=filterresult.filter(user_name=t_user_name)
-        old_user_id=ucs_subs_user.objects.filter(inactive_time="2037-01-01").get(user_name=t_user_name).user_id
-        result=user_old_reg(old_user_id,t_club_id)
-        if result==True:
-            flag=True
-        else:
-            return HttpResponse("用户已存在")
-    except Exception as e:
-        user_reg(t_user_name.strip(), t_wx_name.strip(), t_club_id, t_note)
-        flag=True
+def checkuser(request):
+    user_name=request.POST['user_name']
+    club_id=request.POST['club_id']
+    result=checkUserExist(user_name, club_id)
+    return HttpResponse(result)
 
-    return HttpResponseRedirect('/user')
+
+def user_add(request):
+    user_name=request.POST['user_name']
+    wx_name=request.POST['wx_name']
+    note=request.POST['wx_name']
+    club_id=request.POST['club_id']
+    result=checkUserExist(user_name,club_id)
+    if result==0:
+        flag=user_reg(user_name, wx_name, club_id, note)
+
+        return HttpResponse(flag)
+
+    else:
+        return HttpResponse("False")
+
+def old_user_add(request):
+    user_name=request.POST['user_name']
+    club_id=request.POST['club_id']
+    result=user_old_reg(user_name, club_id)
+    return HttpResponse(result)
+
+
+
 
 def user(request):
     #t = loader.get_template('user_reg.html')
