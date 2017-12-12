@@ -69,4 +69,8 @@ urlpatterns = [
     url(r'^club_manage/', club_manage),
     url(r'^club_info/', club_info),
     url(r'^modify_club/', modify_club),
+    url(r'^table_reg_mini/', table_reg_mini),
+    url(r'^getusefulbalance/', getusefulbalance),
+    url(r'^userbuyin/', userbuyin),
+    url(r'^freeze_minilist/', freeze_minilist),
 ]

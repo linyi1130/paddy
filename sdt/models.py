@@ -215,6 +215,7 @@ class ucs_credit_account(models.Model):
 
 class ucs_game_freeze_record(models.Model):
     account_id = models.IntegerField(null=False)
+    game_no=models.CharField(max_length=20)
     user_id = models.IntegerField(null=False)
     club_id = models.IntegerField(null=False)
     freeze_num = models.IntegerField(null=False)

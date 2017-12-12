@@ -578,3 +578,39 @@ def modify_club(request):
     result=modifyClubInfo(club_id, club_name,club_shortname, club_desc, income_rate, insure_rate)
 
     return HttpResponse(result)
+
+def table_reg_mini(request):
+    operator_info = request.session['operator_info']
+    club_id = operator_info['club_id']
+    tb_user=getUserListByClubId(club_id)
+    gameno=request.POST['gameno']
+    return render(request, 'buyinregsubs.html',{'tb_user': tb_user, 'gameno': gameno})
+
+
+def getusefulbalance(request):
+    account_id=request.POST['account_id']
+    balance=getBalancebyaid(account_id)
+    operator_info = request.session['operator_info']
+    club_id = operator_info['club_id']
+    freeze_sum=getFreezeSumByAid(account_id,club_id)
+    balance_useful=round((balance-freeze_sum)/1000,2)
+    return HttpResponse(balance_useful)
+
+def userbuyin(request):
+    operator_info = request.session['operator_info']
+    club_id = operator_info['club_id']
+    operator_id=operator_info['operator_id']
+    group_name = operator_info['group_name']
+    account_id=request.POST['account_id']
+    user_id=request.POST['user_id']
+    freeze_num=request.POST['freeze_num']
+    note=group_name+"登记上分"
+    game_no=request.POST['game_no']
+    freeze_num=int(float(freeze_num)*1000)
+    result=setFreezeNum(account_id,user_id,freeze_num,club_id,operator_id,game_no,note)
+    return HttpResponse(result)
+
+def freeze_minilist(request):
+    game_no=request.POST['game_no']
+    tb_result=getFreezeListByGameNo(game_no)
+    return render(request,'freeze_minilist.html', {'tb_result': tb_result})
