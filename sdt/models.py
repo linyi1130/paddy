@@ -271,7 +271,7 @@ class ucs_club_account(models.Model):
     active_time=models.DateTimeField(auto_now_add=True)
     inactive_time=models.DateTimeField(default='2037-01-01')
 
-
+#用户账户ID表
 class ucs_balance(models.Model):
     account_id = models.IntegerField(null=True)
     user_id = models.IntegerField(null=True)
@@ -285,9 +285,9 @@ class ucs_balance(models.Model):
     operator_id = models.IntegerField(null=True)
     note = models.CharField(max_length=80)
 
-
+#俱乐部账户流水表
 class ucs_club_balance(models.Model):
-    serial_no = models.CharField(max_length=25)
+    serial_no = models.CharField(max_length=30)
     account_id = models.IntegerField(null=False)
     balance=models.IntegerField(null=False)
     chance=models.IntegerField(null=False)
@@ -298,4 +298,26 @@ class ucs_club_balance(models.Model):
     update_time =models.DateTimeField(auto_now_add=True)
     inactive_time=models.DateTimeField(default='2037-01-01')
     note=models.CharField(max_length=80)
+
+
+#联盟账务流水表
+class ucs_union_balance(models.Model):
+    serial_no = models.CharField(max_length=30)
+    account_id = models.IntegerField(null=False)
+    balance=models.IntegerField(null=False)
+    chance=models.IntegerField(null=False)
+    chance_type=models.IntegerField(null=True)
+    chance_desc=models.CharField(max_length=20)
+    operator_id=models.IntegerField(null=False)
+    group_id= models.IntegerField(null=False)
+    update_time = models.DateTimeField(auto_now_add=True)
+    inactive_time=models.DateTimeField(default='2037-01-01')
+    note=models.CharField(max_length=80)
+
+
+class ucs_union_account(models.Model):
+    account_id=models.IntegerField(null=False)
+    club_id=models.IntegerField(null=False)
+    active_time=models.DateTimeField(auto_now_add=True)
+    inactive_time=models.DateTimeField(default='2037-01-01')
 

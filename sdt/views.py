@@ -647,6 +647,43 @@ def union_account(request):
 
 
 def union_account_list(request):
+    club_id=request.POST['club_id']
+    operator_info = request.session['operator_info']
+    own_club_id = operator_info['club_id']
+    tb_balance_list=getUnionBalanceList(club_id,own_club_id)
+    return render(request, 'union_account_list.html',{'tb_balance_list': tb_balance_list})
 
-    return render(request, 'union_account_list.html')
+def club_account_view(request):
+    club_id=request.POST['club_id']
+    if club_id==0:
+        return render(request, 'club_account_list.html')
+    operator_info = request.session['operator_info']
+    own_club_id = operator_info['club_id']
+    tb_balance_list=getUnionBalanceList(club_id,own_club_id)
+    return render(request, 'club_account_list.html',{'tb_balance_list': tb_balance_list})
 
+
+def club_cash(request):
+    operator_info = request.session['operator_info']
+    group_id = operator_info['group_id']
+    own_club_id=operator_info['club_id']
+    operator_id=operator_info['operator_id']
+    account_id=request.POST['account_id'] #本俱乐部财务账户ID
+    op_type=request.POST['cash_type']
+    if op_type=='false':
+        type_id=1004 #俱乐部充值
+    elif op_type=='true':
+        type_id=2002
+
+    club_id=request.POST['club_id']
+    cash_num=request.POST['cash_num']
+    chance=int(float(cash_num)*1000)
+    note=request.POST['note']
+    serialno=createSerialNo(own_club_id,group_id, type_id)
+    result=operator_cash(account_id, chance, type_id, operator_id, note, serialno, group_id)
+    if result:
+        result_2=club_cash_func(operator_id,group_id,club_id,chance, type_id, serialno, note)
+        return HttpResponse(result_2)
+    else:
+        result_2=False
+        return HttpResponse(result_2)
