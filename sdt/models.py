@@ -118,7 +118,7 @@ class ucs_gamerecord(models.Model):
     status_id = models.IntegerField(null=False)
     status = models.CharField(max_length=10)
     operator_id = models.IntegerField(null=True)
-    inactivetime = models.DateTimeField(default='2037-01-01')
+    inactive_time = models.DateTimeField(default='2037-01-01')
     straddle=models.IntegerField(default=0)
     group_name=models.CharField(max_length=10)
 

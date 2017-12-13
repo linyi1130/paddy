@@ -614,3 +614,9 @@ def freeze_minilist(request):
     game_no=request.POST['game_no']
     tb_result=getFreezeListByGameNo(game_no)
     return render(request,'freeze_minilist.html', {'tb_result': tb_result})
+
+
+def abortgame(request):
+    gameno=request.POST['game_no']
+    result = abortGameByNo(gameno)
+    return HttpResponse(result)
