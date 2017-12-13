@@ -302,13 +302,15 @@ def result_unionbyclub(request):
 def useraccountview(request):
     operator_info = request.session['operator_info']
     account_id=request.POST['account_id']
+    user_id=request.POST['user_id']
     user_name=request.POST['user_name']
     club_id=operator_info['club_id']
     tb_result=getUserAccountInfo(account_id,club_id)
     tb_balance_list=getUserBalenceList(account_id,club_id)
     club_name=operator_info['club_name']
+    tb_freeze=getFreezeListByUid(user_id)
     return render(request, 'user_account_info.html',{'user_name':user_name,'tb_result':tb_result,
-                                                     'club_name':club_name,'tb_balance_list':tb_balance_list})
+                                                     'club_name':club_name,'tb_balance_list':tb_balance_list, 'tb_freeze':tb_freeze})
 
 def usercash(request):
     user_id=request.POST['user_id']
@@ -329,7 +331,7 @@ def usercash(request):
         serial_no = createSerialNo(club_id, group_id, type_id)
         result=userCashReg(account_id, user_id, club_id, cashtype, operator_id, change_num, note,serial_no)
         if result: #用户充值成功
-            flag=operator_cash(operator_account_id, change_num, cashtype, operator_id, note,serial_no)
+            flag=operator_cash(operator_account_id, change_num, cashtype, operator_id, note,serial_no, group_id)
             if flag:
                 tb_result = getUserAccountInfo(account_id, club_id)
                 tb_balance_list = getUserBalenceList(account_id, club_id)
@@ -611,7 +613,16 @@ def userbuyin(request):
     note=group_name+"登记上分"
     game_no=request.POST['game_no']
     freeze_num=int(float(freeze_num)*1000)
-    result=setFreezeNum(account_id,user_id,freeze_num,club_id,operator_id,game_no,note)
+    try:
+        tb_game_info=ucs_gamerecord.objects.filter(inactive_time='2037-01-01').get(game_no=game_no)
+        start_time=tb_game_info.start_time
+        #start_time=datetime.datetime.fromtimestamp(str_start_time)
+        duration=int(tb_game_info.duration)
+        unfreeze_time=start_time+datetime.timedelta(minutes=+duration)
+    except Exception as e:
+        unfreeze_time=datetime.datetime.now()
+
+    result=setFreezeNum(account_id,user_id,freeze_num,club_id,operator_id,game_no,note,unfreeze_time)
     return HttpResponse(result)
 
 def freeze_minilist(request):

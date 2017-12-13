@@ -6,7 +6,6 @@ class ucs_subs_club(models.Model):
     club_name = models.CharField(max_length=20)
     club_shortname = models.CharField(max_length=4)
     club_desc = models.CharField(max_length=80)
-    account_id=models.IntegerField(null=False)
     income_rate = models.IntegerField(null=False)
     insure_rate = models.IntegerField(null=False)
     active_time = models.DateTimeField(auto_now_add=True)
@@ -215,14 +214,17 @@ class ucs_credit_account(models.Model):
     inactive_time = models.DateTimeField()
     note = models.CharField(max_length=80)
 
+
 class ucs_game_freeze_record(models.Model):
     account_id = models.IntegerField(null=False)
     game_no=models.CharField(max_length=20)
     user_id = models.IntegerField(null=False)
     club_id = models.IntegerField(null=False)
     freeze_num = models.IntegerField(null=False)
+    status=models.CharField(max_length=10,default="预占用")
     operator_id = models.IntegerField(null= False)
     active_time = models.DateTimeField(auto_now=True)
+    unfreeze_time=models.DateTimeField()
     inactive_time = models.DateTimeField(default='2037-01-01')
     note = models.CharField(max_length=80)
 
