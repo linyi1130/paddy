@@ -96,9 +96,10 @@ def cash(request):
     operator_name=operator_info['operator_name']
     club_name=operator_info['club_name']
     club_id = operator_info['club_id']
+    group_id = operator_info['group_id']
     group_name=operator_info['group_name']
     tb_user = SQL_user_list(club_id)
-    tb_type_list=club_account_list()
+    tb_type_list=club_account_list(club_id,group_id)
     return render(request, 'cash.html', {'tb_user': tb_user,'operator_name':operator_name,
                                          'club_name':club_name, 'group_name':group_name, 'tb_type_list': tb_type_list})
 
@@ -115,6 +116,7 @@ def getbalance(request):
     except Exception as e:
         balancenum=0
     return HttpResponse(balancenum)
+
 
 def cashin(request):
 
@@ -156,6 +158,7 @@ def cashin(request):
     #return HttpResponseRedirect('/cash', {'acc_list':acc_list,'tb_user':tb_user})
     return render(request, 'cash.html', {'acc_list':acc_list,'tb_user':tb_user})
 
+
 def result(request):
     t=loader.get_template('result.html')
     web_page=t.render()
@@ -167,6 +170,7 @@ def result_split(request):
     tb_result=result_reg(strResult,gameno)
 
     return render(request, 'result_preview.html', {'tb_result': tb_result})
+
 
 def result_pretreat_step1(request):
     strResult = request.POST['result']
@@ -620,3 +624,18 @@ def abortgame(request):
     gameno=request.POST['game_no']
     result = abortGameByNo(gameno)
     return HttpResponse(result)
+
+
+def union_account(request):
+    operator_info = request.session['operator_info']
+    club_id = operator_info['club_id']
+    group_id=operator_info['group_id']
+    tb_result=getClubListWithoutSelf(club_id)
+    tb_account_list=club_account_list(club_id,group_id)
+    return render(request, 'union_account.html', {'tb_club': tb_result,'tb_account': tb_account_list})
+
+
+def union_account_list(request):
+
+    return render(request, 'union_account_list.html')
+

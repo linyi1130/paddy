@@ -74,4 +74,7 @@ urlpatterns = [
     url(r'^userbuyin/', userbuyin),
     url(r'^freeze_minilist/', freeze_minilist),
     url(r'^abortgame/', abortgame),
+    url(r'^union_account/', union_account),
+    url(r'^union_account_list/', union_account_list),
+    url(r'^club_account_list/', club_account_list),
 ]
