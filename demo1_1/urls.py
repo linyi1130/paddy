@@ -29,7 +29,7 @@ urlpatterns = [
     url(r'^cash/',cash),
     url(r'^getbalance/',getbalance),
     url(r'^cashin/',cashin),
-    url(r'^result/', result),
+    url(r'^result/$', result),
     url(r'^result_pretreat_step1/', result_pretreat_step1),
     url(r'^result_newuser/', result_newuser),
     url(r'^result_club/', result_club),

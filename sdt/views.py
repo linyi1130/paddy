@@ -160,9 +160,9 @@ def cashin(request):
 
 
 def result(request):
-    t=loader.get_template('result.html')
-    web_page=t.render()
-    return HttpResponse(web_page)
+    game_no=request.GET.get('game_no')
+
+    return render(request,'result.html',{'game_no':game_no})
 
 def result_split(request):
     strResult = request.POST['result']
@@ -179,8 +179,8 @@ def result_pretreat_step1(request):
     result_preload(strResult, gameno)
     # 返回新未注册玩家名单
     newuser = result_regNewUser(gameno)
-    if len(newuser) > 0:
-        t_club = ucs_subs_club.objects.all().order_by('-active_time')
+    if newuser:
+        t_club = ucs_subs_club.objects.filter(inactive_time='2037-01-01').order_by('-active_time')
 
         #return HttpResponseRedirect(request,'/result_newuser/',{'newuser':newuser,'t_club':t_club,'gameno':gameno})
         return render_to_response('result_newuser.html',{'newuser':newuser,'t_club':t_club,'gameno':gameno})
@@ -189,7 +189,8 @@ def result_pretreat_step1(request):
         if len(split_club)>0 :
             return render(request, 'result_attachclub.html', {'row': split_club, 'gameno': gameno})
     #没有新增玩家和待选择俱乐部，直接进入战绩预览
-    return None
+    url = "/result_preview?gameno=" + gameno
+    return HttpResponseRedirect(url)
 def result_newuser(request):
     tmp = request.POST
     newuser = []
@@ -203,12 +204,12 @@ def result_newuser(request):
     while (i < lenlist):
         if user_reg(newuser[i],newuser[i],newuser[i+1],"") == True :
             i=i+2
-        i=i+2
+        #i=i+2
     split_club = result_attachclub(gameno)
     if len(split_club) > 0:
         return render(request, 'result_attachclub.html', {'row': split_club, 'gameno': gameno})
-
-    return HttpResponseRedirect('/result_club/', {'gameno' : gameno })  #要进入战绩预览，这里要改
+    url="/result_preview?gameno="+gameno + "&type=1" #1表示俱乐部匹配未完成
+    return HttpResponseRedirect(url)
 
 def result_club(request):  #处理多俱乐部玩家
     tmp_split=request.POST
@@ -216,16 +217,23 @@ def result_club(request):  #处理多俱乐部玩家
     flag = split_club(tmp_split)
     if flag==True:
         #url=reverse(result_preview,kwargs={'gameno':gamono})
-        url="/result_preview/?gameno=" + gamono
+        url="/result_preview/?gameno=" + gamono + "&type=2"   #2表示俱乐部匹配已经完成
         #render(request, "/result_preview/", {'gamono':gamono})
         return HttpResponseRedirect(url)
     else:
         return HttpResponse("出错啦！")
 
 def result_preview(request):
-    gamono = request.GET.get('gameno')
-    result=result_reg(gamono)
-    return render(request,'result_preview.html',{'tb_result':result, 'gameno':gamono})
+    gameno = request.GET.get('gameno')
+    type=request.GET.get('type')
+    if type==1:
+        tmp_split={'gameno': gameno}
+        flag=split_club(tmp_split)
+        if flag:
+            result = result_reg(gameno)
+    else:
+        result = result_reg(gameno)
+    return render(request,'result_preview.html',{'tb_result':result, 'gameno':gameno})
 def loadtabletype(request):
     gametype=pm_gametype.objects.all()
     blind=pm_blind.objects.all()
@@ -298,6 +306,7 @@ def result_unionbyclub(request):
     tb_result=result_searchUnionbyclub(startime,endtime)
     tb_result_sum = result_searchUnionbyclubsum(startime,endtime)
     return  render(request, "result_unionbyclubl1.html", {'tb_result': tb_result,'starttime':startime,'endtime':endtime,'tb_result_sum': tb_result_sum })
+
 
 def useraccountview(request):
     operator_info = request.session['operator_info']
@@ -402,6 +411,7 @@ def operator_list(request):
     tb_operator_list = ucs_operator.objects.filter(inactive_time='2037-01-01').filter(club_id=club_id)
     return render(request,'manage/operator_list.html', {'tb_operator_list' : tb_operator_list})
 
+
 def add_operator(request):
     operator_name=request.POST['operator_name']
     login_id=request.POST['login_id']
@@ -416,6 +426,7 @@ def operator_relation(request):
     tb_relation = operator_relation_list(club_id)
     return render(request, 'manage/operator_relation.html', {'tb_group_list':tb_group_list,
                                                              'tb_operator_list':tb_operator_list})
+
 
 def relation_list(request):
     club_id='1000'
@@ -568,6 +579,7 @@ def club_manage(request):
     tb_club_list=getClubListMini()
     return render(request,'club_manage.html',{'tb_club_list': tb_club_list})
 
+
 def club_info(request):
     club_id=request.POST['club_id']
     tb_club_list=getClubInfoById(club_id)
@@ -582,8 +594,8 @@ def modify_club(request):
     income_rate=request.POST['income_rate']
     insure_rate=request.POST['insure_rate']
     result=modifyClubInfo(club_id, club_name,club_shortname, club_desc, income_rate, insure_rate)
-
     return HttpResponse(result)
+
 
 def table_reg_mini(request):
     operator_info = request.session['operator_info']
@@ -601,6 +613,7 @@ def getusefulbalance(request):
     freeze_sum=getFreezeSumByAid(account_id,club_id)
     balance_useful=round((balance-freeze_sum)/1000,2)
     return HttpResponse(balance_useful)
+
 
 def userbuyin(request):
     operator_info = request.session['operator_info']
@@ -624,6 +637,7 @@ def userbuyin(request):
 
     result=setFreezeNum(account_id,user_id,freeze_num,club_id,operator_id,game_no,note,unfreeze_time)
     return HttpResponse(result)
+
 
 def freeze_minilist(request):
     game_no=request.POST['game_no']
