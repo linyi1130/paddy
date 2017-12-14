@@ -189,7 +189,7 @@ def result_pretreat_step1(request):
         if len(split_club)>0 :
             return render(request, 'result_attachclub.html', {'row': split_club, 'gameno': gameno})
     #没有新增玩家和待选择俱乐部，直接进入战绩预览
-    url = "/result_preview?gameno=" + gameno
+    url = "/result_preview?gameno=" + gameno + "&type=1"
     return HttpResponseRedirect(url)
 def result_newuser(request):
     tmp = request.POST
@@ -226,14 +226,15 @@ def result_club(request):  #处理多俱乐部玩家
 def result_preview(request):
     gameno = request.GET.get('gameno')
     type=request.GET.get('type')
-    if type==1:
+    if type=="1":
         tmp_split={'gameno': gameno}
         flag=split_club(tmp_split)
         if flag:
             result = result_reg(gameno)
-    else:
+            return render(request, 'result_preview.html', {'tb_result': result, 'gameno': gameno})
+    elif type=="2":
         result = result_reg(gameno)
-    return render(request,'result_preview.html',{'tb_result':result, 'gameno':gameno})
+        return render(request,'result_preview.html',{'tb_result':result, 'gameno':gameno})
 def loadtabletype(request):
     gametype=pm_gametype.objects.all()
     blind=pm_blind.objects.all()
