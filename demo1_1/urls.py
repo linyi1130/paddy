@@ -78,4 +78,5 @@ urlpatterns = [
     url(r'^union_account_list/', union_account_list),
     url(r'^club_account_view/', club_account_view),
     url(r'^club_cash/', club_cash),
+
 ]

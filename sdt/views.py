@@ -478,8 +478,9 @@ def club_account_info(request):
     operator_info=request.session['operator_info']
     club_id = operator_info['club_id']
     group_id = operator_info['group_id']
+    group_name=operator_info['group_name']
     tb_result=get_club_account_infoByGroup(club_id,group_id)
-    return render(request, 'account_info.html', {'tb_result': tb_result})
+    return render(request, 'sidebar_account.html', {'tb_result': tb_result, 'group_name': group_name})
 
 
 def check_balance(request):
