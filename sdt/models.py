@@ -6,6 +6,7 @@ class ucs_subs_club(models.Model):
     club_name = models.CharField(max_length=20)
     club_shortname = models.CharField(max_length=4)
     club_desc = models.CharField(max_length=80)
+    club_lever=models.IntegerField(null=False)
     income_rate = models.IntegerField(null=False)
     insure_rate = models.IntegerField(null=False)
     active_time = models.DateTimeField(auto_now_add=True)
@@ -320,4 +321,19 @@ class ucs_union_account(models.Model):
     club_id=models.IntegerField(null=False)
     active_time=models.DateTimeField(auto_now_add=True)
     inactive_time=models.DateTimeField(default='2037-01-01')
+
+
+class pm_club_lever(models.Model):
+    lever_id=models.IntegerField(null=False)
+    lever_name=models.CharField(max_length=20)
+
+
+class ucs_club_relation(models.Model):
+    club_id=models.IntegerField(null=False)
+    subs_club_id=models.IntegerField(null=False)
+    active_time=models.DateTimeField(auto_now_add=True)
+    inactive_time=models.DateTimeField(default='2037-01-01')
+
+
+
 

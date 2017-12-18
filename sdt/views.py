@@ -20,13 +20,24 @@ def club_list(request):
 
 
 def club_add(request):
+    operator_info = request.session['operator_info']
+    club_id=operator_info['club_id']
+    club_lever = operator_info['club_lever']
+    if club_lever>4:
+        return False
+    subs_club_lever=int(club_lever)+1
     club_name=request.POST['club_name']
     club_shortname = request.POST['short_name']
     income_rate = request.POST['income_rate']
     club_desc = request.POST['club_desc']
     insure_rate = request.POST['insure_rate']
-    result=club_reg(club_name, club_shortname,club_desc, income_rate, insure_rate )
-    if result:
+    #注册成功返回ID
+    subs_club_id=club_reg(club_name, club_shortname,club_desc, income_rate, insure_rate,subs_club_lever )
+    if subs_club_id:
+        #加入俱乐部关系表
+        t=ucs_club_relation(club_id=club_id,
+                          subs_club_id=subs_club_id)
+        t.save()
         return HttpResponseRedirect('/club/')
     else:
         result=False
@@ -480,7 +491,8 @@ def club_account_info(request):
     group_id = operator_info['group_id']
     group_name=operator_info['group_name']
     tb_result=get_club_account_infoByGroup(club_id,group_id)
-    return render(request, 'sidebar_account.html', {'tb_result': tb_result, 'group_name': group_name})
+    tb_union_list=getUnionClubAccountList(club_id)
+    return render(request, 'sidebar_account.html', {'tb_result': tb_result,'tb_union_list':tb_union_list, 'group_name': group_name})
 
 
 def check_balance(request):
