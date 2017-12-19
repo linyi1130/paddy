@@ -187,6 +187,7 @@ def result_pretreat_step1(request):
     strResult = request.POST['result']
     gameno = request.POST['gameno']
     tmp_result.objects.filter(game_no=gameno).delete()
+    tmp_result_attachclub_pre.objects.filter(gameno=gameno).delete()
     result_preload(strResult, gameno)
     # 返回新未注册玩家名单
     newuser = result_regNewUser(gameno)
@@ -302,9 +303,16 @@ def result_l1(request):
 
 def result_post(request):
     gameno= request.POST['gameno']
+    operator_info = request.session['operator_info']
+    club_id=operator_info['club_id']
+    group_id=operator_info['group_id']
+    operator_id=operator_info['operator_id']
     flag=result_record(gameno)
     if flag:
-        return HttpResponse('/result_l1/')
+        if gameResultClubReg(gameno,club_id, group_id, operator_id):
+
+            ucs_gamerecord.objects.filter(inactive_time='2037-01-01').filter(game_no=gameno).update(status_id=5)
+            return HttpResponse("登记成功")
     else :
         return HttpResponse("添加失败")
 
