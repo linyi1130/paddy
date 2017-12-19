@@ -307,18 +307,22 @@ def result_post(request):
     club_id=operator_info['club_id']
     group_id=operator_info['group_id']
     operator_id=operator_info['operator_id']
-    flag=result_record(gameno)
+    flag=result_record(gameno, operator_id)
     if flag:
-        if gameResultClubReg(gameno,club_id, group_id, operator_id):
-
+        seriale_no = createSerialNo(club_id, group_id, 1003)
+        t1=gameResultClubReg(gameno,club_id, group_id, operator_id,seriale_no)
+        t2=gameResultUserReg(gameno,club_id,operator_id,seriale_no)
+        if t1 & t2:
             ucs_gamerecord.objects.filter(inactive_time='2037-01-01').filter(game_no=gameno).update(status_id=5)
             return HttpResponse("登记成功")
     else :
         return HttpResponse("添加失败")
 
+
 def result_union(request):
 
     return render(request, "result_union.html")
+
 
 def result_unionbyclub(request):
     startime=request.POST['start']
@@ -488,7 +492,7 @@ def login(request):
     result =operator_login (login_id, password)
     if result:
         request.session['operator_info']=result
-        return HttpResponseRedirect('/cash/')
+        return HttpResponseRedirect('/test/')
     else:
         return HttpResponse("用户名或密码不匹配")
 
@@ -524,7 +528,7 @@ def check_balance(request):
 
 def test(request):
 
-    return render(request,'test01.html')
+    return render(request,'notice.html')
 
 def searchUser(request):
     user_name=request.POST['user_name']

@@ -156,16 +156,16 @@ class tmp_result_step_3(models.Model):
     user_name = models.CharField(max_length=20)
     club_id=models.IntegerField(null=False)
     club_name = models.CharField(max_length=20)
-    score = models.IntegerField(null=False)
-    score_final = models.IntegerField(null=False)
-    income_water = models.IntegerField(null=False)
-    waterup = models.IntegerField(null=False)
-    insure = models.IntegerField(null=False)
-    income_insure = models.IntegerField(null=False)
-    insure_up = models.IntegerField(null=False)
-    income_total = models.IntegerField(null=False)
-    up_total = models.IntegerField(null=False)
-    delivery = models.IntegerField(null=False)
+    score = models.IntegerField(null=False)            #原始成绩
+    score_final = models.IntegerField(null=False)      #抽水后成绩
+    income_water = models.IntegerField(null=False)     #水钱收入
+    waterup = models.IntegerField(null=False)          #上交水钱
+    insure = models.IntegerField(null=False)           #原始保险
+    income_insure = models.IntegerField(null=False)    #抽水后保险
+    insure_up = models.IntegerField(null=False)        #保险上交
+    income_total = models.IntegerField(null=False)     #收入小计
+    up_total = models.IntegerField(null=False)         #上交小计
+    delivery = models.IntegerField(null=False)         #交收
     game_no = models.CharField(max_length=40)
 
 class tmp_result_attachclub(models.Model):
@@ -203,7 +203,29 @@ class ucs_result_table_l1(models.Model):
     operator_id = models.IntegerField(null=True)
     active_time = models.DateTimeField(auto_now= True)
     inactive_time = models.DateTimeField(default='2037-01-01')
-    note = models.CharField(max_length=80)
+
+
+class ucs_result_table(models.Model):
+    game_no=models.CharField(max_length=40)
+    user_id=models.IntegerField(null=False)
+    account_id=models.IntegerField(null=False)
+    user_name=models.CharField(max_length=20)
+    club_id=models.IntegerField(null=False)
+    club_name=models.CharField(max_length=20)
+    score=models.IntegerField(null=False)
+    score_final=models.IntegerField(null=False)
+    income_water=models.IntegerField(null=False)
+    waterup = models.IntegerField(null=False)
+    insure= models.IntegerField(null=False)
+    income_insure = models.IntegerField(null=False)
+    insure_up=models.IntegerField(null= False)
+    income_total = models.IntegerField(null= False)
+    up_total = models.IntegerField(null=False)
+    delivery = models.IntegerField(null= False)
+    operator_id = models.IntegerField(null=True)
+    active_time = models.DateTimeField(auto_now= True)
+    inactive_time = models.DateTimeField(default='2037-01-01')
+
 
 class ucs_credit_account(models.Model):
     account_id = models.IntegerField(null=False)
