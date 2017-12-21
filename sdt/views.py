@@ -728,3 +728,38 @@ def club_cash(request):
     else:
         result_2=False
         return HttpResponse(result_2)
+
+
+def union_check(request):
+    operator_info = request.session['operator_info']
+    club_id=operator_info['club_id']
+    account_balance=getClubAccountTotal(club_id)
+    user_balance=getClubBalanceTotal(club_id)
+    union_balance=getUnionBalanceTotal(club_id)
+    club_income=getClubIncomeTotal(club_id)
+    up_total=getUnionIncomeTotal(club_id)
+    income_total=round((club_income+up_total),2)
+    check=round((account_balance-(user_balance+union_balance+club_income+up_total)),2)
+    tb1={}
+    tb1['account_balance']=account_balance
+    tb1['user_balance'] = user_balance
+    tb1['union_balance'] = union_balance
+    tb1['club_income'] = club_income
+    tb1['up_total'] = up_total
+    tb1['income_total'] = income_total
+    tb1['check'] = check
+    usertype=getClubUserBalanceByType(club_id)
+    clubtype=getUnionBalanceByType(club_id)
+    tb2=round((usertype['userplus']+usertype['userminus']+clubtype['clubplus']+clubtype['clubminus']),2)
+    tb_income=getClubIncomeByType(club_id)
+    tb3={}
+    tb3['total']=round((tb_income['total']+tb_income['up_total']),2)
+    tb3['water']=round((tb_income['water']+tb_income['up_water']),2)
+    tb3['insure']=round((tb_income['insure']+tb_income['up_insure']),2)
+    tb4=getClubAccountBalanceByType(club_id)
+    tb4_sum=0
+    for t in tb4:
+        tb4_sum=tb4_sum+t[2]
+    return render(request, 'union_check.html', {'tb1':tb1,'usertype': usertype,'clubtype': clubtype,
+                                                'tb2':tb2, 'tb_income':tb_income, 'tb3':tb3 , 'tb4':tb4,
+                                                'tb4_sum': tb4_sum})
