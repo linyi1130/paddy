@@ -314,10 +314,26 @@ def result_post(request):
         t2=gameResultUserReg(gameno,club_id,operator_id,seriale_no)
         if t1 & t2:
             ucs_gamerecord.objects.filter(inactive_time='2037-01-01').filter(game_no=gameno).update(status_id=5)
-            return HttpResponse("登记成功")
+            tb_result = []
+            club_list = ucs_result_table.objects.filter(inactive_time='2037-01-01').filter(game_no=gameno) \
+                .values('club_id').distinct()
+            for t in club_list:
+                club_id = t['club_id']
+                tb_result.append(getResultDetailByGameno(gameno, club_id))
+            return render(request, 'result_detail_tb.html', {'tb_result': tb_result})
     else :
         return HttpResponse("添加失败")
 
+def result_detail(request):
+    #game_no=request.POST['game_no']
+    gameno='20171220OC02014'
+    tb_result=[]
+    club_list=ucs_result_table.objects.filter(inactive_time='2037-01-01').filter(game_no=gameno)\
+            .values('club_id').distinct()
+    for t in club_list:
+        club_id=t['club_id']
+        tb_result.append(getResultDetailByGameno(gameno, club_id))
+    return render(request, 'result_detail_tb.html', {'tb_result': tb_result})
 
 def result_union(request):
 
@@ -763,3 +779,4 @@ def union_check(request):
     return render(request, 'union_check.html', {'tb1':tb1,'usertype': usertype,'clubtype': clubtype,
                                                 'tb2':tb2, 'tb_income':tb_income, 'tb3':tb3 , 'tb4':tb4,
                                                 'tb4_sum': tb4_sum})
+
