@@ -847,3 +847,18 @@ def company_balance_list(request):
     tb_list=getCompanyBalanceList(club_id)
     tb_total=getCompanyBalanceSum(club_id)
     return render(request, 'company_account_tb.html',{'tb_list': tb_list,'tb_total': tb_total})
+
+
+def getGameStatus(request):
+    game_no=request.POST['game_no']
+    try:
+        status=ucs_gamerecord.objects.filter(inactive_time='2037-01-01').get(game_no=game_no).status_id
+        if status<4:
+            result=True
+            return HttpResponse(result)
+        else:
+            result=False
+            return HttpResponse(result)
+    except:
+        result=False
+        return HttpResponse(result)
