@@ -794,3 +794,20 @@ def group_balance_search(request):
     group_list=[(group_id, group_name)]
     account_list=club_account_list(club_id, group_id)
     return render(request, 'group_balance_list.html', {'account_list': account_list,'group_list':group_list})
+
+
+def company_account(request):
+    operator_info = request.session['operator_info']
+    club_id=operator_info['club_id']
+    group_list=ucs_operator_group.objects.filter(inactive_time='2037-01-01').filter(club_id=club_id).values()
+    type_list= pm_comany_type.objects.filter(inactive_time='2037-01-01').order_by('type').values()
+    return render(request,'company_account.html', {'group_list': group_list, 'type_list': type_list})
+
+
+def getGroupAccount(request):
+    operator_info = request.session['operator_info']
+    club_id=operator_info['club_id']
+    group_id=request.POST['group_id']
+    tmp=getGroupAccountFunc(club_id,group_id)
+    tb_account_list = json.dumps(tmp, cls=django.core.serializers.json.DjangoJSONEncoder)
+    return HttpResponse(tb_account_list)

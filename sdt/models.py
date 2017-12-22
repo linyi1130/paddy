@@ -357,5 +357,23 @@ class ucs_club_relation(models.Model):
     inactive_time=models.DateTimeField(default='2037-01-01')
 
 
+#俱乐部收入户流水
+class ucs_company_balance(models.Model):
+    club_id=models.IntegerField(null=False)
+    serial_no=models.CharField(max_length=30)
+    balance=models.IntegerField(null=False)
+    chance=models.IntegerField(null=False)
+    op_type_id=models.IntegerField(null=False)
+    operator_id=models.IntegerField(null=False)
+    active_time=models.DateTimeField(auto_now_add=True)
+    inactive_time=models.DateTimeField(default='2037-01-01')
+
+
+#俱乐部收入户流水类型
+class pm_comany_type(models.Model):
+    type_id=models.IntegerField(null=False)
+    type=models.CharField(max_length=20)
+    inactive_time=models.DateTimeField(default='2037-01-01')
+
 
 

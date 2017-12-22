@@ -85,5 +85,7 @@ urlpatterns = [
     url(r'^result_detail/', result_detail),
     url(r'^group_balance_search/', group_balance_search),
     url(r'^group_balance_list/', group_balance_list),
+    url(r'^company_account/', company_account),
+    url(r'^getGroupAccount/', getGroupAccount),
 
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
