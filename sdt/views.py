@@ -811,3 +811,39 @@ def getGroupAccount(request):
     tmp=getGroupAccountFunc(club_id,group_id)
     tb_account_list = json.dumps(tmp, cls=django.core.serializers.json.DjangoJSONEncoder)
     return HttpResponse(tb_account_list)
+
+
+def company_cash(request):
+    operator_info = request.session['operator_info']
+    club_id=operator_info['club_id']
+    group_id=operator_info['group_id']
+    operator_id=operator_info['operator_id']
+    account_id=request.POST['account_id']
+    cash=request.POST['cash_num']
+    note = request.POST['note']
+    op_type_id=int(request.POST['op_type_id'])
+    if op_type_id>2000 :
+        type_id=2003
+    else:
+        type_id=1005
+
+    serial_no = createSerialNo (club_id, group_id, type_id)
+
+    cash_num=int(float(cash)*1000)
+    if operator_cash(account_id,cash_num,type_id,operator_id,note, serial_no,group_id):
+
+        companyCashFunc(club_id, account_id, cash_num, op_type_id, operator_id,serial_no, note)
+        result=True
+        return HttpResponse(result)
+
+    else:
+        result = False
+        return HttpResponse(result)
+
+
+def company_balance_list(request):
+    operator_info = request.session['operator_info']
+    club_id=operator_info['club_id']
+    tb_list=getCompanyBalanceList(club_id)
+    tb_total=getCompanyBalanceSum(club_id)
+    return render(request, 'company_account_tb.html',{'tb_list': tb_list,'tb_total': tb_total})
