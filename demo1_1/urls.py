@@ -91,5 +91,8 @@ urlpatterns = [
     url(r'^company_balance_list/', company_balance_list),
     url(r'^getGameStatus/', getGameStatus),
     url(r'^loadsidebar/', loadsidebar),
+    url(r'^correct_manage/', correct_manage),
+    url(r'^correct_user_list/', correct_user_list),
+    url(r'^correct_user/', correct_user),
 
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

@@ -301,6 +301,7 @@ class ucs_balance(models.Model):
     club_id=models.IntegerField(null=True)
     balance = models.IntegerField(null=True)
     chance = models.IntegerField(null=True)
+    type_id=models.IntegerField(null=True)
     chance_desc = models.CharField(null=False, max_length=20)
     serial_no = models.CharField(max_length=25)
     updatetime = models.DateTimeField(auto_now_add=True)

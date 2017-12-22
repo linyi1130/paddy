@@ -107,6 +107,7 @@ def user_list(request):
     tb_result=getUserListByClubId(club_id)
     return render(request, 'user_list.html',{'tb_user': tb_result})
 
+
 def cash(request):
     operator_info=request.session['operator_info']
     operator_name=operator_info['operator_name']
@@ -118,6 +119,7 @@ def cash(request):
     tb_type_list=club_account_list(club_id,group_id)
     return render(request, 'cash.html', {'tb_user': tb_user,'operator_name':operator_name,
                                          'club_name':club_name, 'group_name':group_name, 'tb_type_list': tb_type_list})
+
 
 def getbalance(request):
     try: user_id=request.POST['user_id']
@@ -179,6 +181,7 @@ def result(request):
     game_no=request.GET.get('game_no')
 
     return render(request,'result.html',{'game_no':game_no})
+
 
 def result_split(request):
     strResult = request.POST['result']
@@ -870,3 +873,33 @@ def getGameStatus(request):
     except:
         result=False
         return HttpResponse(result)
+
+
+def correct_manage(request):
+    operator_info = request.session['operator_info']
+    operator_id=operator_info['operator_id']
+    operator_name = operator_info['operator_name']
+    op_list=[(operator_id, operator_name)]
+    return render(request,'correct_manage.html',{'op_list': op_list})
+
+
+def correct_user_list(request):
+    operator_id=request.POST['operator_id']
+    operator_info = request.session['operator_info']
+    club_id=operator_info['club_id']
+    tb_result=getCorrectUserList(club_id, operator_id)
+    return render(request, 'correct_user_list.html',{'tb_result': tb_result})
+
+
+def correct_user(request):
+    operator_info = request.session['operator_info']
+    operator_id=operator_info['operator_id']
+    group_id = operator_info['group_id']
+    club_id=operator_info['club_id']
+    serial_no=request.POST['serial_no']
+    note = request.POST['note']
+    new_serial_no=createSerialNo(club_id, group_id, 1002)
+    result=correctUserFunc(serial_no, new_serial_no, note, operator_id)
+    if result:
+        result2=correctClubFunc(serial_no, new_serial_no, note, operator_id, group_id)
+        return HttpResponse(result2)
