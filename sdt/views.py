@@ -14,6 +14,11 @@ import django.core.serializers.json
 from django.contrib import messages
 from django.forms.models import model_to_dict
 # Create your views here.
+def loadsidebar(request):
+
+    return render(request,'sidebar.html')
+
+
 def club_list(request):
     t_club = getCLubList()
     return render(request, 'club.html', {'t_club': t_club})
@@ -377,7 +382,7 @@ def usercash(request):
     #operator_account_id = get_operator_accountID(club_id, group_id, type_id)
     if chang_type == "false":
         cashtype=1001  #客服充值
-        serial_no = createSerialNo(club_id, group_id, type_id)
+        serial_no = createSerialNo(club_id, group_id, cashtype)
         result=userCashReg(account_id, user_id, club_id, cashtype, operator_id, change_num, note,serial_no)
         if result: #用户充值成功
             flag=operator_cash(type_id, change_num, cashtype, operator_id, note,serial_no, group_id)
@@ -390,7 +395,7 @@ def usercash(request):
         else: return HttpResponse("出错了")
     elif chang_type=='true':
         cashtype = 2001
-        serial_no=createSerialNo(club_id, group_id,type_id)
+        serial_no=createSerialNo(club_id, group_id,cashtype)
         result = userCashReg(account_id, user_id, club_id, cashtype, operator_id, change_num, note, serial_no)
         if result:  # 用户充值成功
             flag = operator_cash(type_id, change_num, cashtype, operator_id, note, serial_no,group_id)
