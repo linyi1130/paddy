@@ -15,7 +15,10 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib import admin
+from django.conf.urls.static import static
+from django.conf import settings
 from sdt.views import *
+app_name='sdt'
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^club/', club_list),
@@ -80,5 +83,7 @@ urlpatterns = [
     url(r'^club_cash/', club_cash),
     url(r'^union_check/', union_check),
     url(r'^result_detail/', result_detail),
+    url(r'^group_balance_search/', group_balance_search),
+    url(r'^group_balance_list/', group_balance_list),
 
-]
+]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

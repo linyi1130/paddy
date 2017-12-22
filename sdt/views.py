@@ -780,3 +780,17 @@ def union_check(request):
                                                 'tb2':tb2, 'tb_income':tb_income, 'tb3':tb3 , 'tb4':tb4,
                                                 'tb4_sum': tb4_sum})
 
+
+def group_balance_list(request):
+    account_id=request.POST['account_id']
+    tb_result= getClubBalanceByGroup(account_id)
+    return render(request, 'group_balance_list_tb.html', {'tb_result': tb_result})
+
+def group_balance_search(request):
+    operator_info = request.session['operator_info']
+    club_id=operator_info['club_id']
+    group_id = operator_info['group_id']
+    group_name=operator_info['group_name']
+    group_list=[(group_id, group_name)]
+    account_list=club_account_list(club_id, group_id)
+    return render(request, 'group_balance_list.html', {'account_list': account_list,'group_list':group_list})
