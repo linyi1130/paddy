@@ -755,7 +755,9 @@ def union_check(request):
     club_income=getClubIncomeTotal(club_id)
     up_total=getUnionIncomeTotal(club_id)
     income_total=round((club_income+up_total),2)
-    check=round((account_balance-(user_balance+union_balance+club_income+up_total)),2)
+    company=getCompanyBalanceSum(club_id)
+    companySum=company[2]
+    check=round((account_balance-(user_balance+union_balance+club_income+up_total+companySum)),2)
     tb1={}
     tb1['account_balance']=account_balance
     tb1['user_balance'] = user_balance
@@ -763,6 +765,7 @@ def union_check(request):
     tb1['club_income'] = club_income
     tb1['up_total'] = up_total
     tb1['income_total'] = income_total
+    tb1['companysum']=companySum
     tb1['check'] = check
     usertype=getClubUserBalanceByType(club_id)
     clubtype=getUnionBalanceByType(club_id)
