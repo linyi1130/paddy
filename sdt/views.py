@@ -925,3 +925,25 @@ def correct_club(request):
     if result:
         result2 = correctBalanceFunc(serial_no, new_serial_no, note, operator_id, group_id)
         return HttpResponse(result2)
+
+
+def correct_company_list(request):
+    operator_id=request.POST['operator_id']
+    operator_info = request.session['operator_info']
+    club_id=operator_info['club_id']
+    tb_result=getCorrectCompanyList(club_id, operator_id)
+    return render(request, 'correct_company_list.html',{'tb_result': tb_result})
+
+
+def correct_company(request):
+    operator_info = request.session['operator_info']
+    operator_id=operator_info['operator_id']
+    group_id = operator_info['group_id']
+    club_id=operator_info['club_id']
+    serial_no=request.POST['serial_no']
+    note = request.POST['note']
+    new_serial_no=createSerialNo(club_id, group_id, 1002)
+    result=correctCompanyFunc(serial_no, new_serial_no, note, operator_id)
+    if result:
+        result2 = correctBalanceFunc(serial_no, new_serial_no, note, operator_id, group_id)
+        return HttpResponse(result2)

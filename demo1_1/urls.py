@@ -96,5 +96,7 @@ urlpatterns = [
     url(r'^correct_user/', correct_user),
     url(r'^correct_club_list/', correct_club_list),
     url(r'^correct_club/', correct_club),
+    url(r'^correct_company_list/', correct_company_list),
+    url(r'^correct_company/', correct_company),
 
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
