@@ -747,7 +747,7 @@ def club_cash(request):
     serialno=createSerialNo(own_club_id,group_id, type_id)
     result=operator_cash(account_id, chance, type_id, operator_id, note, serialno, group_id)
     if result:
-        result_2=club_cash_func(operator_id,group_id,club_id,chance, type_id, serialno, note)
+        result_2=club_cash_func(operator_id,group_id,club_id,chance, type_id, serialno, note, own_club_id)
         return HttpResponse(result_2)
     else:
         result_2=False
@@ -901,5 +901,27 @@ def correct_user(request):
     new_serial_no=createSerialNo(club_id, group_id, 1002)
     result=correctUserFunc(serial_no, new_serial_no, note, operator_id)
     if result:
-        result2=correctClubFunc(serial_no, new_serial_no, note, operator_id, group_id)
+        result2=correctBalanceFunc(serial_no, new_serial_no, note, operator_id, group_id)
+        return HttpResponse(result2)
+
+
+def correct_club_list(request):
+    operator_id=request.POST['operator_id']
+    operator_info = request.session['operator_info']
+    club_id=operator_info['club_id']
+    tb_result=getCorrectClubList(club_id, operator_id)
+    return render(request, 'correct_club_list.html', {'tb_result': tb_result})
+
+
+def correct_club(request):
+    operator_info = request.session['operator_info']
+    operator_id=operator_info['operator_id']
+    group_id = operator_info['group_id']
+    club_id=operator_info['club_id']
+    serial_no=request.POST['serial_no']
+    note = request.POST['note']
+    new_serial_no=createSerialNo(club_id, group_id, 1002)
+    result=correctClubFunc(serial_no, new_serial_no, note, operator_id, club_id, group_id)
+    if result:
+        result2 = correctBalanceFunc(serial_no, new_serial_no, note, operator_id, group_id)
         return HttpResponse(result2)

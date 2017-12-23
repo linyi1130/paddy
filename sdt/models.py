@@ -337,6 +337,7 @@ class ucs_union_balance(models.Model):
     update_time = models.DateTimeField(auto_now_add=True)
     inactive_time=models.DateTimeField(default='2037-01-01')
     note=models.CharField(max_length=80)
+    main_club_id=models.IntegerField(null=False)
 
 
 class ucs_union_account(models.Model):
