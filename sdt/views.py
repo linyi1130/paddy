@@ -707,7 +707,8 @@ def union_account(request):
     group_id=operator_info['group_id']
     tb_result=getClubListWithoutSelf(club_id)
     tb_account_list=club_account_list(club_id,group_id)
-    return render(request, 'union_account.html', {'tb_club': tb_result,'tb_account': tb_account_list})
+    tb_union_balance=getUnionClubAccountList(club_id)
+    return render(request, 'union_account.html', {'tb_club': tb_result,'tb_account': tb_account_list, 'tb_union_balance':tb_union_balance})
 
 
 def union_account_list(request):
@@ -735,15 +736,26 @@ def club_cash(request):
     operator_id=operator_info['operator_id']
     account_id=request.POST['account_id'] #本俱乐部财务账户ID
     op_type=request.POST['cash_type']
-    if op_type=='false':
-        type_id=1004 #俱乐部充值
-    elif op_type=='true':
-        type_id=2002
-
     club_id=request.POST['club_id']
     cash_num=request.POST['cash_num']
     chance=int(float(cash_num)*1000)
     note=request.POST['note']
+    if op_type=='false':
+        type_id=1004 #俱乐部充值
+    elif op_type=='true':
+        type_id=2002
+        subs_account_id = ucs_union_account.objects.filter(inactive_time='2037-01-01').get(club_id=club_id).account_id
+        balance=ucs_union_balance.objects.filter(inactive_time='2037-01-01').filter(account_id=subs_account_id)\
+            .filter(main_club_id=own_club_id).order_by('-update_time')[0].balance
+        if balance-chance<0:
+            result2=False
+            return HttpResponse(result2)
+        else:
+            balance=ucs_club_balance.objects.filter(inactive_time='2037-01-01').filter(account_id=account_id)\
+                .order_by('-update_time')[0].balance
+            if balance-chance<0:
+                result2 = False
+                return HttpResponse(result2)
     serialno=createSerialNo(own_club_id,group_id, type_id)
     result=operator_cash(account_id, chance, type_id, operator_id, note, serialno, group_id)
     if result:
