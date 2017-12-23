@@ -19,6 +19,11 @@ def loadsidebar(request):
     return render(request,'sidebar.html')
 
 
+def loadnavigate(request):
+
+    return render(request,'web_navigate.html')
+
+
 def club_list(request):
     t_club = getCLubList()
     return render(request, 'club.html', {'t_club': t_club})
@@ -315,7 +320,7 @@ def result_post(request):
     club_id=operator_info['club_id']
     group_id=operator_info['group_id']
     operator_id=operator_info['operator_id']
-    flag=result_record(gameno, operator_id)
+    flag=result_record(gameno,operator_id,club_id )
     if flag:
         seriale_no = createSerialNo(club_id, group_id, 1003)
         t1=gameResultClubReg(gameno,club_id, group_id, operator_id,seriale_no)
@@ -955,7 +960,33 @@ def correct_company(request):
     serial_no=request.POST['serial_no']
     note = request.POST['note']
     new_serial_no=createSerialNo(club_id, group_id, 1002)
-    result=correctCompanyFunc(serial_no, new_serial_no, note, operator_id)
+    result=correctBalanceFunc(serial_no, new_serial_no, note, operator_id, group_id)
     if result:
-        result2 = correctBalanceFunc(serial_no, new_serial_no, note, operator_id, group_id)
+        result2 = correctCompanyFunc(serial_no, new_serial_no, note, operator_id)
         return HttpResponse(result2)
+    else:
+        return HttpResponse(result)
+
+
+def company_income_manage(request):
+    operator_info = request.session['operator_info']
+    club_id = operator_info['club_id']
+
+    year=time.strftime("%Y", time.localtime())
+    month=time.strftime("%Y%m", time.localtime())
+    last_mothly=time.localtime()[1]-1 or 12
+    last_moth=str(year)+str(last_mothly)
+    month_list=(last_moth, month)
+    income_list=getClubIncomeByType(club_id)
+    return render(request, 'company_income_reg.html', {'month_list': month_list, 'income_list': income_list})
+
+
+def company_income_reg(request):
+    operator_info = request.session['operator_info']
+    operator_id = operator_info['operator_id']
+    club_id = operator_info['club_id']
+    reg_month=request.POST['reg_month']
+    flag=companyIncomeGameReg(club_id, reg_month)
+    if flag:
+        result=companyIncomeRegAccount(club_id, reg_month,operator_id)
+        return HttpResponse(result)

@@ -203,6 +203,10 @@ class ucs_result_table_l1(models.Model):
     operator_id = models.IntegerField(null=True)
     active_time = models.DateTimeField(auto_now= True)
     inactive_time = models.DateTimeField(default='2037-01-01')
+    flag=models.IntegerField(null=False)  #销账标志位 1代表已销账
+    level=models.IntegerField(null=False)    #标志报表级别
+    main_club_id=models.IntegerField(null=False)  #标志上交俱乐部ID
+    reg_month=models.CharField(max_length=10)   #销账月份
 
 
 class ucs_result_table(models.Model):
@@ -378,6 +382,17 @@ class pm_comany_type(models.Model):
     type_id=models.IntegerField(null=False)
     type=models.CharField(max_length=20)
     inactive_time=models.DateTimeField(default='2037-01-01')
+
+#俱乐部牌局收益汇总表
+class ucs_company_income(models.Model):
+    club_id=models.IntegerField(null=False)
+    water=models.IntegerField(null=False)
+    insure=models.IntegerField(null=False)
+    up_water=models.IntegerField(null=False)
+    up_insure=models.IntegerField(null=False)
+    active_time=models.DateTimeField(auto_now_add=True)
+    inactive_time=models.DateTimeField(default='2037-01-01')
+
 
 
 

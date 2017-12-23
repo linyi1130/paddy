@@ -98,5 +98,8 @@ urlpatterns = [
     url(r'^correct_club/', correct_club),
     url(r'^correct_company_list/', correct_company_list),
     url(r'^correct_company/', correct_company),
+    url(r'^loadnavigate/', loadnavigate),
+    url(r'^company_income_manage/', company_income_manage),
+    url(r'^company_income_reg/', company_income_reg),
 
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
