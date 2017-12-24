@@ -208,6 +208,30 @@ class ucs_result_table_l1(models.Model):
     main_club_id=models.IntegerField(null=False)  #标志上交俱乐部ID
     reg_month=models.CharField(max_length=10)   #销账月份
 
+class ucs_result_table_l2(models.Model):
+    user_id = models.IntegerField(null=False)
+    account_id = models.IntegerField(null=False)
+    user_name = models.CharField(max_length=20)
+    club_id = models.IntegerField(null=False)
+    club_name = models.CharField(max_length=20)
+    score = models.IntegerField(null= False)
+    score_final = models.IntegerField(null=False)
+    income_water=models.IntegerField(null=False)
+    waterup = models.IntegerField(null=False)
+    insure= models.IntegerField(null=False)
+    income_insure = models.IntegerField(null=False)
+    insure_up=models.IntegerField(null= False)
+    income_total = models.IntegerField(null= False)
+    up_total = models.IntegerField(null=False)
+    delivery = models.IntegerField(null= False)
+    game_no = models.CharField(max_length=40)
+    operator_id = models.IntegerField(null=True)
+    active_time = models.DateTimeField(auto_now= True)
+    inactive_time = models.DateTimeField(default='2037-01-01')
+    flag=models.IntegerField(null=False)  #销账标志位 1代表已销账
+    level=models.IntegerField(null=False)    #标志报表级别
+    main_club_id=models.IntegerField(null=False)  #标志上交俱乐部ID
+    reg_month=models.CharField(max_length=10)   #销账月份
 
 class ucs_result_table(models.Model):
     game_no=models.CharField(max_length=40)
@@ -343,6 +367,20 @@ class ucs_union_balance(models.Model):
     note=models.CharField(max_length=80)
     main_club_id=models.IntegerField(null=False)
 
+class ucs_union_balance_l1(models.Model):
+    serial_no = models.CharField(max_length=30)
+    account_id = models.IntegerField(null=False)
+    balance=models.IntegerField(null=False)
+    chance=models.IntegerField(null=False)
+    chance_type=models.IntegerField(null=True)
+    chance_desc=models.CharField(max_length=20)
+    operator_id=models.IntegerField(null=False)
+    group_id= models.IntegerField(null=False)
+    update_time = models.DateTimeField(auto_now_add=True)
+    inactive_time=models.DateTimeField(default='2037-01-01')
+    note=models.CharField(max_length=80)
+    main_club_id=models.IntegerField(null=False)
+
 
 class ucs_union_account(models.Model):
     account_id=models.IntegerField(null=False)
@@ -361,7 +399,7 @@ class ucs_club_relation(models.Model):
     subs_club_id=models.IntegerField(null=False)
     active_time=models.DateTimeField(auto_now_add=True)
     inactive_time=models.DateTimeField(default='2037-01-01')
-
+    club_level=models.IntegerField(null=False)
 
 #俱乐部收入户流水
 class ucs_company_balance(models.Model):

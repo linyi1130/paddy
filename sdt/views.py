@@ -37,17 +37,17 @@ def club_list(request):
 def club_add(request):
     operator_info = request.session['operator_info']
     club_id=operator_info['club_id']
-    club_lever = operator_info['club_lever']
-    if club_lever>4:
+    club_level = operator_info['club_level']
+    if club_level>4:
         return False
-    subs_club_lever=int(club_lever)+1
+    subs_club_level=int(club_level)+1
     club_name=request.POST['club_name']
     club_shortname = request.POST['short_name']
     income_rate = request.POST['income_rate']
     club_desc = request.POST['club_desc']
     insure_rate = request.POST['insure_rate']
     #注册成功返回ID
-    subs_club_id=club_reg(club_name, club_shortname,club_desc, income_rate, insure_rate,subs_club_lever )
+    subs_club_id=club_reg(club_name, club_shortname,club_desc, income_rate, insure_rate,subs_club_level )
     if subs_club_id:
         #加入俱乐部关系表
         t=ucs_club_relation(club_id=club_id,
@@ -779,16 +779,17 @@ def club_cash(request):
 def union_check(request):
     operator_info = request.session['operator_info']
     club_id=operator_info['club_id']
+    club_level=operator_info['club_level']
     account_balance=getClubAccountTotal(club_id)
     user_balance=getClubBalanceTotal(club_id)
-    union_balance=getUnionBalanceTotal(club_id)
-    club_income=getClubIncomeTotal(club_id)
-    main_club_balance=getMainClubBalanceSum(club_id)
+    union_balance=getUnionBalanceTotal(club_id, club_level)
+    club_income=getClubIncomeTotal(club_id, club_level)
+
     up_total=getUnionIncomeTotal(club_id)
     income_total=round((club_income+up_total),2)
     company=getCompanyBalanceSum(club_id)
     companySum=company[2]
-    check=round((account_balance+main_club_balance-(user_balance+union_balance+club_income+up_total+companySum)),2)
+    check=round((account_balance-(user_balance+union_balance+club_income+up_total+companySum)),2)
     tb1={}
     tb1['account_balance']=account_balance
     tb1['user_balance'] = user_balance
@@ -798,7 +799,6 @@ def union_check(request):
     tb1['income_total'] = income_total
     tb1['companysum']=companySum
     tb1['check'] = check
-    tb1['main_club_balance']=main_club_balance
     usertype=getClubUserBalanceByType(club_id)
     clubtype=getUnionBalanceByType(club_id)
     tb2=round((usertype['userplus']+usertype['userminus']+clubtype['clubplus']+clubtype['clubminus']),2)
