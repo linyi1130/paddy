@@ -729,13 +729,13 @@ def union_account_list(request):
     return render(request, 'union_account_list.html',{'tb_balance_list': tb_balance_list})
 
 def club_account_view(request):
-    club_id=request.POST['club_id']
+    account_id=request.POST['account_id']
     club_name = request.POST['club_name']
-    if club_id==0:
+    if account_id==0:
         return render(request, 'club_account_list.html')
     operator_info = request.session['operator_info']
     own_club_id = operator_info['club_id']
-    tb_balance_list=getUnionBalanceList(club_id,own_club_id)
+    tb_balance_list=getUnionBalanceList(own_club_id,account_id)
     return render(request, 'club_account_list.html',{'tb_balance_list': tb_balance_list, 'club_name': club_name})
 
 
@@ -757,12 +757,15 @@ def club_cash(request):
         subs_account_id = ucs_union_account.objects.filter(inactive_time='2037-01-01').get(club_id=club_id).account_id
         balance=ucs_union_balance.objects.filter(inactive_time='2037-01-01').filter(account_id=subs_account_id)\
             .filter(main_club_id=own_club_id).order_by('-update_time')[0].balance
-        if balance-chance<0:
+        if (balance - chance)<0:
             result2=False
             return HttpResponse(result2)
         else:
-            balance=ucs_club_balance.objects.filter(inactive_time='2037-01-01').filter(account_id=account_id)\
-                .order_by('-update_time')[0].balance
+            try:
+                balance=ucs_club_balance.objects.filter(inactive_time='2037-01-01').filter(account_id=account_id)\
+                    .order_by('-update_time')[0].balance
+            except:
+                balance=0
             if balance-chance<0:
                 result2 = False
                 return HttpResponse(result2)
@@ -802,7 +805,7 @@ def union_check(request):
     usertype=getClubUserBalanceByType(club_id)
     clubtype=getUnionBalanceByType(club_id)
     tb2=round((usertype['userplus']+usertype['userminus']+clubtype['clubplus']+clubtype['clubminus']),2)
-    tb_income=getClubIncomeByType(club_id)
+    tb_income=getClubIncomeByType(club_id, club_level)
     tb3={}
     tb3['total']=round((tb_income['total']+tb_income['up_total']),2)
     tb3['water']=round((tb_income['water']+tb_income['up_water']),2)
