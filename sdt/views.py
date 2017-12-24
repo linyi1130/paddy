@@ -25,8 +25,13 @@ def loadnavigate(request):
 
 
 def club_list(request):
-    t_club = getCLubList()
-    return render(request, 'club.html', {'t_club': t_club})
+    operator_info = request.session['operator_info']
+    club_id=operator_info['club_id']
+    t_club = getCLubList(club_id)
+    club_info=ucs_subs_club.objects.filter(inactive_time='2037-01-01').get(club_id=club_id)
+    income_rate=club_info.income_rate
+    insure_rate=club_info.insure_rate
+    return render(request, 'club.html', {'t_club': t_club,'income_rate': income_rate,'insure_rate': insure_rate})
 
 
 def club_add(request):
@@ -434,19 +439,19 @@ def operator(request):
     return render(request,'manage/operator_manage.html')
 
 def operator_setup(request):
-    club_id='1000'
+    club_id='1001'
     tb_group_list = ucs_operator_group.objects.filter(inactive_time='2037-01-01').filter(club_id=club_id)
     tb_operator_list = ucs_operator.objects.filter(inactive_time='2037-01-01').filter(club_id=club_id)
     return render(request, 'manage/operator_setup.html', {'tb_group_list':tb_group_list, 'tb_operator_list':tb_operator_list})
 
 def operator_group_list(request):
-    club_id='1000'
+    club_id='1001'
     tb_group_list = ucs_operator_group.objects.filter(inactive_time='2037-01-01').filter(club_id=club_id)
     return render(request, 'manage/group_list.html', {'tb_group_list':tb_group_list})
 
 def add_operator_group(request):
     group_name=request.POST['group_name']
-    club_id='1000'
+    club_id='1001'
     message=add_group(group_name, club_id)
     if message:
         cnt = 1
@@ -460,7 +465,7 @@ def add_operator_group(request):
 
 
 def operator_list(request):
-    club_id='1000'
+    club_id='1001'
     tb_operator_list = ucs_operator.objects.filter(inactive_time='2037-01-01').filter(club_id=club_id)
     return render(request,'manage/operator_list.html', {'tb_operator_list' : tb_operator_list})
 
@@ -468,12 +473,12 @@ def operator_list(request):
 def add_operator(request):
     operator_name=request.POST['operator_name']
     login_id=request.POST['login_id']
-    club_id='1000'
+    club_id='1001'
     message=add_operator_func(operator_name, login_id, club_id)
     return render(request, 'manage/operator_list.html')
 
 def operator_relation(request):
-    club_id='1000'
+    club_id='1001'
     tb_group_list = ucs_operator_group.objects.filter(inactive_time='2037-01-01').filter(club_id=club_id)
     tb_operator_list = ucs_operator.objects.filter(inactive_time='2037-01-01').filter(club_id=club_id).filter(group_id=None)
     tb_relation = operator_relation_list(club_id)
@@ -482,7 +487,7 @@ def operator_relation(request):
 
 
 def relation_list(request):
-    club_id='1000'
+    club_id='1001'
     tb_relation = operator_relation_list(club_id)
     return render(request, 'manage/relation_list.html',{'tb_relation':tb_relation})
 
@@ -778,11 +783,12 @@ def union_check(request):
     user_balance=getClubBalanceTotal(club_id)
     union_balance=getUnionBalanceTotal(club_id)
     club_income=getClubIncomeTotal(club_id)
+    main_club_balance=getMainClubBalanceSum(club_id)
     up_total=getUnionIncomeTotal(club_id)
     income_total=round((club_income+up_total),2)
     company=getCompanyBalanceSum(club_id)
     companySum=company[2]
-    check=round((account_balance-(user_balance+union_balance+club_income+up_total+companySum)),2)
+    check=round((account_balance+main_club_balance-(user_balance+union_balance+club_income+up_total+companySum)),2)
     tb1={}
     tb1['account_balance']=account_balance
     tb1['user_balance'] = user_balance
@@ -792,6 +798,7 @@ def union_check(request):
     tb1['income_total'] = income_total
     tb1['companysum']=companySum
     tb1['check'] = check
+    tb1['main_club_balance']=main_club_balance
     usertype=getClubUserBalanceByType(club_id)
     clubtype=getUnionBalanceByType(club_id)
     tb2=round((usertype['userplus']+usertype['userminus']+clubtype['clubplus']+clubtype['clubminus']),2)
