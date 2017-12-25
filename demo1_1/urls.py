@@ -101,5 +101,10 @@ urlpatterns = [
     url(r'^loadnavigate/', loadnavigate),
     url(r'^company_income_manage/', company_income_manage),
     url(r'^company_income_reg/', company_income_reg),
+    url(r'^developer_manage/', developer_manage),
+    url(r'^developer_new/', developer_new),
+    url(r'^check_developer/', check_developer),
+    url(r'^developer_reg/', developer_reg),
+    url(r'^developer_list/', developer_list),
 
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

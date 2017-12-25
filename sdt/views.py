@@ -1000,3 +1000,44 @@ def company_income_reg(request):
     if flag:
         result=companyIncomeRegAccount(club_id, reg_month,operator_id)
         return HttpResponse(result)
+
+
+def developer_manage(request):
+
+    return render(request, 'developer_manage.html')
+
+
+def developer_new(request):
+    operator_info = request.session['operator_info']
+    club_id = operator_info['club_id']
+    club_list=ucs_subs_club.objects.filter(inactive_time='2037-01-01').filter(club_id=club_id).values('income_rate','insure_rate')
+
+    return render(request,'developer_new.html', {'club_list': club_list})
+
+def check_developer(request):
+    developer_name=request.POST['developer_name']
+    try:
+        ucs_developer.objects.filter(inactive_time='2037-01-01').get(developer_name=developer_name)
+        result=False
+        return HttpResponse(result)
+    except:
+        result=True
+        return HttpResponse(result)
+
+
+def developer_reg(request):
+    operator_info = request.session['operator_info']
+    club_id = operator_info['club_id']
+    developer_name=request.POST['developer_name']
+    developer_desc=request.POST['note']
+    income_rate=request.POST['income_rate']
+    insure_rate=request.POST['insure_rate']
+    result=developerRegFunc(club_id, developer_name, income_rate, insure_rate, developer_desc)
+    return HttpResponse(result)
+
+
+def developer_list(request):
+    operator_info = request.session['operator_info']
+    club_id = operator_info['club_id']
+    tb_list=getDeveloperListByClubID(club_id)
+    return render(request, 'developer_list.html', {'tb_list': tb_list})

@@ -421,6 +421,7 @@ class pm_comany_type(models.Model):
     type=models.CharField(max_length=20)
     inactive_time=models.DateTimeField(default='2037-01-01')
 
+
 #俱乐部牌局收益汇总表
 class ucs_company_income(models.Model):
     club_id=models.IntegerField(null=False)
@@ -432,5 +433,21 @@ class ucs_company_income(models.Model):
     inactive_time=models.DateTimeField(default='2037-01-01')
 
 
+#俱乐部拉手发展表
+class ucs_developer(models.Model):
+    developer_id=models.IntegerField(null=False)
+    developer_name=models.CharField(max_length=20)
+    developer_desc=models.CharField(max_length=40)
+    income_rate=models.IntegerField(null=False)
+    insure_rate=models.IntegerField(null=False)
+    club_id=models.IntegerField(null=False)
+    active_time=models.DateTimeField(auto_now_add=True)
+    inactive_time=models.DateTimeField(default='2037-01-01')
 
+
+class ucs_club_developer(models.Model):
+    user_id=models.IntegerField(null=False)
+    developer_id=models.IntegerField(null=False)
+    active_time=models.DateTimeField(auto_now_add=False)
+    inactive_time=models.DateTimeField(default='2037-01-01')
 
