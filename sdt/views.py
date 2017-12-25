@@ -981,13 +981,13 @@ def correct_company(request):
 def company_income_manage(request):
     operator_info = request.session['operator_info']
     club_id = operator_info['club_id']
-
+    club_level=operator_info['club_level']
     year=time.strftime("%Y", time.localtime())
     month=time.strftime("%Y%m", time.localtime())
     last_mothly=time.localtime()[1]-1 or 12
     last_moth=str(year)+str(last_mothly)
     month_list=(last_moth, month)
-    income_list=getClubIncomeByType(club_id)
+    income_list=getClubIncomeByType(club_id, club_level)
     return render(request, 'company_income_reg.html', {'month_list': month_list, 'income_list': income_list})
 
 
@@ -1041,3 +1041,53 @@ def developer_list(request):
     club_id = operator_info['club_id']
     tb_list=getDeveloperListByClubID(club_id)
     return render(request, 'developer_list.html', {'tb_list': tb_list})
+
+
+def developer_modify(request):
+    operator_info = request.session['operator_info']
+    club_id = operator_info['club_id']
+    tb=ucs_developer.objects.filter(inactive_time='2037-01-01').filter(club_id=club_id)\
+                .values('developer_id', 'developer_name')
+    club_list = ucs_subs_club.objects.filter(inactive_time='2037-01-01').filter(club_id=club_id).values('income_rate',
+                                                                                                        'insure_rate')
+    return render(request, 'developer_modify.html', {'tb_list': tb,'club_list': club_list})
+
+
+def developer_info(request):
+    operator_info = request.session['operator_info']
+    club_id = operator_info['club_id']
+    developer_id=request.POST['developer_id']
+    tb=ucs_developer.objects.filter(inactive_time='2037-01-01').filter(club_id=club_id)\
+                .filter(developer_id=developer_id).values('income_rate', 'insure_rate', 'developer_desc')
+    tmp={}
+    for t in tb:
+        tmp['income_rate']=t['income_rate']
+        tmp['insure_rate']=t['insure_rate']
+        tmp['developer_desc']=t['developer_desc']
+    result=json.dumps(tmp)
+    return HttpResponse(result)
+
+
+def developer_user(request):
+    operator_info = request.session['operator_info']
+    club_id = operator_info['club_id']
+    tb_developer=ucs_developer.objects.filter(inactive_time='2037-01-01').filter(club_id=club_id)\
+                .values('developer_id', 'developer_name')
+    tb_user=SQL_user_list(club_id)
+    return render(request,'developer_user.html',{'tb_developer':tb_developer, 'tb_user': tb_user})
+
+def developer_user_reg(request):
+    operator_info = request.session['operator_info']
+    developer_id=request.POST['developer_id']
+    user_id=request.POST['user_id']
+    club_id = operator_info['club_id']
+    result=UserDeveloperReg(developer_id, user_id, club_id)
+    return HttpResponse(result)
+
+
+def developer_user_list(request):
+    operator_info = request.session['operator_info']
+    club_id = operator_info['club_id']
+    developer_id = request.POST['developer_id']
+    tb_user=getDeveUserList(club_id,developer_id)
+    return render(request, 'developer_user_list.html',{'tb_user': tb_user})

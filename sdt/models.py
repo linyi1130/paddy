@@ -448,6 +448,7 @@ class ucs_developer(models.Model):
 class ucs_club_developer(models.Model):
     user_id=models.IntegerField(null=False)
     developer_id=models.IntegerField(null=False)
-    active_time=models.DateTimeField(auto_now_add=False)
+    active_time=models.DateTimeField(auto_now_add=True)
     inactive_time=models.DateTimeField(default='2037-01-01')
+    club_id=models.IntegerField(null=False)
 
