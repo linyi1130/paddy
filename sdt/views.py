@@ -1014,6 +1014,7 @@ def developer_new(request):
 
     return render(request,'developer_new.html', {'club_list': club_list})
 
+
 def check_developer(request):
     developer_name=request.POST['developer_name']
     try:
@@ -1073,8 +1074,9 @@ def developer_user(request):
     club_id = operator_info['club_id']
     tb_developer=ucs_developer.objects.filter(inactive_time='2037-01-01').filter(club_id=club_id)\
                 .values('developer_id', 'developer_name')
-    tb_user=SQL_user_list(club_id)
+    tb_user=getUserListWithoutBand(club_id)
     return render(request,'developer_user.html',{'tb_developer':tb_developer, 'tb_user': tb_user})
+
 
 def developer_user_reg(request):
     operator_info = request.session['operator_info']
@@ -1091,3 +1093,20 @@ def developer_user_list(request):
     developer_id = request.POST['developer_id']
     tb_user=getDeveUserList(club_id,developer_id)
     return render(request, 'developer_user_list.html',{'tb_user': tb_user})
+
+
+def developer_user_club_list(request):
+    operator_info = request.session['operator_info']
+    club_id = operator_info['club_id']
+    tb_list=getDeveUserListByClub(club_id)
+    return render(request,'developer_user_club.html',{'tb_list':tb_list})
+
+
+def developer_unband(request):
+    operator_info = request.session['operator_info']
+    club_id = operator_info['club_id']
+    developer_id=request.POST['developer_id']
+    user_id=request.POST['user_id']
+    result=developerUserUnband(club_id, developer_id, user_id)
+
+    return HttpResponse(result)

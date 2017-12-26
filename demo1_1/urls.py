@@ -111,5 +111,7 @@ urlpatterns = [
     url(r'^developer_user/', developer_user),
     url(r'^developer_user_reg/', developer_user_reg),
     url(r'^developer_user_list/', developer_user_list),
+    url(r'^developer_user_club_list/', developer_user_club_list),
+    url(r'^developer_unband/', developer_unband),
 
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
