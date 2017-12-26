@@ -17,7 +17,7 @@ class ucs_subs_user(models.Model):
     num = models.AutoField(primary_key=True)
     user_id = models.IntegerField(null=False)
     customer_id = models.IntegerField(null=True)
-    account_id = models.IntegerField(null=False)
+    account_id = models.IntegerField(null=True)
     user_name = models.CharField(max_length=20)
     wx_name = models.CharField(max_length=20)
     active_time = models.DateTimeField(auto_now_add=True)
