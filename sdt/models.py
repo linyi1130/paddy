@@ -312,6 +312,7 @@ class ucs_operator(models.Model):
     group_id = models.IntegerField(null=True)
     active_time = models.DateTimeField(auto_now_add=True)
     inactive_time = models.DateTimeField(default='2037-01-01')
+    permission_group=models.IntegerField(null=True)
 
 #俱乐部财务组账户ID表
 class ucs_club_account(models.Model):
@@ -452,3 +453,25 @@ class ucs_club_developer(models.Model):
     inactive_time=models.DateTimeField(default='2037-01-01')
     club_id=models.IntegerField(null=False)
 
+
+class ucs_permission_group(models.Model):
+    group_id=models.IntegerField(null=False)
+    group_name=models.CharField(max_length=20)
+    inactive_time=models.DateTimeField(default='2037-01-01')
+
+
+class pm_permission(models.Model):
+    type_id=models.IntegerField(null=False)
+    permission=models.CharField(max_length=20)
+    inactive_time = models.DateTimeField(default='2037-01-01')
+
+
+class ucs_permission(models.Model):
+    group_id=models.IntegerField(null=False)
+    type_id=models.IntegerField(null=False)
+    inactive_time = models.DateTimeField(default='2037-01-01')
+
+
+class paddy_admin(models.Model):
+    login_name=models.CharField(max_length=20)
+    password=models.CharField(max_length=80)

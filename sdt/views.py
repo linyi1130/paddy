@@ -28,9 +28,17 @@ def club_list(request):
     operator_info = request.session['operator_info']
     club_id=operator_info['club_id']
     t_club = getCLubList(club_id)
-    club_info=ucs_subs_club.objects.filter(inactive_time='2037-01-01').get(club_id=club_id)
-    income_rate=club_info.income_rate
-    insure_rate=club_info.insure_rate
+    if len(t_club)==0:
+        insure_rate = 100
+        income_rate = 100
+    else:
+        try:
+            club_info=ucs_subs_club.objects.filter(inactive_time='2037-01-01').get(club_id=club_id)
+            income_rate=club_info.income_rate
+            insure_rate=club_info.insure_rate
+        except:
+            insure_rate=0
+            income_rate=0
     return render(request, 'club.html', {'t_club': t_club,'income_rate': income_rate,'insure_rate': insure_rate})
 
 
@@ -51,7 +59,8 @@ def club_add(request):
     if subs_club_id:
         #加入俱乐部关系表
         t=ucs_club_relation(club_id=club_id,
-                          subs_club_id=subs_club_id)
+                          subs_club_id=subs_club_id,
+                            club_level=club_level)
         t.save()
         return HttpResponseRedirect('/club/')
     else:
@@ -82,13 +91,15 @@ def checkuser(request):
 
 
 def user_add(request):
+    operator_info=request.session['operator_info']
+    operator_id=operator_info['operator_id']
     user_name=request.POST['user_name']
     wx_name=request.POST['wx_name']
-    note=request.POST['wx_name']
+    note=request.POST['note']
     club_id=request.POST['club_id']
     result=checkUserExist(user_name,club_id)
     if result==0:
-        flag=user_reg(user_name, wx_name, club_id, note)
+        flag=user_reg(user_name, wx_name, club_id, note,operator_id)
 
         return HttpResponse(flag)
 
@@ -222,6 +233,8 @@ def result_pretreat_step1(request):
     url = "/result_preview?gameno=" + gameno + "&type=1"
     return HttpResponseRedirect(url)
 def result_newuser(request):
+    operator_info = request.session['operator_info']
+    operator_id=operator_info['operator_id']
     tmp = request.POST
     newuser = []
     gameno=request.POST['gameno']
@@ -232,7 +245,7 @@ def result_newuser(request):
     lenlist = len(newuser)
     i = 0
     while (i < lenlist):
-        if user_reg(newuser[i],newuser[i],newuser[i+1],"") == True :
+        if user_reg(newuser[i],newuser[i],newuser[i+1],"",operator_id) == True :
             i=i+2
         #i=i+2
     split_club = result_attachclub(gameno)
@@ -439,19 +452,22 @@ def operator(request):
     return render(request,'manage/operator_manage.html')
 
 def operator_setup(request):
-    club_id='1001'
+    operator_info=request.session['operator_info']
+    club_id = operator_info['club_id']
     tb_group_list = ucs_operator_group.objects.filter(inactive_time='2037-01-01').filter(club_id=club_id)
     tb_operator_list = ucs_operator.objects.filter(inactive_time='2037-01-01').filter(club_id=club_id)
     return render(request, 'manage/operator_setup.html', {'tb_group_list':tb_group_list, 'tb_operator_list':tb_operator_list})
 
 def operator_group_list(request):
-    club_id='1001'
+    operator_info=request.session['operator_info']
+    club_id = operator_info['club_id']
     tb_group_list = ucs_operator_group.objects.filter(inactive_time='2037-01-01').filter(club_id=club_id)
     return render(request, 'manage/group_list.html', {'tb_group_list':tb_group_list})
 
 def add_operator_group(request):
     group_name=request.POST['group_name']
-    club_id='1001'
+    operator_info=request.session['operator_info']
+    club_id = operator_info['club_id']
     message=add_group(group_name, club_id)
     if message:
         cnt = 1
@@ -465,7 +481,8 @@ def add_operator_group(request):
 
 
 def operator_list(request):
-    club_id='1001'
+    operator_info=request.session['operator_info']
+    club_id = operator_info['club_id']
     tb_operator_list = ucs_operator.objects.filter(inactive_time='2037-01-01').filter(club_id=club_id)
     return render(request,'manage/operator_list.html', {'tb_operator_list' : tb_operator_list})
 
@@ -473,12 +490,14 @@ def operator_list(request):
 def add_operator(request):
     operator_name=request.POST['operator_name']
     login_id=request.POST['login_id']
-    club_id='1001'
+    operator_info=request.session['operator_info']
+    club_id = operator_info['club_id']
     message=add_operator_func(operator_name, login_id, club_id)
     return render(request, 'manage/operator_list.html')
 
 def operator_relation(request):
-    club_id='1001'
+    operator_info=request.session['operator_info']
+    club_id = operator_info['club_id']
     tb_group_list = ucs_operator_group.objects.filter(inactive_time='2037-01-01').filter(club_id=club_id)
     tb_operator_list = ucs_operator.objects.filter(inactive_time='2037-01-01').filter(club_id=club_id).filter(group_id=None)
     tb_relation = operator_relation_list(club_id)
@@ -487,7 +506,8 @@ def operator_relation(request):
 
 
 def relation_list(request):
-    club_id='1001'
+    operator_info=request.session['operator_info']
+    club_id = operator_info['club_id']
     tb_relation = operator_relation_list(club_id)
     return render(request, 'manage/relation_list.html',{'tb_relation':tb_relation})
 
@@ -523,10 +543,15 @@ def operator_relation_setup(request):
 def login(request):
     login_id=request.POST['login_id']
     password=request.POST['password']
+    if login_id=="paddy":
+        ps=paddy_admin.objects.get(login_name=login_id).password
+        request.session['supper']='paddy'
+        if check_password(password,ps):
+            return HttpResponseRedirect("/app_initialize/")
     result =operator_login (login_id, password)
     if result:
         request.session['operator_info']=result
-        return HttpResponseRedirect('/test/')
+        return HttpResponseRedirect('/welcome/')
     else:
         return HttpResponse("用户名或密码不匹配")
 
@@ -560,7 +585,7 @@ def check_balance(request):
     msg=True
     return HttpResponse(msg)
 
-def test(request):
+def welcome(request):
 
     return render(request,'notice.html')
 
@@ -1109,4 +1134,68 @@ def developer_unband(request):
     user_id=request.POST['user_id']
     result=developerUserUnband(club_id, developer_id, user_id)
 
+    return HttpResponse(result)
+
+
+def app_initialize(request):
+    supper = request.session['supper']
+    if supper == 'paddy':
+        return render(request,'manage/app_initialize.html')
+    else:
+        return HttpResponse("请重新登录")
+
+def app_union_setup(request):
+    club_name=request.POST['club_name']
+    club_shortname=request.POST['club_shortname']
+    try:
+        if ucs_subs_club.objects.filter(inactive_time='2037-01-01').filter(club_id=1000).exists():
+            return HttpResponse("False")
+        t=ucs_subs_club(club_id=1000,
+                        club_name=club_name,
+                        club_shortname=club_shortname,
+                        club_desc="",
+                        income_rate=100,
+                        insure_rate=100,
+                        club_lever=0)
+        t.save()
+        t=ucs_union_account(account_id=4000,
+                            club_id=1000)
+        t.save()
+        return HttpResponse("True")
+    except:
+        return HttpResponse("False")
+
+
+
+def load_main_club(request):
+    try:
+        tb_list=ucs_subs_club.objects.filter(inactive_time='2037-01-01').get(club_id=1000)
+        club_name=tb_list.club_name
+        club_shortname=tb_list.club_shortname
+        return render(request, 'manage/app_union_setup.html',{'club_name':club_name,'club_shortname':club_shortname})
+    except:
+        return render(request, 'manage/app_union_setup.html')
+
+
+
+def test(request):
+    ps=make_password('whx_1025', None, 'pbkdf2_sha256')
+    return HttpResponse(ps)
+
+
+def app_operator(request):
+    supper=request.session['supper']
+    if supper=='paddy':
+        tb_club=ucs_subs_club.objects.filter(inactive_time='2037-01-01').values('club_id', 'club_name')
+        tb_permission=ucs_permission_group.objects.filter(inactive_time='2037-01-01').values('group_id','group_name')
+        return render(request,'manage/app_operator.html',{'tb_club': tb_club,'tb_permission':tb_permission})
+    else:
+        return HttpResponse("请重新登录")
+
+
+def app_operator_reg(request):
+    operator_name=request.POST['operator_name']
+    login_id=request.POST['login_id']
+    club_id=request.POST['club_id']
+    result=add_operator_func(operator_name, login_id,club_id)
     return HttpResponse(result)
