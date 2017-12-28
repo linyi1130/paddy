@@ -345,9 +345,11 @@ def result_post(request):
         t2=gameResultUserReg(gameno,club_id,operator_id,seriale_no)
         if t1 & t2:
             ucs_gamerecord.objects.filter(inactive_time='2037-01-01').filter(game_no=gameno).update(status_id=5)
+            abortGameByNo(gameno)
             tb_result = []
             club_list = ucs_result_table.objects.filter(inactive_time='2037-01-01').filter(game_no=gameno) \
                 .values('club_id').distinct()
+            abortGameByNo(gameno)
             for t in club_list:
                 club_id = t['club_id']
                 tb_result.append(getResultDetailByGameno(gameno, club_id))
