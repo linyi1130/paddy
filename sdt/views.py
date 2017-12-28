@@ -692,9 +692,9 @@ def table_reg_mini(request):
 
 def getusefulbalance(request):
     account_id=request.POST['account_id']
-    balance=getBalancebyaid(account_id)
     operator_info = request.session['operator_info']
     club_id = operator_info['club_id']
+    balance=getBalancebyaid(account_id, club_id)
     freeze_sum=getFreezeSumByAid(account_id,club_id)
     balance_useful=round((balance-freeze_sum)/1000,2)
     return HttpResponse(balance_useful)
