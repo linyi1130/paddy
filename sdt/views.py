@@ -358,8 +358,8 @@ def result_post(request):
         return HttpResponse("添加失败")
 
 def result_detail(request):
-    #game_no=request.POST['game_no']
-    gameno='20171220OC02014'
+    gameno=request.POST['game_no']
+    #gameno='20171220OC02014'
     tb_result=[]
     club_list=ucs_result_table.objects.filter(inactive_time='2037-01-01').filter(game_no=gameno)\
             .values('club_id').distinct()

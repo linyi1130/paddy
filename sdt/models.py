@@ -207,6 +207,8 @@ class ucs_result_table_l1(models.Model):
     level=models.IntegerField(null=False)    #标志报表级别
     main_club_id=models.IntegerField(null=False)  #标志上交俱乐部ID
     reg_month=models.CharField(max_length=10)   #销账月份
+    developer_id = models.IntegerField(null=True)
+
 
 class ucs_result_table_l2(models.Model):
     user_id = models.IntegerField(null=False)
@@ -232,6 +234,8 @@ class ucs_result_table_l2(models.Model):
     level=models.IntegerField(null=False)    #标志报表级别
     main_club_id=models.IntegerField(null=False)  #标志上交俱乐部ID
     reg_month=models.CharField(max_length=10)   #销账月份
+    developer_id = models.IntegerField(null=True)
+
 
 class ucs_result_table(models.Model):
     game_no=models.CharField(max_length=40)
@@ -253,6 +257,7 @@ class ucs_result_table(models.Model):
     operator_id = models.IntegerField(null=True)
     active_time = models.DateTimeField(auto_now= True)
     inactive_time = models.DateTimeField(default='2037-01-01')
+
 
 
 class ucs_credit_account(models.Model):
