@@ -119,5 +119,7 @@ urlpatterns = [
     url(r'^welcome/', welcome),
     url(r'^app_operator/', app_operator),
     url(r'^app_operator_reg/', app_operator_reg),
+    url(r'^result_list_view/', result_list_view),
+    url(r'^result_list/', result_list),
 
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

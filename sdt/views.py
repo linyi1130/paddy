@@ -344,12 +344,10 @@ def result_post(request):
         t1=gameResultClubReg(gameno,club_id, group_id, operator_id,seriale_no)
         t2=gameResultUserReg(gameno,club_id,operator_id,seriale_no)
         if t1 & t2:
-            ucs_gamerecord.objects.filter(inactive_time='2037-01-01').filter(game_no=gameno).update(status_id=5)
-            abortGameByNo(gameno)
+            regedGameByNo(gameno)
             tb_result = []
             club_list = ucs_result_table.objects.filter(inactive_time='2037-01-01').filter(game_no=gameno) \
                 .values('club_id').distinct()
-            abortGameByNo(gameno)
             for t in club_list:
                 club_id = t['club_id']
                 tb_result.append(getResultDetailByGameno(gameno, club_id))
@@ -819,7 +817,7 @@ def union_check(request):
     income_total=round((club_income+up_total),2)
     company=getCompanyBalanceSum(club_id)
     companySum=company[2]
-    check=round((account_balance-(user_balance+union_balance+club_income+up_total+companySum)),2)
+    check=round((account_balance-(user_balance+union_balance+club_income+up_total+companySum)),0)
     tb1={}
     tb1['account_balance']=account_balance
     tb1['user_balance'] = user_balance
@@ -1201,3 +1199,16 @@ def app_operator_reg(request):
     club_id=request.POST['club_id']
     result=add_operator_func(operator_name, login_id,club_id)
     return HttpResponse(result)
+
+
+def result_list_view(request):
+
+
+    return render(request, 'result_list_view.html')
+
+
+def result_list(request):
+    start_date=request.POST['start']
+    end_date=request.POST['end']
+    tb_result=getResultList(start_date, end_date)
+    return render(request, 'result_list.html',{'tb_result': tb_result})

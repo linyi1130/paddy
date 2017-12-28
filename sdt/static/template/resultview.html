@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="{%static 'semantic/semantic.css' %} ">
     <link rel="stylesheet" href="{%static 'semantic/calendar.css' %} ">
 <script src="http://lib.baomitu.com/jquery/1.12.4/jquery.min.js"></script>
+<script src="http://lib.baomitu.com/semantic-ui-calendar/0.0.8/calendar.js"></script>
 <script src="http://lib.baomitu.com/datatables/1.10.16/js/jquery.dataTables.min.js"></script>
 <script src="http://lib.baomitu.com/datatables/1.10.16/js/dataTables.semanticui.min.js"></script>
 <script src="http://lib.baomitu.com/semantic-ui/2.2.13/semantic.min.js"></script>
@@ -101,7 +102,7 @@
         $.ajaxSetup({
             cache : false,
             async: true
-        })
+        });
     	var str_club_id
 		str_club_id=$("#club_id").dropdown('get value')
 		$("#club_id").value=str_club_id
