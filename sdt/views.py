@@ -1212,3 +1212,21 @@ def result_list(request):
     end_date=request.POST['end']
     tb_result=getResultList(start_date, end_date)
     return render(request, 'result_list.html',{'tb_result': tb_result})
+
+
+def developer_table_view(request):
+    operator_info = request.session['operator_info']
+    club_id = operator_info['club_id']
+    developer_list=ucs_developer.objects.filter(inactive_time='2037-01-01').filter(club_id=club_id).values('developer_id', 'developer_name')
+
+    return render(request, 'developer_table_view.html', {'developer_list': developer_list})
+
+
+def developer_table_list(request):
+    operator_info = request.session['operator_info']
+    club_id = operator_info['club_id']
+    developer_id = request.POST['developer_id']
+    start_date=request.POST['start_date']
+    end_date=request.POST['end_date']
+    tb_list=getDeveTableList(club_id, developer_id, start_date,end_date)
+    return render(request, 'developer_table_list.html',{'tb_list' :tb_list})
