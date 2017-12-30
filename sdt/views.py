@@ -319,9 +319,8 @@ def game_reg(request):
 
 def result_view(request):
     t_club = getClubListMini()
-    t_game_list=gamenolist()
 
-    return render(request,"resultview.html", {'t_club': t_club,'t_game_list': t_game_list})
+    return render(request,"resultview.html", {'t_club': t_club})
 
 def result_l1(request):
     club_id=request.POST['club_id']
@@ -330,7 +329,7 @@ def result_l1(request):
     enddate=request.POST['end']
     tb_result=result_searchByclub(club_id,startdate,enddate)
     tb_sum = result_searchByclubSum(club_id,startdate,enddate)
-    return  render(request,'result_l1.html',{'tb_result':tb_result, 'club_name': club_name,'tb_sum' : tb_sum } )
+    return  render(request,'result_l1.html',{'tb_result':tb_result, 'club_name': club_name,'tb_sum' : tb_sum,'club_id':club_id } )
 
 def result_post(request):
     gameno= request.POST['gameno']
@@ -357,13 +356,21 @@ def result_post(request):
 
 def result_detail(request):
     gameno=request.POST['game_no']
-    #gameno='20171220OC02014'
-    tb_result=[]
-    club_list=ucs_result_table.objects.filter(inactive_time='2037-01-01').filter(game_no=gameno)\
+
+    club_list = ucs_result_table.objects.filter(inactive_time='2037-01-01').filter(game_no=gameno) \
             .values('club_id').distinct()
+    tb_result=[]
     for t in club_list:
         club_id=t['club_id']
         tb_result.append(getResultDetailByGameno(gameno, club_id))
+    return render(request, 'result_detail_tb.html', {'tb_result': tb_result})
+
+
+def result_detailbyClub(request):
+    gameno = request.POST['game_no']
+    club_id=request.POST['club_id']
+    tb_result=[]
+    tb_result.append(getResultDetailByGameno(gameno, club_id))
     return render(request, 'result_detail_tb.html', {'tb_result': tb_result})
 
 def result_union(request):
@@ -1239,3 +1246,18 @@ def developer_table_detail(request):
     game_no=request.POST['game_no']
     tb_result=getDeveTableDetail(club_id, game_no, developer_id)
     return render(request, 'developer_table_detail.html', {'tb_result': tb_result})
+
+
+def report_developer(request):
+
+    return render(request, 'report/report_developer.html')
+
+
+def report_developer_result(request):
+    operator_info = request.session['operator_info']
+    club_id = operator_info['club_id']
+    start_date=request.POST['start_date']
+    end_date=request.POST['end_date']
+    tb_result=getDeveResultByDate(club_id, start_date, end_date)
+    tb_result_sum=getDeveResultSumBydate(club_id,start_date,end_date)
+    return render(request,'report/report_developer_sum.html',{'tb_result': tb_result, 'starttime': start_date, 'endtime': end_date,'tb_result_sum':tb_result_sum})

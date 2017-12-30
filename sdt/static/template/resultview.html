@@ -45,15 +45,6 @@
         </select>
         </div>
         <div class="field">
-            <label>牌局号</label>
-            <select class="ui fluid search dropdown">
-            <option value="">请选择牌局号</option>
-                {% for t in t_game_list %}
-                    <option value={{ t.game_no }}>{{ t.game_no }}</option>
-                {% endfor %}
-        </select>
-        </div>
-        <div class="field">
             <label>开始日期</label>
             <div class="ui calendar" name="startdate" id="startdate">
                 <div class="ui input left icon">
@@ -71,9 +62,12 @@
                 </div>
             </div>
         </div>
+        <div class="field">
+            <label>&nbsp;</label>
+            <button class="ui button primary" onclick="aa()">查询</button>
+        </div>
     </div>
-        <button class="ui button primary" onclick="aa()">查询</button>
-        <button class="ui red button" onclick="getall()" id="getall">全部</button>
+
     </div>
     <div name="result_l1" id="result_l1"></div>
 
