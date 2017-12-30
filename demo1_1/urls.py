@@ -123,4 +123,5 @@ urlpatterns = [
     url(r'^result_list/', result_list),
     url(r'^developer_table_view/', developer_table_view),
     url(r'^developer_table_list/', developer_table_list),
+    url(r'^developer_table_detail/', developer_table_detail),
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

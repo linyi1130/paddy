@@ -1230,3 +1230,12 @@ def developer_table_list(request):
     end_date=request.POST['end_date']
     tb_list=getDeveTableList(club_id, developer_id, start_date,end_date)
     return render(request, 'developer_table_list.html',{'tb_list' :tb_list})
+
+
+def developer_table_detail(request):
+    operator_info = request.session['operator_info']
+    club_id = operator_info['club_id']
+    developer_id=request.POST['developer_id']
+    game_no=request.POST['game_no']
+    tb_result=getDeveTableDetail(club_id, game_no, developer_id)
+    return render(request, 'developer_table_detail.html', {'tb_result': tb_result})
