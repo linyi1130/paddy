@@ -127,4 +127,10 @@ urlpatterns = [
     url(r'^result_detailbyClub/', result_detailbyClub),
     url(r'^report_developer/', report_developer),
     url(r'^report_developer_result/', report_developer_result),
+    url(r'^reward_manage/', reward_manage),
+    url(r'^reward_normal/', reward_normal),
+    url(r'^reward_normal_add/', reward_normal_add),
+    url(r'^reward_normal_list/', reward_normal_list),
+    url(r'^reward_normal_modify/', reward_normal_modify),
+    url(r'^reward_normal_delete/', reward_normal_delete),
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

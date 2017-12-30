@@ -1261,3 +1261,43 @@ def report_developer_result(request):
     tb_result=getDeveResultByDate(club_id, start_date, end_date)
     tb_result_sum=getDeveResultSumBydate(club_id,start_date,end_date)
     return render(request,'report/report_developer_sum.html',{'tb_result': tb_result, 'starttime': start_date, 'endtime': end_date,'tb_result_sum':tb_result_sum})
+
+def reward_manage(request):
+
+    return render(request, 'manage/reward_manage.html')
+
+def reward_normal(request):
+    tb_blind=pm_blind.objects.values('blind_id', 'blind_desc')
+    tb_reward=pm_reward.objects.values('type_id','type_name')
+    return render(request, 'manage/game_reward_normal.html', {'tb_blind': tb_blind,'tb_reward':tb_reward})
+
+
+def reward_normal_add(request):
+    blind_id=request.POST['blind_id']
+    type_id=request.POST['type_id']
+    reward=request.POST['reward']
+    reward_input=int(float(reward)*1000)
+    result=reward_normal_add_func(blind_id, type_id, reward_input)
+    return HttpResponse(result)
+
+
+def reward_normal_list(request):
+    tb_result=getRewardNormalList()
+
+    return render(request,'manage/game_normal_list.html',{'tb_result': tb_result})
+
+
+def reward_normal_modify(request):
+    blind_id=request.POST['blind_id']
+    type_id=request.POST['type_id']
+    reward=request.POST['reward']
+    reward_input = int(float(reward) * 1000)
+    result=rewardNormalModify(blind_id,type_id,reward_input)
+    return HttpResponse(result)
+
+
+def reward_normal_delete(request):
+    blind_id=request.POST['blind_id']
+    type_id=request.POST['type_id']
+    result=rewardNormalDelete(blind_id, type_id)
+    return HttpResponse(result)

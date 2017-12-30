@@ -507,3 +507,17 @@ class ucs_permission(models.Model):
 class paddy_admin(models.Model):
     login_name=models.CharField(max_length=20)
     password=models.CharField(max_length=80)
+
+
+class ucs_game_reward(models.Model):
+    blind_id=models.IntegerField(null=False)
+    type_id=models.IntegerField(null=False)
+    reward = models.IntegerField(null=False)
+    inactive_time=models.DateTimeField(default='2037-01-01')
+
+
+class pm_reward(models.Model):
+    type_id=models.IntegerField(null=False)
+    type_name=models.CharField(max_length=20)
+    inactive_time=models.DateTimeField(default='2037-01-01')
+
