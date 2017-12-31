@@ -13,6 +13,7 @@ import json
 import django.core.serializers.json
 from django.contrib import messages
 from django.forms.models import model_to_dict
+from django.core import serializers
 # Create your views here.
 def loadsidebar(request):
 
@@ -1300,4 +1301,18 @@ def reward_normal_delete(request):
     blind_id=request.POST['blind_id']
     type_id=request.POST['type_id']
     result=rewardNormalDelete(blind_id, type_id)
+    return HttpResponse(result)
+
+
+def reward_normol_form(request):
+    operator_info = request.session['operator_info']
+    club_id = operator_info['club_id']
+    game_no=request.POST['game_no']
+    reward_list=getRewardByGameno(game_no)
+    tb_user=getRewardFromUserList(game_no, club_id)
+    tb_result={}
+    tb_result['user_list']=tb_user
+    tb_result['tb_reward']=reward_list
+    #result=json.dumps(tb_user, cls=django.core.serializers.json.DjangoJSONEncoder)
+    result=json.dumps(tb_result)
     return HttpResponse(result)
