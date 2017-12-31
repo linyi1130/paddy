@@ -1333,8 +1333,10 @@ def reward_normal_reg(request):
     op_account_id=request.POST['op_account_id']
     serial_no=createSerialNo(club_id,group_id,2004)
     if operator_cash(op_account_id, reward, 2004,operator_id, '牌局奖励', serial_no, group_id):
+        #serial_no = createSerialNo(club_id, group_id, 2008)
         result=companyCashFunc(club_id, op_account_id, reward, 2008, operator_id, serial_no, '牌局奖励')
         if user_flag=='true':
+            serial_no = createSerialNo(club_id, group_id, 1001)
             if userCashReg(user_account_id,user_id, club_id, 1001, operator_id, reward, '牌局奖励', serial_no):
                 result=operator_cash(op_account_id, reward, 1001, operator_id, '牌局奖励', serial_no, group_id)
             return HttpResponse(result)
