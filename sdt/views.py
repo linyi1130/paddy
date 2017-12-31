@@ -129,7 +129,7 @@ def user_list(request):
     tb_result=getUserListByClubId(club_id)
     return render(request, 'user_list.html',{'tb_user': tb_result})
 
-
+#初始化充值页面
 def cash(request):
     operator_info=request.session['operator_info']
     operator_name=operator_info['operator_name']
@@ -157,7 +157,7 @@ def getbalance(request):
         balancenum=0
     return HttpResponse(balancenum)
 
-
+#作废
 def cashin(request):
 
     if request.POST.get('cashInOut',0)==0:
@@ -399,7 +399,7 @@ def useraccountview(request):
     tb_freeze=getFreezeListByUid(user_id)
     return render(request, 'user_account_info.html',{'user_name':user_name,'tb_result':tb_result,
                                                      'club_name':club_name,'tb_balance_list':tb_balance_list, 'tb_freeze':tb_freeze})
-
+#玩家充值结算
 def usercash(request):
     user_id=request.POST['user_id']
     account_id=request.POST['account_id']
@@ -871,7 +871,7 @@ def company_account(request):
     operator_info = request.session['operator_info']
     club_id=operator_info['club_id']
     group_list=ucs_operator_group.objects.filter(inactive_time='2037-01-01').filter(club_id=club_id).values()
-    type_list= pm_comany_type.objects.filter(inactive_time='2037-01-01').order_by('type').values()
+    type_list= pm_company_type.objects.filter(inactive_time='2037-01-01').order_by('type').values()
     return render(request,'company_account.html', {'group_list': group_list, 'type_list': type_list})
 
 
@@ -1307,12 +1307,37 @@ def reward_normal_delete(request):
 def reward_normol_form(request):
     operator_info = request.session['operator_info']
     club_id = operator_info['club_id']
+    group_id = operator_info['group_id']
     game_no=request.POST['game_no']
     reward_list=getRewardByGameno(game_no)
     tb_user=getRewardFromUserList(game_no, club_id)
+    account_list=getGroupAccountList(club_id,group_id)
     tb_result={}
     tb_result['user_list']=tb_user
     tb_result['tb_reward']=reward_list
+    tb_result['account_list']=account_list
     #result=json.dumps(tb_user, cls=django.core.serializers.json.DjangoJSONEncoder)
     result=json.dumps(tb_result)
+    return HttpResponse(result)
+
+def reward_normal_reg(request):
+    operator_info = request.session['operator_info']
+    club_id = operator_info['club_id']
+    group_id = operator_info['group_id']
+    operator_id=operator_info['operator_id']
+    t_reward=request.POST['reward']
+    user_flag=request.POST['user_flag']
+    user_account_id=request.POST['user_account_id']
+    user_id=request.POST['user_id']
+    reward=int(float(t_reward)*1000)
+    op_account_id=request.POST['op_account_id']
+    serial_no=createSerialNo(club_id,group_id,2004)
+    if operator_cash(op_account_id, reward, 2004,operator_id, '牌局奖励', serial_no, group_id):
+        result=companyCashFunc(club_id, op_account_id, reward, 2008, operator_id, serial_no, '牌局奖励')
+        if user_flag=='true':
+            if userCashReg(user_account_id,user_id, club_id, 1001, operator_id, reward, '牌局奖励', serial_no):
+                result=operator_cash(op_account_id, reward, 1001, operator_id, '牌局奖励', serial_no, group_id)
+            return HttpResponse(result)
+    else:
+        result=False
     return HttpResponse(result)

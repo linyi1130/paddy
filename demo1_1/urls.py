@@ -134,4 +134,5 @@ urlpatterns = [
     url(r'^reward_normal_modify/', reward_normal_modify),
     url(r'^reward_normal_delete/', reward_normal_delete),
     url(r'^reward_normol_form/', reward_normol_form),
+    url(r'^reward_normal_reg/', reward_normal_reg),
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

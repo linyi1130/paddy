@@ -449,7 +449,7 @@ class ucs_company_balance(models.Model):
 
 
 #俱乐部收入户流水类型
-class pm_comany_type(models.Model):
+class pm_company_type(models.Model):
     type_id=models.IntegerField(null=False)
     type=models.CharField(max_length=20)
     inactive_time=models.DateTimeField(default='2037-01-01')
