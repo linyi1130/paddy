@@ -521,3 +521,9 @@ class pm_reward(models.Model):
     type_name=models.CharField(max_length=20)
     inactive_time=models.DateTimeField(default='2037-01-01')
 
+#账户提现手续费，rate单位万分位
+class pm_deposit_rate(models.Model):
+    account_type=models.IntegerField(null=False)
+    rate=models.IntegerField(null=False)
+    club_id=models.IntegerField(null=False)
+    inactive_time=models.DateTimeField(default='2037-01-01')

@@ -1265,7 +1265,7 @@ def report_developer_result(request):
 
 def reward_manage(request):
 
-    return render(request, 'manage/reward_manage.html')
+    return render(request, 'manage/configure_manage.html')
 
 def reward_normal(request):
     tb_blind=pm_blind.objects.values('blind_id', 'blind_desc')
@@ -1343,3 +1343,41 @@ def reward_normal_reg(request):
     else:
         result=False
     return HttpResponse(result)
+
+
+def deposit_rate(request):
+    operator_info = request.session['operator_info']
+    club_id = operator_info['club_id']
+    tb_list=pm_account_type.objects.filter(inactive_time='2037-01-01').values('type_id','type')
+
+    return render(request, 'manage/deposit_rate.html', {'tb_list': tb_list})
+
+
+def deposit_rate_reg(request):
+    operator_info = request.session['operator_info']
+    club_id = operator_info['club_id']
+    type_id=request.POST['type_id']
+    rate=request.POST['rate']
+
+    result=depositRateReg(club_id,type_id,rate)
+    return HttpResponse(result)
+
+
+def depoist_rate_list(request):
+    operator_info = request.session['operator_info']
+    club_id = operator_info['club_id']
+    tb_deposit=getDepositList(club_id)
+    return render(request, 'manage/deposit_rate_list.html', {'tb_depoist': tb_deposit})
+
+
+def depoist_rete_delete(request):
+    operator_info = request.session['operator_info']
+    club_id = operator_info['club_id']
+    type_id=request.POST['type_id']
+    try:
+        pm_deposit_rate.objects.filter(inactive_time='2037-01-01').filter(club_id=club_id).filter(account_type=type_id).update(inactive_time=now())
+        result=True
+        return HttpResponse(result)
+    except:
+        result = False
+        return HttpResponse(result)
