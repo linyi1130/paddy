@@ -1381,3 +1381,24 @@ def depoist_rete_delete(request):
     except:
         result = False
         return HttpResponse(result)
+
+
+def deposit(request):
+    operator_info = request.session['operator_info']
+    club_id = operator_info['club_id']
+    group_id=operator_info['group_id']
+    group_name=operator_info['group_name']
+    tb_account_list=get_club_account_infoByGroup(club_id, group_id)
+    tb_account=getDepositAccountList(club_id,group_id)
+    return render(request,'deposit.html', {'tb_account_list': tb_account_list, 'group_name':group_name, 'tb_account':tb_account})
+
+
+def get_deposit_rate(request):
+    operator_info = request.session['operator_info']
+    club_id = operator_info['club_id']
+    type_id=request.POST['type_id']
+    try:
+        rate=pm_deposit_rate.objects.filter(inactive_time='2037-01-01').filter(club_id=club_id).get(account_type=type_id).rate
+        return HttpResponse(rate)
+    except:
+        return HttpResponse("False")
