@@ -354,6 +354,7 @@ class ucs_club_account(models.Model):
     group_id=models.IntegerField(null=False)
     active_time=models.DateTimeField(auto_now_add=True)
     inactive_time=models.DateTimeField(default='2037-01-01')
+    account_desc=models.CharField(max_length=20)
 
 #用户账户ID表
 class ucs_balance(models.Model):
@@ -526,4 +527,24 @@ class pm_deposit_rate(models.Model):
     account_type=models.IntegerField(null=False)
     rate=models.IntegerField(null=False)
     club_id=models.IntegerField(null=False)
+    inactive_time=models.DateTimeField(default='2037-01-01')
+
+
+class ucs_deposit_balance(models.Model):
+    serial_no=models.CharField(max_length=40)
+    club_id=models.IntegerField(null=False)
+    group_id=models.IntegerField(null=False)
+    account_id=models.IntegerField(null=False)              #俱乐部现金账户ID
+    type_id=models.IntegerField(null=False)                 #俱乐部账户类型（支付宝，微信等）
+    deposit=models.IntegerField(null=False)
+    fee=models.IntegerField(null=False)
+    operator_id=models.IntegerField(null=False)
+    status_id=models.IntegerField(null=False)
+    active_time=models.DateTimeField(auto_now_add=True)
+    inactive_time=models.DateTimeField(default='2037-01-01')
+
+
+class pm_deposit_status(models.Model):
+    status_id=models.IntegerField(null=False)
+    status=models.CharField(max_length=20)
     inactive_time=models.DateTimeField(default='2037-01-01')

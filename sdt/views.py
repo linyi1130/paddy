@@ -138,7 +138,7 @@ def cash(request):
     group_id = operator_info['group_id']
     group_name=operator_info['group_name']
     tb_user = SQL_user_list(club_id)
-    tb_type_list=club_account_list(club_id,group_id)
+    tb_type_list=ucs_club_account.objects.filter(inactive_time='2037-01-01').filter(group_id=group_id).filter(club_id=club_id).values('account_id','account_desc')
     return render(request, 'cash.html', {'tb_user': tb_user,'operator_name':operator_name,
                                          'club_name':club_name, 'group_name':group_name, 'tb_type_list': tb_type_list})
 
@@ -482,7 +482,8 @@ def add_operator_group(request):
         while cnt <= 3:
             account_id=create_club_accountID(club_id)
             serial_no=createSerialNo(club_id,1,1)
-            if create_club_account(account_id,club_id,cnt,message):
+            account_type=pm_account_type.objects.filter(inactive_time='2037-01-01').get(type_id=cnt).type
+            if create_club_account(account_id,club_id,cnt,message,account_type):
                 operator_cash(account_id, 0, 9999, 9999, "初始化",serial_no, message)
                 cnt = cnt + 1
     return render(request, 'manage/group_list.html')
@@ -749,7 +750,8 @@ def union_account(request):
     club_id = operator_info['club_id']
     group_id=operator_info['group_id']
     tb_result=getClubListWithoutSelf(club_id)
-    tb_account_list=club_account_list(club_id,group_id)
+    tb_account_list=ucs_club_account.objects.filter(inactive_time='2037-01-01')\
+        .filter(group_id=group_id).filter(club_id=club_id).values('account_id','account_desc')
     tb_union_balance=getUnionClubAccountList(club_id)
     return render(request, 'union_account.html', {'tb_club': tb_result,'tb_account': tb_account_list, 'tb_union_balance':tb_union_balance})
 
@@ -1304,7 +1306,7 @@ def reward_normal_delete(request):
     return HttpResponse(result)
 
 
-def reward_normol_form(request):
+def reward_normal_form(request):
     operator_info = request.session['operator_info']
     club_id = operator_info['club_id']
     group_id = operator_info['group_id']
@@ -1402,3 +1404,38 @@ def get_deposit_rate(request):
         return HttpResponse(rate)
     except:
         return HttpResponse("False")
+
+
+def deposit_reg(request):
+    operator_info = request.session['operator_info']
+    club_id = operator_info['club_id']
+    group_id=operator_info['group_id']
+    operator_id=operator_info['operator_id']
+    deposit=request.POST['deposit']
+    deposit_input=int(deposit)*1000
+    fee=request.POST['fee']
+    fee_input=int(fee)*1000
+    chance=deposit_input+fee_input
+    account_id = request.POST['account_id']
+    type_id=request.POST['type_id']
+    serial_no=createSerialNo(club_id,group_id, 2005)
+    balance=getClubBalanceByAccount(account_id)
+    if (int(balance)-(int(deposit_input)+int(fee_input)))>=0:
+        if depositReg(serial_no, club_id, group_id, account_id, type_id, deposit_input, fee_input, operator_id):
+            if operator_cash(account_id, chance, 2005, operator_id, '提现', serial_no, group_id):
+                result=companyCashFunc(club_id, account_id, fee_input, 2009, operator_id, serial_no, '提现')
+                return HttpResponse(result)
+            else:
+                return HttpResponse('False')
+        else:
+            return HttpResponse('False')
+    else:
+        return HttpResponse('False')
+
+
+def deposit_list(request):
+    operator_info = request.session['operator_info']
+    club_id = operator_info['club_id']
+    group_id=operator_info['group_id']
+    tb_result=getDepositBalanceList(club_id,group_id)
+    return render(request,'depoist_list.html', {'tb_result':tb_result})

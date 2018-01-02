@@ -133,7 +133,7 @@ urlpatterns = [
     url(r'^reward_normal_list/', reward_normal_list),
     url(r'^reward_normal_modify/', reward_normal_modify),
     url(r'^reward_normal_delete/', reward_normal_delete),
-    url(r'^reward_normol_form/', reward_normol_form),
+    url(r'^reward_normal_form/', reward_normal_form),
     url(r'^reward_normal_reg/', reward_normal_reg),
     url(r'^deposit_rate/', deposit_rate),
     url(r'^deposit_rate_reg/', deposit_rate_reg),
@@ -141,4 +141,6 @@ urlpatterns = [
     url(r'^depoist_rete_delete/', depoist_rete_delete),
     url(r'^deposit/', deposit),
     url(r'^get_deposit_rate/', get_deposit_rate),
+    url(r'^deposit_reg/', deposit_reg),
+    url(r'^deposit_list/', deposit_list),
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
