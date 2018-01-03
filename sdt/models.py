@@ -540,6 +540,7 @@ class ucs_deposit_balance(models.Model):
     fee=models.IntegerField(null=False)
     operator_id=models.IntegerField(null=False)
     status_id=models.IntegerField(null=False)
+    account_target_id=models.IntegerField(null=False)       #提现到银行卡账户ID
     active_time=models.DateTimeField(auto_now_add=True)
     inactive_time=models.DateTimeField(default='2037-01-01')
 

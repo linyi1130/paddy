@@ -1357,6 +1357,7 @@ def reward_normal_reg(request):
 def deposit_rate(request):
     operator_info = request.session['operator_info']
     club_id = operator_info['club_id']
+    group_id = operator_info['group_id']
     tb_list=pm_account_type.objects.filter(inactive_time='2037-01-01').values('type_id','type')
 
     return render(request, 'manage/deposit_rate.html', {'tb_list': tb_list})
@@ -1399,7 +1400,9 @@ def deposit(request):
     group_name=operator_info['group_name']
     tb_account_list=get_club_account_infoByGroup(club_id, group_id)
     tb_account=getDepositAccountList(club_id,group_id)
-    return render(request,'deposit.html', {'tb_account_list': tb_account_list, 'group_name':group_name, 'tb_account':tb_account})
+    tb_account_target=ucs_club_account.objects.filter(inactive_time='2037-01-01').filter(club_id=club_id)\
+                .filter(group_id=group_id).filter(type_id=3).values('account_id', 'account_desc')
+    return render(request,'deposit.html', {'tb_account_list': tb_account_list, 'group_name':group_name, 'tb_account':tb_account, 'tb_account_target':tb_account_target})
 
 
 def get_deposit_rate(request):
@@ -1424,11 +1427,12 @@ def deposit_reg(request):
     fee_input=int(fee)*1000
     chance=deposit_input+fee_input
     account_id = request.POST['account_id']
+    account_target_id = request.POST['account_target_id']
     type_id=request.POST['type_id']
     serial_no=createSerialNo(club_id,group_id, 2005)
     balance=getClubBalanceByAccount(account_id)
     if (int(balance)-(int(deposit_input)+int(fee_input)))>=0:
-        if depositReg(serial_no, club_id, group_id, account_id, type_id, deposit_input, fee_input, operator_id):
+        if depositReg(serial_no, club_id, group_id, account_id, type_id, deposit_input, fee_input, operator_id,account_target_id):
             if operator_cash(account_id, chance, 2005, operator_id, '提现', serial_no, group_id):
                 result=companyCashFunc(club_id, account_id, fee_input, 2009, operator_id, serial_no, '提现')
                 return HttpResponse(result)
@@ -1446,6 +1450,24 @@ def deposit_list(request):
     group_id=operator_info['group_id']
     tb_result=getDepositBalanceList(club_id,group_id)
     return render(request,'depoist_list.html', {'tb_result':tb_result})
+
+
+def deposit_arrived(request):
+    operator_info = request.session['operator_info']
+    club_id = operator_info['club_id']
+    group_id=operator_info['group_id']
+    operator_id=operator_info['operator_id']
+    serial_no=request.POST['serial_no']
+    deposit=request.POST['deposit']
+    account_target_id=request.POST['account_target_id']
+    deposit_input=int(float(deposit)*1000)
+    new_serial_no=createSerialNo(club_id, group_id,1007)
+    if depositArrived(serial_no,operator_id,club_id, new_serial_no):
+        result=operator_cash(account_target_id, deposit_input,1007, operator_id, '提现到账', new_serial_no, group_id)
+        return HttpResponse(result)
+    else:
+        return HttpResponse('False')
+
 
 
 def manage_account_setup(request):
@@ -1479,3 +1501,5 @@ def manage_account_modify(request):
     account_desc=request.POST['account_desc']
     result=modifyAccountDesc(account_id, account_desc)
     return HttpResponse(result)
+
+

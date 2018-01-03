@@ -147,4 +147,5 @@ urlpatterns = [
     url(r'^manage_account_type_list/', manage_account_type_list),
     url(r'^manage_account_reg/', manage_account_reg),
     url(r'^manage_account_modify/', manage_account_modify),
+    url(r'^deposit_arrived/', deposit_arrived),
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
