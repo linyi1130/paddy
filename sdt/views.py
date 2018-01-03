@@ -218,21 +218,23 @@ def result_pretreat_step1(request):
     gameno = request.POST['gameno']
     tmp_result.objects.filter(game_no=gameno).delete()
     tmp_result_attachclub_pre.objects.filter(gameno=gameno).delete()
-    result_preload(strResult, gameno)
+    if result_preload(strResult, gameno):
     # 返回新未注册玩家名单
-    newuser = result_regNewUser(gameno)
-    if newuser:
-        t_club = ucs_subs_club.objects.filter(inactive_time='2037-01-01').order_by('-active_time')
+        newuser = result_regNewUser(gameno)
+        if newuser:
+            t_club = ucs_subs_club.objects.filter(inactive_time='2037-01-01').order_by('-active_time')
 
-        #return HttpResponseRedirect(request,'/result_newuser/',{'newuser':newuser,'t_club':t_club,'gameno':gameno})
-        return render_to_response('result_newuser.html',{'newuser':newuser,'t_club':t_club,'gameno':gameno})
+            #return HttpResponseRedirect(request,'/result_newuser/',{'newuser':newuser,'t_club':t_club,'gameno':gameno})
+            return render_to_response('result_newuser.html',{'newuser':newuser,'t_club':t_club,'gameno':gameno})
+        else:
+            split_club=result_attachclub(gameno)
+            if len(split_club)>0 :
+                return render(request, 'result_attachclub.html', {'row': split_club, 'gameno': gameno})
+        #没有新增玩家和待选择俱乐部，直接进入战绩预览
+        url = "/result_preview?gameno=" + gameno + "&type=1"
+        return HttpResponseRedirect(url)
     else:
-        split_club=result_attachclub(gameno)
-        if len(split_club)>0 :
-            return render(request, 'result_attachclub.html', {'row': split_club, 'gameno': gameno})
-    #没有新增玩家和待选择俱乐部，直接进入战绩预览
-    url = "/result_preview?gameno=" + gameno + "&type=1"
-    return HttpResponseRedirect(url)
+        return HttpResponse("原始战绩不完整，请重新导入")
 def result_newuser(request):
     operator_info = request.session['operator_info']
     operator_id=operator_info['operator_id']
