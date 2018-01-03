@@ -702,7 +702,7 @@ def table_reg_mini(request):
     tb_user=getUserListByClubId(club_id)
     gameno=request.POST['gameno']
     try:
-        status_id=ucs_gamerecord.objects.filter(inactive_time='2037-01-01').get(game_no=game_no).status_id
+        status_id=ucs_gamerecord.objects.filter(inactive_time='2037-01-01').get(game_no=gameno).status_id
         if (status_id==4 or status_id==5):
             return HttpResponse('False')
     except:
@@ -1535,3 +1535,31 @@ def user_balance_full_list(request):
     return render(request,'user_balance_full_list.html',{'tb_balance': tb_balance})
 
 
+def user_result_full_list(request):
+    operator_info = request.session['operator_info']
+    club_id = operator_info['club_id']
+    user_id=request.POST['user_id']
+    startdate=request.POST['startdate']
+    enddate=request.POST['enddate']
+    tb_result=getUserResultListByDate(club_id, user_id, startdate,enddate)
+    return render(request, 'user_result_full_list.html', {'tb_result': tb_result})
+
+
+def user_freeze_full_list(request):
+    operator_info = request.session['operator_info']
+    club_id = operator_info['club_id']
+    user_id=request.POST['user_id']
+    startdate=request.POST['startdate']
+    enddate=request.POST['enddate']
+    tb_result=getUserFreezeListByDate(club_id, user_id, startdate,enddate)
+    return render(request,'user_freeze_full_list.html',{'tb_result': tb_result})
+
+
+def user_income_full_list(request):
+    operator_info = request.session['operator_info']
+    club_id = operator_info['club_id']
+    user_id=request.POST['user_id']
+    startdate=request.POST['startdate']
+    enddate=request.POST['enddate']
+    tb_result=getUserIncomeListByDate(club_id, user_id, startdate,enddate)
+    return render(request, 'user_income_full_list.html', {'tb_result': tb_result})

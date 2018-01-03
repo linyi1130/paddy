@@ -150,4 +150,7 @@ urlpatterns = [
     url(r'^deposit_arrived/', deposit_arrived),
     url(r'^user_detail/', user_detail),
     url(r'^user_balance_full_list/', user_balance_full_list),
+    url(r'^user_result_full_list/', user_result_full_list),
+    url(r'^user_freeze_full_list/', user_freeze_full_list),
+    url(r'^user_income_full_list/', user_income_full_list),
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
