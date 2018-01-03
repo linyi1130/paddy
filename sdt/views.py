@@ -398,7 +398,7 @@ def useraccountview(request):
     tb_result=getUserAccountInfo(account_id,club_id)
     tb_balance_list=getUserBalenceList(account_id,club_id)
     club_name=operator_info['club_name']
-    tb_freeze=getFreezeListByUid(user_id)
+    tb_freeze=getFreezeListByUid(user_id, club_id)
     return render(request, 'user_account_info.html',{'user_name':user_name,'tb_result':tb_result,
                                                      'club_name':club_name,'tb_balance_list':tb_balance_list, 'tb_freeze':tb_freeze})
 #玩家充值结算
@@ -701,6 +701,12 @@ def table_reg_mini(request):
     club_id = operator_info['club_id']
     tb_user=getUserListByClubId(club_id)
     gameno=request.POST['gameno']
+    try:
+        status_id=ucs_gamerecord.objects.filter(inactive_time='2037-01-01').get(game_no=game_no).status_id
+        if (status_id==4 or status_id==5):
+            return HttpResponse('False')
+    except:
+        return HttpResponse('False')
     return render(request, 'buyinregsubs.html',{'tb_user': tb_user, 'gameno': gameno})
 
 
@@ -1320,6 +1326,13 @@ def reward_normal_form(request):
     club_id = operator_info['club_id']
     group_id = operator_info['group_id']
     game_no=request.POST['game_no']
+    try:
+        status_id=ucs_gamerecord.objects.filter(inactive_time='2037-01-01').get(game_no=game_no).status_id
+        if (status_id==4 or status_id==5):
+            return HttpResponse('False')
+    except:
+        return HttpResponse('False')
+
     reward_list=getRewardByGameno(game_no)
     tb_user=getRewardFromUserList(game_no, club_id)
     account_list=getGroupAccountList(club_id,group_id)
@@ -1503,5 +1516,22 @@ def manage_account_modify(request):
     account_desc=request.POST['account_desc']
     result=modifyAccountDesc(account_id, account_desc)
     return HttpResponse(result)
+
+
+def user_detail(request):
+    operator_info = request.session['operator_info']
+    club_id = operator_info['club_id']
+    tb_user=getUserListByClubId(club_id)
+    return render(request,'user_detail.html', {'tb_user': tb_user})
+
+
+def user_balance_full_list(request):
+    operator_info = request.session['operator_info']
+    club_id = operator_info['club_id']
+    account_id=request.POST['account_id']
+    startdate=request.POST['startdate']
+    enddate=request.POST['enddate']
+    tb_balance=getUserBalanceListByDate(club_id,account_id, startdate,enddate)
+    return render(request,'user_balance_full_list.html',{'tb_balance': tb_balance})
 
 
