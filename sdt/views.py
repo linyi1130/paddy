@@ -459,6 +459,7 @@ def operator(request):
     #group_list=ucs_operator_group.objects.all()
     return render(request,'manage/operator_manage.html')
 
+
 def operator_setup(request):
     operator_info=request.session['operator_info']
     club_id = operator_info['club_id']
@@ -466,11 +467,13 @@ def operator_setup(request):
     tb_operator_list = ucs_operator.objects.filter(inactive_time='2037-01-01').filter(club_id=club_id)
     return render(request, 'manage/operator_setup.html', {'tb_group_list':tb_group_list, 'tb_operator_list':tb_operator_list})
 
+
 def operator_group_list(request):
     operator_info=request.session['operator_info']
     club_id = operator_info['club_id']
     tb_group_list = ucs_operator_group.objects.filter(inactive_time='2037-01-01').filter(club_id=club_id)
     return render(request, 'manage/group_list.html', {'tb_group_list':tb_group_list})
+
 
 def add_operator_group(request):
     group_name=request.POST['group_name']
@@ -813,7 +816,7 @@ def club_cash(request):
         result_2=False
         return HttpResponse(result_2)
 
-
+#俱乐部账目核对
 def union_check(request):
     operator_info = request.session['operator_info']
     club_id=operator_info['club_id']
@@ -822,14 +825,14 @@ def union_check(request):
     user_balance=getClubBalanceTotal(club_id)
     union_balance=getUnionBalanceTotal(club_id, club_level)
     club_income=getClubIncomeTotal(club_id, club_level)
-
+    deposit_sum = getDepoistSumByClub(club_id)
     up_total=getUnionIncomeTotal(club_id)
     income_total=round((club_income+up_total),2)
     company=getCompanyBalanceSum(club_id)
     companySum=company[2]
-    check=round((account_balance-(user_balance+union_balance+club_income+up_total+companySum)),0)
+    check=round((account_balance+deposit_sum-(user_balance+union_balance+club_income+up_total+companySum)),0)
     tb1={}
-    tb1['account_balance']=account_balance
+    tb1['account_balance']=account_balance+deposit_sum
     tb1['user_balance'] = user_balance
     tb1['union_balance'] = union_balance
     tb1['club_income'] = club_income
@@ -846,6 +849,10 @@ def union_check(request):
     tb3['water']=round((tb_income['water']+tb_income['up_water']),2)
     tb3['insure']=round((tb_income['insure']+tb_income['up_insure']),2)
     tb4=getClubAccountBalanceByType(club_id)
+    deposit_list=getDepositSumByType(club_id)
+    tb4=list(tb4)
+    for t in deposit_list:
+        tb4.append(('提现中',t[0],t[1]))
     tb4_sum=0
     for t in tb4:
         tb4_sum=tb4_sum+t[2]
