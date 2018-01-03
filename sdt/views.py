@@ -474,7 +474,7 @@ def operator_group_list(request):
     tb_group_list = ucs_operator_group.objects.filter(inactive_time='2037-01-01').filter(club_id=club_id)
     return render(request, 'manage/group_list.html', {'tb_group_list':tb_group_list})
 
-
+#新增客服组
 def add_operator_group(request):
     group_name=request.POST['group_name']
     operator_info=request.session['operator_info']
@@ -1446,3 +1446,36 @@ def deposit_list(request):
     group_id=operator_info['group_id']
     tb_result=getDepositBalanceList(club_id,group_id)
     return render(request,'depoist_list.html', {'tb_result':tb_result})
+
+
+def manage_account_setup(request):
+    operator_info = request.session['operator_info']
+    club_id = operator_info['club_id']
+    tb_group=ucs_operator_group.objects.filter(inactive_time='2037-01-01').filter(club_id=club_id).values('group_id','group_name')
+    tb_type=pm_account_type.objects.filter(inactive_time='2037-01-01').values('type_id', 'type')
+    return render(request,'manage/account_setup.html',{'tb_group': tb_group, 'tb_type': tb_type})
+
+
+def manage_account_type_list(request):
+    operator_info = request.session['operator_info']
+    club_id = operator_info['club_id']
+    tb_list=getGroupAccountFullList(club_id)
+    return render(request, 'manage/account_type_list.html',{'tb_list': tb_list})
+
+
+def manage_account_reg(request):
+    operator_info = request.session['operator_info']
+    club_id = operator_info['club_id']
+    group_id=request.POST['group_id']
+    type_id=request.POST['type_id']
+    account_desc=request.POST['account_desc']
+    account_id=create_club_accountID(club_id)
+    result=create_club_account(account_id, club_id,type_id, group_id,account_desc)
+    return HttpResponse(result)
+
+
+def manage_account_modify(request):
+    account_id=request.POST['account_id']
+    account_desc=request.POST['account_desc']
+    result=modifyAccountDesc(account_id, account_desc)
+    return HttpResponse(result)

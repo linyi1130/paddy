@@ -143,4 +143,8 @@ urlpatterns = [
     url(r'^get_deposit_rate/', get_deposit_rate),
     url(r'^deposit_reg/', deposit_reg),
     url(r'^deposit_list/', deposit_list),
+    url(r'^manage_account_setup/', manage_account_setup),
+    url(r'^manage_account_type_list/', manage_account_type_list),
+    url(r'^manage_account_reg/', manage_account_reg),
+    url(r'^manage_account_modify/', manage_account_modify),
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
