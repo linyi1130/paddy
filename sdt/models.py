@@ -345,6 +345,7 @@ class ucs_operator(models.Model):
     active_time = models.DateTimeField(auto_now_add=True)
     inactive_time = models.DateTimeField(default='2037-01-01')
     permission_group=models.IntegerField(null=True)
+    is_active=models.BooleanField(default=True)
 
 #俱乐部财务组账户ID表
 class ucs_club_account(models.Model):

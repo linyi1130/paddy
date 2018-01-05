@@ -27,6 +27,10 @@ def loadnavigate(request):
 
 def club_list(request):
     operator_info = request.session['operator_info']
+    operator_id = operator_info['operator_id']
+    permission = getPermission(operator_id)
+    if not permission.filter(type_id=8).exists():
+        return HttpResponseRedirect('/warning/')
     club_id=operator_info['club_id']
     t_club = getCLubList(club_id)
     if len(t_club)==0:
@@ -132,6 +136,10 @@ def user_list(request):
 #初始化充值页面
 def cash(request):
     operator_info=request.session['operator_info']
+    operator_id = operator_info['operator_id']
+    permission = getPermission(operator_id)
+    if not permission.filter(type_id=1).exists():
+        return HttpResponseRedirect('/warning/')
     operator_name=operator_info['operator_name']
     club_name=operator_info['club_name']
     club_id = operator_info['club_id']
@@ -200,6 +208,11 @@ def cashin(request):
 
 
 def result(request):
+    operator_info = request.session['operator_info']
+    operator_id = operator_info['operator_id']
+    permission = getPermission(operator_id)
+    if not permission.filter(type_id=7).exists():
+        return HttpResponseRedirect('/warning/')
     game_no=request.GET.get('game_no')
 
     return render(request,'result.html',{'game_no':game_no})
@@ -270,6 +283,11 @@ def result_club(request):  #处理多俱乐部玩家
         return HttpResponse("出错啦！")
 
 def result_preview(request):
+    operator_info = request.session['operator_info']
+    operator_id = operator_info['operator_id']
+    permission = getPermission(operator_id)
+    if not permission.filter(type_id=7).exists():
+        return HttpResponseRedirect('/warning/')
     gameno = request.GET.get('gameno')
     type=request.GET.get('type')
     if type=="1":
@@ -281,7 +299,14 @@ def result_preview(request):
     elif type=="2":
         result = result_reg(gameno)
         return render(request,'result_preview.html',{'tb_result':result, 'gameno':gameno})
+
+
 def loadtabletype(request):
+    operator_info = request.session['operator_info']
+    operator_id = operator_info['operator_id']
+    permission = getPermission(operator_id)
+    if not permission.filter(type_id=7).exists():
+        return HttpResponseRedirect('/warning/')
     gametype=pm_gametype.objects.all()
     blind=pm_blind.objects.all()
     gametime=pm_gametime.objects.all()
@@ -304,6 +329,9 @@ def table_list(request):
 def game_reg(request):
     operator_info = request.session['operator_info']
     operator_id=operator_info['operator_id']
+    permission = getPermission(operator_id)
+    if not permission.filter(type_id=7).exists():
+        return HttpResponseRedirect('/warning/')
     group_name=operator_info['group_name']
     blind=request.POST['blind']
     gametype=request.POST['gametype']
@@ -321,8 +349,12 @@ def game_reg(request):
     return HttpResponse(result)
 
 def result_view(request):
+    operator_info = request.session['operator_info']
+    operator_id = operator_info['operator_id']
+    permission = getPermission(operator_id)
+    if not permission.filter(type_id=4).exists():
+        return HttpResponseRedirect('/warning/')
     t_club = getClubListMini()
-
     return render(request,"resultview.html", {'t_club': t_club})
 
 def result_l1(request):
@@ -376,8 +408,13 @@ def result_detailbyClub(request):
     tb_result.append(getResultDetailByGameno(gameno, club_id))
     return render(request, 'result_detail_tb.html', {'tb_result': tb_result})
 
-def result_union(request):
 
+def result_union(request):
+    operator_info = request.session['operator_info']
+    operator_id = operator_info['operator_id']
+    permission = getPermission(operator_id)
+    if not permission.filter(type_id=4).exists():
+        return HttpResponseRedirect('/warning/')
     return render(request, "result_union.html")
 
 
@@ -453,13 +490,24 @@ def default(request):
     request.session.clear_expired()
     return render(request,"login.html")
 
-def report_view(request):
 
+def report_view(request):
+    operator_info = request.session['operator_info']
+    operator_id = operator_info['operator_id']
+    permission = getPermission(operator_id)
+    if not permission.filter(type_id=4).exists():
+        return HttpResponseRedirect('/warning/')
     return render(request,"report_navigate.html")
 
+
 def operator(request):
-    #group_list=ucs_operator_group.objects.all()
-    return render(request,'manage/operator_manage.html')
+    operator_info = request.session['operator_info']
+    operator_id=operator_info['operator_id']
+    permission=getPermission(operator_id)
+    if permission.filter(type_id=5).exists():
+        return render(request,'manage/operator_manage.html')
+    else:
+        return HttpResponseRedirect('/warning/')
 
 
 def operator_setup(request):
@@ -639,13 +687,22 @@ def modifyUserInfo(request):
 
 def modify_user(request):
     operator_info=request.session['operator_info']
+    operator_id = operator_info['operator_id']
+    permission = getPermission(operator_id)
+    if not permission.filter(type_id=9).exists():
+        return HttpResponseRedirect('/warning/')
     club_id=operator_info['club_id']
 
     tb_user = getUserListByClubId(club_id)
     return render(request,'user_modify.html', {'tb_user':tb_user,'club_id': club_id})
 
+
 def user_account_group(request):
-    operator_info=request.session['operator_info']
+    operator_info = request.session['operator_info']
+    operator_id = operator_info['operator_id']
+    permission = getPermission(operator_id)
+    if not permission.filter(type_id=9).exists():
+        return HttpResponseRedirect('/warning/')
     club_id=operator_info['club_id']
 
     tb_user = getUserListByClubId(club_id)
@@ -675,6 +732,11 @@ def account_migrate(request):
 
 
 def club_manage(request):
+    operator_info = request.session['operator_info']
+    operator_id = operator_info['operator_id']
+    permission = getPermission(operator_id)
+    if not permission.filter(type_id=8).exists():
+        return HttpResponseRedirect('/warning/')
     tb_club_list=getClubListMini()
     return render(request,'club_manage.html',{'tb_club_list': tb_club_list})
 
@@ -751,6 +813,11 @@ def freeze_minilist(request):
 
 
 def abortgame(request):
+    operator_info = request.session['operator_info']
+    operator_id = operator_info['operator_id']
+    permission = getPermission(operator_id)
+    if not permission.filter(type_id=7).exists():
+        return HttpResponseRedirect('/warning/')
     gameno=request.POST['game_no']
     result = abortGameByNo(gameno)
     return HttpResponse(result)
@@ -758,6 +825,10 @@ def abortgame(request):
 
 def union_account(request):
     operator_info = request.session['operator_info']
+    operator_id = operator_info['operator_id']
+    permission = getPermission(operator_id)
+    if not permission.filter(type_id=4).exists():
+        return HttpResponseRedirect('/warning/')
     club_id = operator_info['club_id']
     group_id=operator_info['group_id']
     tb_result=getClubListWithoutSelf(club_id)
@@ -827,6 +898,10 @@ def club_cash(request):
 #俱乐部账目核对
 def union_check(request):
     operator_info = request.session['operator_info']
+    operator_id = operator_info['operator_id']
+    permission = getPermission(operator_id)
+    if not permission.filter(type_id=4).exists():
+        return HttpResponseRedirect('/warning/')
     club_id=operator_info['club_id']
     club_level=operator_info['club_level']
     account_balance=getClubAccountTotal(club_id)
@@ -886,6 +961,10 @@ def group_balance_search(request):
 
 def company_account(request):
     operator_info = request.session['operator_info']
+    operator_id = operator_info['operator_id']
+    permission = getPermission(operator_id)
+    if not permission.filter(type_id=6).exists():
+        return HttpResponseRedirect('/warning/')
     club_id=operator_info['club_id']
     group_list=ucs_operator_group.objects.filter(inactive_time='2037-01-01').filter(club_id=club_id).values()
     type_list= pm_company_type.objects.filter(inactive_time='2037-01-01').order_by('type').values()
@@ -953,6 +1032,11 @@ def getGameStatus(request):
 
 
 def correct_manage(request):
+    operator_info = request.session['operator_info']
+    operator_id = operator_info['operator_id']
+    permission = getPermission(operator_id)
+    if not permission.filter(type_id=3).exists():
+        return HttpResponseRedirect('/warning/')
     operator_info = request.session['operator_info']
     operator_id=operator_info['operator_id']
     operator_name = operator_info['operator_name']
@@ -1030,6 +1114,10 @@ def correct_company(request):
 
 def company_income_manage(request):
     operator_info = request.session['operator_info']
+    operator_id = operator_info['operator_id']
+    permission = getPermission(operator_id)
+    if not permission.filter(type_id=10).exists():
+        return HttpResponseRedirect('/warning/')
     club_id = operator_info['club_id']
     club_level=operator_info['club_level']
     year=time.strftime("%Y", time.localtime())
@@ -1053,7 +1141,11 @@ def company_income_reg(request):
 
 
 def developer_manage(request):
-
+    operator_info = request.session['operator_info']
+    operator_id = operator_info['operator_id']
+    permission = getPermission(operator_id)
+    if not permission.filter(type_id=8).exists():
+        return HttpResponseRedirect('/warning/')
     return render(request, 'developer_manage.html')
 
 
@@ -1227,7 +1319,11 @@ def app_operator_reg(request):
 
 
 def result_list_view(request):
-
+    operator_info = request.session['operator_info']
+    operator_id = operator_info['operator_id']
+    permission = getPermission(operator_id)
+    if not permission.filter(type_id=4).exists():
+        return HttpResponseRedirect('/warning/')
 
     return render(request, 'result_list_view.html')
 
@@ -1240,6 +1336,11 @@ def result_list(request):
 
 
 def developer_table_view(request):
+    operator_info = request.session['operator_info']
+    operator_id = operator_info['operator_id']
+    permission = getPermission(operator_id)
+    if not permission.filter(type_id=11).exists():
+        return HttpResponseRedirect('/warning/')
     operator_info = request.session['operator_info']
     club_id = operator_info['club_id']
     developer_list=ucs_developer.objects.filter(inactive_time='2037-01-01').filter(club_id=club_id).values('developer_id', 'developer_name')
@@ -1267,7 +1368,11 @@ def developer_table_detail(request):
 
 
 def report_developer(request):
-
+    operator_info = request.session['operator_info']
+    operator_id = operator_info['operator_id']
+    permission = getPermission(operator_id)
+    if not permission.filter(type_id=11).exists():
+        return HttpResponseRedirect('/warning/')
     return render(request, 'report/report_developer.html')
 
 
@@ -1280,9 +1385,15 @@ def report_developer_result(request):
     tb_result_sum=getDeveResultSumBydate(club_id,start_date,end_date)
     return render(request,'report/report_developer_sum.html',{'tb_result': tb_result, 'starttime': start_date, 'endtime': end_date,'tb_result_sum':tb_result_sum})
 
-def reward_manage(request):
 
+def reward_manage(request):
+    operator_info = request.session['operator_info']
+    operator_id = operator_info['operator_id']
+    permission = getPermission(operator_id)
+    if not permission.filter(type_id=5).exists():
+        return HttpResponseRedirect('/warning/')
     return render(request, 'manage/configure_manage.html')
+
 
 def reward_normal(request):
     tb_blind=pm_blind.objects.values('blind_id', 'blind_desc')
@@ -1344,6 +1455,7 @@ def reward_normal_form(request):
     result=json.dumps(tb_result)
     return HttpResponse(result)
 
+
 def reward_normal_reg(request):
     operator_info = request.session['operator_info']
     club_id = operator_info['club_id']
@@ -1371,6 +1483,10 @@ def reward_normal_reg(request):
 
 def deposit_rate(request):
     operator_info = request.session['operator_info']
+    operator_id = operator_info['operator_id']
+    permission = getPermission(operator_id)
+    if not permission.filter(type_id=5).exists():
+        return HttpResponseRedirect('/warning/')
     club_id = operator_info['club_id']
     group_id = operator_info['group_id']
     tb_list=pm_account_type.objects.filter(inactive_time='2037-01-01').values('type_id','type')
@@ -1383,7 +1499,6 @@ def deposit_rate_reg(request):
     club_id = operator_info['club_id']
     type_id=request.POST['type_id']
     rate=request.POST['rate']
-
     result=depositRateReg(club_id,type_id,rate)
     return HttpResponse(result)
 
@@ -1410,6 +1525,10 @@ def depoist_rete_delete(request):
 
 def deposit(request):
     operator_info = request.session['operator_info']
+    operator_id = operator_info['operator_id']
+    permission = getPermission(operator_id)
+    if not permission.filter(type_id=1).exists():
+        return HttpResponseRedirect('/warning/')
     club_id = operator_info['club_id']
     group_id=operator_info['group_id']
     group_name=operator_info['group_name']
@@ -1520,6 +1639,10 @@ def manage_account_modify(request):
 
 def user_detail(request):
     operator_info = request.session['operator_info']
+    operator_id = operator_info['operator_id']
+    permission = getPermission(operator_id)
+    if not permission.filter(type_id=4).exists():
+        return HttpResponseRedirect('/warning/')
     club_id = operator_info['club_id']
     tb_user=getUserListByClubId(club_id)
     return render(request,'user_detail.html', {'tb_user': tb_user})
@@ -1563,3 +1686,39 @@ def user_income_full_list(request):
     enddate=request.POST['enddate']
     tb_result=getUserIncomeListByDate(club_id, user_id, startdate,enddate)
     return render(request, 'user_income_full_list.html', {'tb_result': tb_result})
+
+
+def warning(request):
+
+    return render(request,'warning.html')
+
+
+def permission(request):
+
+    return render(request,'manage/permission.html')
+
+
+def permission_group(request):
+    try:
+        tb_group=ucs_permission_group.objects.filter(inactive_time='2037-01-01').values('group_id', 'group_name')
+        tb_permission=pm_permission.objects.filter(inactive_time='2037-01-01').values('type_id','permission')
+    except:
+        return HttpResponse('出错了')
+    return render(request,'manage/permission_group.html',{'tb_group': tb_group,'tb_permission': tb_permission})
+
+
+def get_permission_list(request):
+    group_id=request.POST['group_id']
+    try:
+        #tb_permission = ucs_permission.objects.filter(inactive_time='2037-01-01').filter(group_id=group_id).values('type_id')
+        tmp=getPermissionList(group_id)
+        tb_list=json.dumps(tmp, cls=django.core.serializers.json.DjangoJSONEncoder)
+        return HttpResponse(tb_list)
+    except:
+        return HttpResponse('False')
+
+def permission_group_set(request):
+    type_list=request.POST.getlist('type_list')
+    group_id=request.POST['group_id']
+    result=setPermissionGroup(group_id,type_list)
+    return HttpResponse(result)

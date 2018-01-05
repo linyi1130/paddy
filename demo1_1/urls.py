@@ -153,4 +153,9 @@ urlpatterns = [
     url(r'^user_result_full_list/', user_result_full_list),
     url(r'^user_freeze_full_list/', user_freeze_full_list),
     url(r'^user_income_full_list/', user_income_full_list),
+    url(r'^warning/', warning),
+    url(r'^permission/', permission),
+    url(r'^permission_group/', permission_group),
+    url(r'^get_permission_list/', get_permission_list),
+    url(r'^permission_group_set/', permission_group_set),
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
