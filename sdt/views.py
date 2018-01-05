@@ -1722,3 +1722,28 @@ def permission_group_set(request):
     group_id=request.POST['group_id']
     result=setPermissionGroup(group_id,type_list)
     return HttpResponse(result)
+
+
+def permission_operator(request):
+    try:
+        tb_operator=ucs_operator.objects.filter(inactive_time='2037-01-01').values('operator_id','operator_name','login_id')
+        tb_group=ucs_permission_group.objects.filter(inactive_time='2037-01-01').values('group_id','group_name')
+        return render(request,'manage/permission_operator.html', {'tb_operator':tb_operator, 'tb_group': tb_group})
+    except:
+        return HttpResponse("出错了")
+
+
+def permission_operator_list(request):
+    tb_result=getPermissionOperatorList()
+
+    return render(request,'manage/permission_operator_list.html',{'tb_result': tb_result})
+
+
+def operator_set_active(request):
+    is_active=request.POST['is_active']
+    operator_id=request.POST['operator_id']
+    try:
+        ucs_operator.objects.filter(inactive_time='2037-01-01').filter(operator_id=operator_id).update(is_active=False)
+        return HttpResponse('True')
+    except Exception as e :
+        return HttpResponse('False')
