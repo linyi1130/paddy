@@ -29,6 +29,8 @@ def club_list(request):
     operator_info = request.session['operator_info']
     operator_id = operator_info['operator_id']
     permission = getPermission(operator_id)
+    if operator_info['is_active']==False:
+        return HttpResponseRedirect('/operator_disable/')
     if not permission.filter(type_id=8).exists():
         return HttpResponseRedirect('/warning/')
     club_id=operator_info['club_id']
@@ -138,6 +140,8 @@ def cash(request):
     operator_info=request.session['operator_info']
     operator_id = operator_info['operator_id']
     permission = getPermission(operator_id)
+    if operator_info['is_active']==False:
+        return HttpResponseRedirect('/operator_disable/')
     if not permission.filter(type_id=1).exists():
         return HttpResponseRedirect('/warning/')
     operator_name=operator_info['operator_name']
@@ -211,6 +215,8 @@ def result(request):
     operator_info = request.session['operator_info']
     operator_id = operator_info['operator_id']
     permission = getPermission(operator_id)
+    if operator_info['is_active']==False:
+        return HttpResponseRedirect('/operator_disable/')
     if not permission.filter(type_id=7).exists():
         return HttpResponseRedirect('/warning/')
     game_no=request.GET.get('game_no')
@@ -286,6 +292,8 @@ def result_preview(request):
     operator_info = request.session['operator_info']
     operator_id = operator_info['operator_id']
     permission = getPermission(operator_id)
+    if operator_info['is_active']==False:
+        return HttpResponseRedirect('/operator_disable/')
     if not permission.filter(type_id=7).exists():
         return HttpResponseRedirect('/warning/')
     gameno = request.GET.get('gameno')
@@ -305,6 +313,8 @@ def loadtabletype(request):
     operator_info = request.session['operator_info']
     operator_id = operator_info['operator_id']
     permission = getPermission(operator_id)
+    if operator_info['is_active']==False:
+        return HttpResponseRedirect('/operator_disable/')
     if not permission.filter(type_id=7).exists():
         return HttpResponseRedirect('/warning/')
     gametype=pm_gametype.objects.all()
@@ -321,15 +331,24 @@ def getante(request):
     return HttpResponse(ante_list)
 
 def table_list(request):
-
+    operator_info = request.session['operator_info']
+    operator_id = operator_info['operator_id']
+    permission = getPermission(operator_id)
+    if operator_info['is_active']==False:
+        return HttpResponseRedirect('/operator_disable/')
+    if not permission.filter(type_id=2).exists():
+        return HttpResponseRedirect('/warning/')
+    permission_flag=permission.filter(type_id=7).exists()
     tb_result=getTableList()
-    return render(request,'table_list.html', {'table_list': tb_result})
+    return render(request,'table_list.html', {'table_list': tb_result,'permission_flag':permission_flag})
 
 
 def game_reg(request):
     operator_info = request.session['operator_info']
     operator_id=operator_info['operator_id']
     permission = getPermission(operator_id)
+    if operator_info['is_active']==False:
+        return HttpResponseRedirect('/operator_disable/')
     if not permission.filter(type_id=7).exists():
         return HttpResponseRedirect('/warning/')
     group_name=operator_info['group_name']
@@ -352,6 +371,8 @@ def result_view(request):
     operator_info = request.session['operator_info']
     operator_id = operator_info['operator_id']
     permission = getPermission(operator_id)
+    if operator_info['is_active']==False:
+        return HttpResponseRedirect('/operator_disable/')
     if not permission.filter(type_id=4).exists():
         return HttpResponseRedirect('/warning/')
     t_club = getClubListMini()
@@ -413,6 +434,8 @@ def result_union(request):
     operator_info = request.session['operator_info']
     operator_id = operator_info['operator_id']
     permission = getPermission(operator_id)
+    if operator_info['is_active']==False:
+        return HttpResponseRedirect('/operator_disable/')
     if not permission.filter(type_id=4).exists():
         return HttpResponseRedirect('/warning/')
     return render(request, "result_union.html")
@@ -495,6 +518,8 @@ def report_view(request):
     operator_info = request.session['operator_info']
     operator_id = operator_info['operator_id']
     permission = getPermission(operator_id)
+    if operator_info['is_active']==False:
+        return HttpResponseRedirect('/operator_disable/')
     if not permission.filter(type_id=4).exists():
         return HttpResponseRedirect('/warning/')
     return render(request,"report_navigate.html")
@@ -503,6 +528,8 @@ def report_view(request):
 def operator(request):
     operator_info = request.session['operator_info']
     operator_id=operator_info['operator_id']
+    if operator_info['is_active']==False:
+        return HttpResponseRedirect('/operator_disable/')
     permission=getPermission(operator_id)
     if permission.filter(type_id=5).exists():
         return render(request,'manage/operator_manage.html')
@@ -611,6 +638,8 @@ def login(request):
         if check_password(password,ps):
             return HttpResponseRedirect("/app_initialize/")
     result =operator_login (login_id, password)
+    if result['is_active']==False:
+         return HttpResponseRedirect('/operator_disable/')
     if result:
         request.session['operator_info']=result
         return HttpResponseRedirect('/welcome/')
@@ -688,6 +717,8 @@ def modifyUserInfo(request):
 def modify_user(request):
     operator_info=request.session['operator_info']
     operator_id = operator_info['operator_id']
+    if operator_info['is_active']==False:
+        return HttpResponseRedirect('/operator_disable/')
     permission = getPermission(operator_id)
     if not permission.filter(type_id=9).exists():
         return HttpResponseRedirect('/warning/')
@@ -700,6 +731,8 @@ def modify_user(request):
 def user_account_group(request):
     operator_info = request.session['operator_info']
     operator_id = operator_info['operator_id']
+    if operator_info['is_active']==False:
+        return HttpResponseRedirect('/operator_disable/')
     permission = getPermission(operator_id)
     if not permission.filter(type_id=9).exists():
         return HttpResponseRedirect('/warning/')
@@ -815,6 +848,8 @@ def freeze_minilist(request):
 def abortgame(request):
     operator_info = request.session['operator_info']
     operator_id = operator_info['operator_id']
+    if operator_info['is_active']==False:
+        return HttpResponseRedirect('/operator_disable/')
     permission = getPermission(operator_id)
     if not permission.filter(type_id=7).exists():
         return HttpResponseRedirect('/warning/')
@@ -826,6 +861,8 @@ def abortgame(request):
 def union_account(request):
     operator_info = request.session['operator_info']
     operator_id = operator_info['operator_id']
+    if operator_info['is_active']==False:
+        return HttpResponseRedirect('/operator_disable/')
     permission = getPermission(operator_id)
     if not permission.filter(type_id=4).exists():
         return HttpResponseRedirect('/warning/')
@@ -899,6 +936,8 @@ def club_cash(request):
 def union_check(request):
     operator_info = request.session['operator_info']
     operator_id = operator_info['operator_id']
+    if operator_info['is_active']==False:
+        return HttpResponseRedirect('/operator_disable/')
     permission = getPermission(operator_id)
     if not permission.filter(type_id=4).exists():
         return HttpResponseRedirect('/warning/')
@@ -962,6 +1001,8 @@ def group_balance_search(request):
 def company_account(request):
     operator_info = request.session['operator_info']
     operator_id = operator_info['operator_id']
+    if operator_info['is_active']==False:
+        return HttpResponseRedirect('/operator_disable/')
     permission = getPermission(operator_id)
     if not permission.filter(type_id=6).exists():
         return HttpResponseRedirect('/warning/')
@@ -1034,6 +1075,8 @@ def getGameStatus(request):
 def correct_manage(request):
     operator_info = request.session['operator_info']
     operator_id = operator_info['operator_id']
+    if operator_info['is_active']==False:
+        return HttpResponseRedirect('/operator_disable/')
     permission = getPermission(operator_id)
     if not permission.filter(type_id=3).exists():
         return HttpResponseRedirect('/warning/')
@@ -1115,6 +1158,8 @@ def correct_company(request):
 def company_income_manage(request):
     operator_info = request.session['operator_info']
     operator_id = operator_info['operator_id']
+    if operator_info['is_active']==False:
+        return HttpResponseRedirect('/operator_disable/')
     permission = getPermission(operator_id)
     if not permission.filter(type_id=10).exists():
         return HttpResponseRedirect('/warning/')
@@ -1143,6 +1188,8 @@ def company_income_reg(request):
 def developer_manage(request):
     operator_info = request.session['operator_info']
     operator_id = operator_info['operator_id']
+    if operator_info['is_active']==False:
+        return HttpResponseRedirect('/operator_disable/')
     permission = getPermission(operator_id)
     if not permission.filter(type_id=8).exists():
         return HttpResponseRedirect('/warning/')
@@ -1338,6 +1385,8 @@ def result_list(request):
 def developer_table_view(request):
     operator_info = request.session['operator_info']
     operator_id = operator_info['operator_id']
+    if operator_info['is_active']==False:
+        return HttpResponseRedirect('/operator_disable/')
     permission = getPermission(operator_id)
     if not permission.filter(type_id=11).exists():
         return HttpResponseRedirect('/warning/')
@@ -1484,6 +1533,8 @@ def reward_normal_reg(request):
 def deposit_rate(request):
     operator_info = request.session['operator_info']
     operator_id = operator_info['operator_id']
+    if operator_info['is_active']==False:
+        return HttpResponseRedirect('/operator_disable/')
     permission = getPermission(operator_id)
     if not permission.filter(type_id=5).exists():
         return HttpResponseRedirect('/warning/')
@@ -1526,6 +1577,8 @@ def depoist_rete_delete(request):
 def deposit(request):
     operator_info = request.session['operator_info']
     operator_id = operator_info['operator_id']
+    if operator_info['is_active']==False:
+        return HttpResponseRedirect('/operator_disable/')
     permission = getPermission(operator_id)
     if not permission.filter(type_id=1).exists():
         return HttpResponseRedirect('/warning/')
@@ -1640,6 +1693,8 @@ def manage_account_modify(request):
 def user_detail(request):
     operator_info = request.session['operator_info']
     operator_id = operator_info['operator_id']
+    if operator_info['is_active']==False:
+        return HttpResponseRedirect('/operator_disable/')
     permission = getPermission(operator_id)
     if not permission.filter(type_id=4).exists():
         return HttpResponseRedirect('/warning/')
@@ -1742,8 +1797,16 @@ def permission_operator_list(request):
 def operator_set_active(request):
     is_active=request.POST['is_active']
     operator_id=request.POST['operator_id']
+    if is_active=="启用":
+        flag=True
+    else:flag=False
     try:
-        ucs_operator.objects.filter(inactive_time='2037-01-01').filter(operator_id=operator_id).update(is_active=False)
+        ucs_operator.objects.filter(inactive_time='2037-01-01').filter(operator_id=operator_id).update(is_active=flag)
         return HttpResponse('True')
     except Exception as e :
         return HttpResponse('False')
+
+
+def operator_disable(request):
+
+    return render(request,'manage/operator_disable.html')
