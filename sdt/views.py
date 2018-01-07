@@ -638,9 +638,10 @@ def login(request):
         if check_password(password,ps):
             return HttpResponseRedirect("/app_initialize/")
     result =operator_login (login_id, password)
-    if result['is_active']==False:
-         return HttpResponseRedirect('/operator_disable/')
     if result:
+        request.session['operator_info'] = result
+        if result['is_active']==False:
+            return HttpResponseRedirect('/operator_disable/')
         request.session['operator_info']=result
         return HttpResponseRedirect('/welcome/')
     else:
@@ -1810,3 +1811,40 @@ def operator_set_active(request):
 def operator_disable(request):
 
     return render(request,'manage/operator_disable.html')
+
+
+def change_password(request):
+    operator_info = request.session['operator_info']
+    operator_id=operator_info['operator_id']
+    operator_name = operator_info['operator_name']
+    try:
+        login_id=ucs_operator.objects.filter(inactive_time='2037-01-01').get(operator_id=operator_id).login_id
+    except:
+        return HttpResponseRedirect('operator_disable')
+    return render(request,'manage/change_password.html',{'operator_name':operator_name, 'login_id':login_id})
+
+
+def new_password(request):
+    operator_info = request.session['operator_info']
+    operator_id = operator_info['operator_id']
+    old_password=request.POST['old_password']
+    new_password=request.POST['new_password']
+    result=changeOperatrorPassword(operator_id, old_password,new_password)
+    return HttpResponse(result)
+
+
+def reset_password(request):
+    try:
+        tb_operator = ucs_operator.objects.filter(inactive_time='2037-01-01').values('operator_id', 'operator_name',
+                                                                                     'login_id')
+
+        return render(request,'manage/permission_password.html',{'tb_operator':tb_operator})
+    except:
+        return HttpResponse("出错了")
+
+
+def set_password(request):
+    operator_id=request.POST['operator_id']
+    new_password=request.POST['new_password']
+    result=setOperatorPassword(operator_id,new_password)
+    return HttpResponse(result)

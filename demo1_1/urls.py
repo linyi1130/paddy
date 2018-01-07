@@ -162,4 +162,8 @@ urlpatterns = [
     url(r'^permission_operator_list/', permission_operator_list),
     url(r'^operator_set_active/', operator_set_active),
     url(r'^operator_disable/', operator_disable),
+    url(r'^change_password/', change_password),
+    url(r'^new_password/', new_password),
+    url(r'^reset_password/', reset_password),
+    url(r'^set_password/', set_password),
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
