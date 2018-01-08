@@ -123,6 +123,7 @@ class ucs_gamerecord(models.Model):
     inactive_time = models.DateTimeField(default='2037-01-01')
     straddle=models.IntegerField(default=0)
     group_name=models.CharField(max_length=10)
+    img_url=models.CharField(max_length=40)
 
 
 class tmp_result_step_1(models.Model):

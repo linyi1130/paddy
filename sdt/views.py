@@ -1852,10 +1852,11 @@ def set_password(request):
     return HttpResponse(result)
 
 
-def uploadimg(request):
+def upload_result_img(request):
     filetype=request.POST['type']
     strtype=filetype.split('/')
     type=strtype[1]
+    game_no=request.POST['game_no']
     if request.method =='POST':
         file=request.FILES.get("file",None)
         if not file:
@@ -1865,4 +1866,18 @@ def uploadimg(request):
         for chunk in file.chunks():
             destination.write(chunk)
         destination.close()
-        return HttpResponse("上传成功")
+        try:
+            ucs_gamerecord.objects.filter(inactive_time='2037-01-01').filter(game_no=game_no).update(img_url=filename)
+            return HttpResponse(filename)
+        except:
+            return HttpResponse("False")
+
+
+def result_img_show(request):
+    game_no=request.POST['game_no']
+    try:
+        filename=ucs_gamerecord.objects.filter(inactive_time='2037-01-01').get(game_no=game_no).img_url
+        url=filename
+        return HttpResponse(url)
+    except:
+        return HttpResponse("False")

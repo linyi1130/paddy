@@ -166,5 +166,6 @@ urlpatterns = [
     url(r'^new_password/', new_password),
     url(r'^reset_password/', reset_password),
     url(r'^set_password/', set_password),
-    url(r'^uploadimg/', uploadimg),
+    url(r'^upload_result_img/', upload_result_img),
+    url(r'^result_img_show/', result_img_show),
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
