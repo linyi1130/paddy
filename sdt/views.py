@@ -14,6 +14,8 @@ import django.core.serializers.json
 from django.contrib import messages
 from django.forms.models import model_to_dict
 from django.core import serializers
+import os
+from django.conf import settings
 # Create your views here.
 def loadsidebar(request):
 
@@ -1344,8 +1346,8 @@ def load_main_club(request):
 
 
 def test(request):
-    ps=make_password('whx_1025', None, 'pbkdf2_sha256')
-    return HttpResponse(ps)
+
+    return render(request,'test01.html')
 
 
 def app_operator(request):
@@ -1848,3 +1850,19 @@ def set_password(request):
     new_password=request.POST['new_password']
     result=setOperatorPassword(operator_id,new_password)
     return HttpResponse(result)
+
+
+def uploadimg(request):
+    filetype=request.POST['type']
+    strtype=filetype.split('/')
+    type=strtype[1]
+    if request.method =='POST':
+        file=request.FILES.get("file",None)
+        if not file:
+            return HttpResponse("no files for upload")
+        filename=createUploadImgName(1)+"."+type
+        destination=open(os.path.join("sdt/static/upload",filename),'wb+');
+        for chunk in file.chunks():
+            destination.write(chunk)
+        destination.close()
+        return HttpResponse("上传成功")
