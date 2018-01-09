@@ -952,18 +952,18 @@ def union_check(request):
     club_income=getClubIncomeTotal(club_id, club_level)
     deposit_sum = getDepoistSumByClub(club_id)
     up_total=getUnionIncomeTotal(club_id)
-    income_total=round((club_income+up_total),2)
+    income_total=(club_income+up_total)
     company=getCompanyBalanceSum(club_id)
     companySum=company[2]
-    check=round((account_balance+deposit_sum-(user_balance+union_balance+club_income+up_total+companySum)),0)
+    check=round((account_balance+deposit_sum-(user_balance+union_balance+club_income+up_total+companySum)),2)
     tb1={}
-    tb1['account_balance']=account_balance+deposit_sum
-    tb1['user_balance'] = user_balance
-    tb1['union_balance'] = union_balance
-    tb1['club_income'] = club_income
-    tb1['up_total'] = up_total
-    tb1['income_total'] = income_total
-    tb1['companysum']=companySum
+    tb1['account_balance']=round((account_balance+deposit_sum)/1000,2)
+    tb1['user_balance'] = round(user_balance/1000,2)
+    tb1['union_balance'] = round(union_balance/1000,2)
+    tb1['club_income'] = round(club_income/1000,2)
+    tb1['up_total'] = round(up_total/1000,2)
+    tb1['income_total'] = round(income_total/1000,2)
+    tb1['companysum']=round(companySum/1000,2)
     tb1['check'] = check
     usertype=getClubUserBalanceByType(club_id)
     clubtype=getUnionBalanceByType(club_id)
@@ -1057,7 +1057,10 @@ def company_balance_list(request):
     club_id=operator_info['club_id']
     tb_list=getCompanyBalanceList(club_id)
     tb_total=getCompanyBalanceSum(club_id)
-    return render(request, 'company_account_tb.html',{'tb_list': tb_list,'tb_total': tb_total})
+    tb_total_list=[]
+    for t in tb_total:
+        tb_total_list.append(round(t/1000,2))
+    return render(request, 'company_account_tb.html',{'tb_list': tb_list,'tb_total': tb_total_list})
 
 
 def getGameStatus(request):
