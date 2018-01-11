@@ -488,6 +488,10 @@ def useraccountview(request):
     user_name=request.POST['user_name']
     club_id=operator_info['club_id']
     tb_result=getUserAccountInfo(account_id,club_id)
+    tb_developer = getUserDeveloperByUserId(user_id, club_id)
+    if len(tb_developer) >0:
+        tb_result['developer_name'] = tb_developer[0][1]
+    else:tb_result['developer_name'] = ""
     tb_balance_list=getUserBalenceList(account_id,club_id)
     club_name=operator_info['club_name']
     tb_freeze=getFreezeListByUid(user_id, club_id)
@@ -516,6 +520,9 @@ def usercash(request):
             flag=operator_cash(type_id, change_num, cashtype, operator_id, note,serial_no, group_id)
             if flag:
                 tb_result = getUserAccountInfo(account_id, club_id)
+                tb_developer = getUserDeveloperByUserId(user_id, club_id)
+                if tb_developer is not None:
+                    tb_result['developer_name'] = tb_developer[1]
                 tb_balance_list = getUserBalenceList(account_id, club_id)
                 return render(request, 'user_account_info.html', {'user_name': user_name, 'tb_result': tb_result,
                                                     'club_name':club_name, 'tb_balance_list': tb_balance_list})
@@ -529,6 +536,9 @@ def usercash(request):
             flag = operator_cash(type_id, change_num, cashtype, operator_id, note, serial_no,group_id)
             if flag:
                 tb_result = getUserAccountInfo(account_id, club_id)
+                tb_developer=getUserDeveloperByUserId(user_id,club_id)
+                if tb_developer is not None:
+                    tb_result['developer_name']=tb_developer[1]
                 tb_balance_list = getUserBalenceList(account_id, club_id)
                 return render(request, 'user_account_info.html', {'user_name': user_name, 'tb_result': tb_result,
                                                                   'club_name': club_name,
