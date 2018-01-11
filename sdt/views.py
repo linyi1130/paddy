@@ -619,7 +619,12 @@ def add_operator(request):
     login_id=request.POST['login_id']
     operator_info=request.session['operator_info']
     club_id = operator_info['club_id']
-    message=add_operator_func(operator_name, login_id, club_id)
+    club_level=operator_info['club_level']
+    if club_level==0:
+        permission_id=106
+    else:
+        permission_id=103
+    message=add_operator_func(operator_name, login_id, club_id,permission_id)
     return render(request, 'manage/operator_list.html')
 
 def operator_relation(request):
@@ -652,6 +657,7 @@ def operator_relation_setup(request):
                 t_club_id=t.club_id
                 t_login_id=t.login_id
                 t_password=t.password
+                t_permission_group=t.permission_group
                 t.inactive_time=datetime.datetime.now()
                 t.save()
                 p=ucs_operator(operator_id=t_operator_id,
@@ -660,6 +666,7 @@ def operator_relation_setup(request):
                                group_id=group_id,
                                login_id=t_login_id,
                                password=t_password,
+                               permission_group=t_permission_group,
                                active_time=datetime.datetime.now())
                 p.save()
             except Exception as e:
@@ -780,7 +787,7 @@ def user_account_group(request):
         return HttpResponseRedirect('/warning/')
     club_id=operator_info['club_id']
 
-    tb_user = getUserListByClubId(club_id)
+    tb_user = getUserListWithOutDeveByClubId(club_id)
     return render(request, 'user_account_group.html', {'tb_user': tb_user, 'club_id': club_id})
 
 
@@ -959,18 +966,18 @@ def club_cash(request):
         subs_account_id = ucs_union_account.objects.filter(inactive_time='2037-01-01').get(club_id=club_id).account_id
         balance=ucs_union_balance.objects.filter(inactive_time='2037-01-01').filter(account_id=subs_account_id)\
             .filter(main_club_id=own_club_id).order_by('-update_time')[0].balance
-        if (balance - chance)<0:
-            result2=False
+        #if (balance - chance)<0:
+        #    result2=False
+        #    return HttpResponse(result2)
+        #else:
+        try:
+            balance=ucs_club_balance.objects.filter(inactive_time='2037-01-01').filter(account_id=account_id)\
+                .order_by('-update_time')[0].balance
+        except:
+            balance=0
+        if balance-chance<0:
+            result2 = False
             return HttpResponse(result2)
-        else:
-            try:
-                balance=ucs_club_balance.objects.filter(inactive_time='2037-01-01').filter(account_id=account_id)\
-                    .order_by('-update_time')[0].balance
-            except:
-                balance=0
-            if balance-chance<0:
-                result2 = False
-                return HttpResponse(result2)
     serialno=createSerialNo(own_club_id,group_id, type_id)
     result=operator_cash(account_id, chance, type_id, operator_id, note, serialno, group_id)
     if result:
@@ -1424,7 +1431,8 @@ def app_operator_reg(request):
     operator_name=request.POST['operator_name']
     login_id=request.POST['login_id']
     club_id=request.POST['club_id']
-    result=add_operator_func(operator_name, login_id,club_id)
+    permission_group_id=request.POST['permission_group_id']
+    result=add_operator_func(operator_name, login_id,club_id,permission_group_id)
     return HttpResponse(result)
 
 
