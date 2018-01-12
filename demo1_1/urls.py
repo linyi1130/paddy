@@ -63,6 +63,7 @@ urlpatterns = [
     url(r'^club_account_info/', club_account_info),
     url(r'^check_balance/', check_balance),
     url(r'^test/', test),
+    url(r'^test02/', test02),
     url(r'^searchUser/', searchUser),
     url(r'^modify_user/', modify_user),
     url(r'^modifyUserInfo/', modifyUserInfo),
@@ -168,4 +169,5 @@ urlpatterns = [
     url(r'^set_password/', set_password),
     url(r'^upload_result_img/', upload_result_img),
     url(r'^result_img_show/', result_img_show),
+    url(r'^user_result_min_list/', user_result_min_list),
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

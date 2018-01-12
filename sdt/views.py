@@ -521,8 +521,8 @@ def usercash(request):
             if flag:
                 tb_result = getUserAccountInfo(account_id, club_id)
                 tb_developer = getUserDeveloperByUserId(user_id, club_id)
-                if tb_developer is not None:
-                    tb_result['developer_name'] = tb_developer[1]
+                if len(tb_developer) >0:
+                    tb_result['developer_name'] = tb_developer[0][1]
                 tb_balance_list = getUserBalenceList(account_id, club_id)
                 return render(request, 'user_account_info.html', {'user_name': user_name, 'tb_result': tb_result,
                                                     'club_name':club_name, 'tb_balance_list': tb_balance_list})
@@ -537,8 +537,8 @@ def usercash(request):
             if flag:
                 tb_result = getUserAccountInfo(account_id, club_id)
                 tb_developer=getUserDeveloperByUserId(user_id,club_id)
-                if tb_developer is not None:
-                    tb_result['developer_name']=tb_developer[1]
+                if len(tb_developer) >0:
+                    tb_result['developer_name']=tb_developer[0][1]
                 tb_balance_list = getUserBalenceList(account_id, club_id)
                 return render(request, 'user_account_info.html', {'user_name': user_name, 'tb_result': tb_result,
                                                                   'club_name': club_name,
@@ -716,12 +716,12 @@ def club_account_info(request):
 def check_balance(request):
     operator_info = request.session['operator_info']
     account_id = request.POST['account_id']
-    #club_id = operator_info['club_id']
+    club_id = operator_info['club_id']
     #group_id = operator_info['group_id']
     type_id = request.POST['pay_account']
     change_num = int(float(request.POST['change_num']) * 1000)
     #operator_account_id = get_operator_accountID(club_id, group_id, type_id)
-    user_balance = getBalancebyaid(account_id)
+    user_balance = getBalancebyaid(account_id,club_id)
     if change_num>user_balance:
         msg=1
         return HttpResponse(msg)
@@ -1426,6 +1426,9 @@ def test(request):
 
     return render(request,'test01.html')
 
+def test02(request):
+    return render(request, 'test02.html')
+
 
 def app_operator(request):
     supper=request.session['supper']
@@ -1977,3 +1980,17 @@ def result_img_show(request):
         return HttpResponse(url)
     except:
         return HttpResponse("False")
+
+
+def user_result_min_list(request):
+    user_name=request.POST['user_name']
+    operator_info = request.session['operator_info']
+    club_id=operator_info['club_id']
+    try:
+        user_id=ucs_subs_user.objects.filter(inactive_time='2037-01-01').get(user_name=user_name).user_id
+        account_id=ucs_account.objects.filter(inactive_time='2037-01-01').filter(club_id=club_id).get(user_id=user_id).account_id
+    except:
+        return HttpResponse('False')
+    tb_balance_list=getUserBalenceList(account_id,club_id)
+    tb_result = getUserAccountInfo(account_id, club_id)
+    return render(request,'user_result_min_list.html',{'tb_balance_list':tb_balance_list,'tb_result':tb_result,'user_name':user_name})
