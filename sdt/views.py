@@ -474,10 +474,12 @@ def result_union(request):
 
 
 def result_unionbyclub(request):
+    operator_info = request.session['operator_info']
+    club_id=operator_info['club_id']
     startime=request.POST['start']
     endtime=request.POST['end']
-    tb_result=result_searchUnionbyclub(startime,endtime)
-    tb_result_sum = result_searchUnionbyclubsum(startime,endtime)
+    tb_result=result_searchUnionbyclub(startime,endtime,club_id)
+    tb_result_sum = result_searchUnionbyclubsum(startime,endtime,club_id)
     return  render(request, "result_unionbyclubl1.html", {'tb_result': tb_result,'starttime':startime,'endtime':endtime,'tb_result_sum': tb_result_sum })
 
 

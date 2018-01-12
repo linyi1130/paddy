@@ -69,9 +69,11 @@
     </div>
 
     </div>
+    <div class="ui horizontal divider">查询结果</div>
     <div name="result_l1" id="result_l1"></div>
 
     </div>
+
 </div>
 
 <script>
@@ -153,18 +155,22 @@
 	</script>
 
 <script>
-
-</script>
-<script>
     function aa() {
+
+      if($('.ui.fullscreen.modal').length>0){
+         $('.ui.fullscreen.modal').remove();
+      }
         var club_id=$("#club_id").dropdown('get value');
         var club_name=$("#club_id").find("option:selected").text();
         var start =$("#start").val();
         var end = $("#end").val();
-        $('#result_l1').load("/result_l1/",
-            {'club_id' : club_id, 'club_name': club_name,'start':start,'end': end}
+        $('#result_l1').load("/result_l1/ #content",
+            {'club_id' : club_id, 'club_name': club_name,'start':start,'end': end},function (result) {
+                $result=$(result);
+                $result.find("script").appendTo('#content');
+            }
         )
-        $.ajaxSetup ({ cache: false });
+
     }
 </script>
 </body>
