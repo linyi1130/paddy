@@ -290,13 +290,22 @@ class ucs_result_table(models.Model):
 
 class ucs_credit_account(models.Model):
     account_id = models.IntegerField(null=False)
-    user_id = models.IntegerField(null=False)
     club_id=models.IntegerField(null=False)
     credit_num = models.IntegerField(null = False)
     operator_id = models.IntegerField(null= False)
     active_time = models.DateTimeField(auto_now=True)
-    inactive_time = models.DateTimeField()
+    inactive_time = models.DateTimeField(default='2037-01-01')
     note = models.CharField(max_length=80)
+
+
+class ucs_credit_developer_account(models.Model):
+    developer_id=models.IntegerField(null=False)
+    club_id=models.IntegerField(null=False)
+    credit_num=models.IntegerField(null=False)
+    operator_id=models.IntegerField(null=False)
+    note=models.CharField(max_length=80)
+    active_time=models.DateTimeField(auto_now_add=True)
+    inactive_time=models.DateTimeField(default='2037-01-01')
 
 
 class ucs_game_freeze_record(models.Model):

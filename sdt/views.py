@@ -2010,4 +2010,100 @@ def credit_manage(request):
 
 
 def load_credit_user_reg(request):
-    return render(request, 'credit_user_reg.html')
+    operator_info = request.session['operator_info']
+    club_id = operator_info['club_id']
+    tb_result=getUserListWithoutCredit(club_id)
+    return render(request, 'credit_user_reg.html',{'tb_result':tb_result})
+
+
+def load_credit_user_list(request):
+    operator_info = request.session['operator_info']
+    club_id = operator_info['club_id']
+    tb_result=getCreditUserList(club_id)
+    return render(request,'credit_user_list.html',{'tb_result':tb_result})
+
+
+def credit_user_reg(request):
+    operator_info = request.session['operator_info']
+    club_id = operator_info['club_id']
+    operator_id=operator_info['operator_id']
+    account_id=request.POST['account_id']
+    credit_num=request.POST['credit_num']
+    credit_num_input=int(float(credit_num)*1000)
+    note=request.POST['note']
+    result=creditUserReg(account_id, club_id, credit_num_input, operator_id,note)
+    return HttpResponse(result)
+
+
+def credit_user_disable(request):
+    operator_info = request.session['operator_info']
+    club_id = operator_info['club_id']
+    account_id=request.POST['account_id']
+    result=creditUserDisable(account_id,club_id)
+    return HttpResponse(result)
+
+
+def credit_user_modify(request):
+    operator_info = request.session['operator_info']
+    club_id = operator_info['club_id']
+    operator_id = operator_info['operator_id']
+    account_id = request.POST['account_id']
+    credit_num = request.POST['credit_num']
+    credit_num_input = int(float(credit_num) * 1000)
+    note = request.POST['note']
+    if creditUserDisable(account_id,club_id):
+        result=creditUserReg(account_id, club_id, credit_num_input, operator_id,note)
+        return HttpResponse(result)
+    else:
+        return HttpResponse('False')
+
+
+def load_credit_developer_reg(request):
+    operator_info = request.session['operator_info']
+    club_id = operator_info['club_id']
+    try:
+        tb_list=ucs_developer.objects.filter(inactive_time='2037-01-01').filter(club_id=club_id)\
+            .values('developer_id','developer_name')
+    except:
+        return HttpResponse('出错啦')
+    return render(request,'credit_developer_reg.html',{'tb_list':tb_list})
+
+
+def load_credit_developer_list(request):
+    operator_info = request.session['operator_info']
+    club_id = operator_info['club_id']
+    tb_result=getCreditDeveloperList(club_id)
+    return render(request,'credit_developer_list.html',{'tb_result':tb_result})
+
+
+def credit_developer_reg(request):
+    operator_info = request.session['operator_info']
+    club_id = operator_info['club_id']
+    operator_id = operator_info['operator_id']
+    developer_id=request.POST['developer_id']
+    credit_num = request.POST['credit_num']
+    credit_num_input = int(float(credit_num) * 1000)
+    note = request.POST['note']
+    result=creditDeveloperReg(developer_id,club_id,credit_num_input,note,operator_id)
+    return HttpResponse(result)
+
+
+def credit_developer_disable(request):
+    operator_info = request.session['operator_info']
+    club_id = operator_info['club_id']
+    developer_id=request.POST['developer_id']
+    result=creditDeveloperDisable(developer_id,club_id)
+    return HttpResponse(result)
+
+
+def credit_developer_modify(request):
+    operator_info = request.session['operator_info']
+    club_id = operator_info['club_id']
+    operator_id = operator_info['operator_id']
+    developer_id=request.POST['developer_id']
+    credit_num = request.POST['credit_num']
+    credit_num_input = int(float(credit_num) * 1000)
+    note = request.POST['note']
+    if creditDeveloperDisable(developer_id,club_id):
+        result=creditDeveloperReg(developer_id, club_id,credit_num_input,note,operator_id)
+    return HttpResponse(result)

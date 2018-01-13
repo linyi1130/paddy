@@ -172,4 +172,13 @@ urlpatterns = [
     url(r'^user_result_min_list/', user_result_min_list),
     url(r'^credit_manage/', credit_manage),
     url(r'^load_credit_user_reg/', load_credit_user_reg),
+    url(r'^load_credit_user_list/', load_credit_user_list),
+    url(r'^credit_user_reg/', credit_user_reg),
+    url(r'^credit_user_disable/', credit_user_disable),
+    url(r'^credit_user_modify/', credit_user_modify),
+    url(r'^load_credit_developer_reg/', load_credit_developer_reg),
+    url(r'^credit_developer_reg/', credit_developer_reg),
+    url(r'^load_credit_developer_list/', load_credit_developer_list),
+    url(r'^credit_developer_disable/', credit_developer_disable),
+    url(r'^credit_developer_modify/', credit_developer_modify),
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
