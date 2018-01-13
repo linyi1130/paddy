@@ -170,4 +170,6 @@ urlpatterns = [
     url(r'^upload_result_img/', upload_result_img),
     url(r'^result_img_show/', result_img_show),
     url(r'^user_result_min_list/', user_result_min_list),
+    url(r'^credit_manage/', credit_manage),
+    url(r'^load_credit_user_reg/', load_credit_user_reg),
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

@@ -130,7 +130,16 @@ def old_user_add(request):
 def user(request):
     #t = loader.get_template('user_reg.html')
     #t_user = ucs_subs_user.objects.all()
-    operator_info = request.session['operator_info']
+    try:
+        operator_info = request.session['operator_info']
+    except:
+        return HttpResponseRedirect('/default/')
+    operator_id = operator_info['operator_id']
+    permission = getPermission(operator_id)
+    if operator_info['is_active']==False:
+        return HttpResponseRedirect('/operator_disable/')
+    if not permission.filter(type_id=1).exists():
+        return HttpResponseRedirect('/warning/')
     club_id=operator_info['club_id']
     tb_club=ucs_subs_club.objects.filter(inactive_time='2037-01-01').filter(club_id=club_id)
     return render(request,'user.html',{'tb_club':tb_club})
@@ -1993,3 +2002,12 @@ def user_result_min_list(request):
     tb_balance_list=getUserBalenceList(account_id,club_id)
     tb_result = getUserAccountInfo(account_id, club_id)
     return render(request,'user_result_min_list.html',{'tb_balance_list':tb_balance_list,'tb_result':tb_result,'user_name':user_name})
+
+def credit_manage(request):
+
+
+    return render(request,'credit_manage.html')
+
+
+def load_credit_user_reg(request):
+    return render(request, 'credit_user_reg.html')
