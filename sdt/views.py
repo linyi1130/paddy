@@ -4,14 +4,11 @@ from django.shortcuts import render,HttpResponse
 from django.template import Context,Template,RequestContext
 from django.template import loader
 from django.http import HttpResponseRedirect,HttpResponse
-from django.core.urlresolvers import reverse
 from sdt.models import *
 from sdt.sdt_func import *
-from .form import *
 import datetime
 import json
 import django.core.serializers.json
-from django.contrib import messages
 from django.forms.models import model_to_dict
 from django.core import serializers
 import os
@@ -162,7 +159,7 @@ def cash(request):
     group_name=operator_info['group_name']
     tb_user = SQL_user_list(club_id)
     tb_type_list=ucs_club_account.objects.filter(inactive_time='2037-01-01').filter(group_id=group_id).filter(club_id=club_id).values('account_id','account_desc')
-    return render(request, 'cash.html', {'tb_user': tb_user,'operator_name':operator_name,
+    return render(request, 'cash2.html', {'tb_user': tb_user,'operator_name':operator_name,
                                          'club_name':club_name, 'group_name':group_name, 'tb_type_list': tb_type_list})
 
 
