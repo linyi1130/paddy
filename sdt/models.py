@@ -560,3 +560,17 @@ class pm_deposit_status(models.Model):
     status_id=models.IntegerField(null=False)
     status=models.CharField(max_length=20)
     inactive_time=models.DateTimeField(default='2037-01-01')
+
+
+class ucs_developer_balance(models.Model):
+    serial_no = models.CharField(max_length=40)
+    developer_id=models.IntegerField(null=False)
+    club_id=models.IntegerField(null=False)
+    chance=models.IntegerField(null=False)
+    balance=models.IntegerField(null=False)
+    type_id=models.IntegerField(null=False)
+    user_id=models.IntegerField(null=True)
+    operator_id=models.IntegerField(null=False)
+    note=models.CharField(max_length=40)
+    active_time=models.DateTimeField(auto_now_add=True)
+    inactive_time=models.DateTimeField(default='2037-01-01')

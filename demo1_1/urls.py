@@ -181,4 +181,6 @@ urlpatterns = [
     url(r'^load_credit_developer_list/', load_credit_developer_list),
     url(r'^credit_developer_disable/', credit_developer_disable),
     url(r'^credit_developer_modify/', credit_developer_modify),
+    url(r'^check_developer_balance/', check_developer_balance),
+    url(r'^check_developer_balance_by_user/', check_developer_balance_by_user),
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

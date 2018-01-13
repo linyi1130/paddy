@@ -435,8 +435,9 @@ def result_post(request):
     if flag:
         seriale_no = createSerialNo(club_id, group_id, 1003)
         t1=gameResultClubReg(gameno,club_id, group_id, operator_id,seriale_no)
-        t2=gameResultUserReg(gameno,club_id,operator_id,seriale_no)
-        if t1 & t2:
+        t2=gameResultUserReg(gameno,operator_id,seriale_no)
+        t3=gameDeveloperReg(gameno,operator_id,seriale_no)
+        if t1 & t2 & t3:
             regedGameByNo(gameno)
             tb_result = []
             club_list = ucs_result_table.objects.filter(inactive_time='2037-01-01').filter(game_no=gameno) \
@@ -519,6 +520,10 @@ def usercash(request):
     chang_type=request.POST['change_type']
     note=request.POST['note']
     type_id=request.POST['pay_account']
+    try:
+        developer_id=ucs_club_developer.objects.filter(inactive_time='2037-01-01').filter(club_id=club_id).get(user_id=user_id).developer_id
+    except:
+        developer_id=""
     #operator_account_id = get_operator_accountID(club_id, group_id, type_id)
     if chang_type == "false":
         cashtype=1001  #客服充值
@@ -527,6 +532,8 @@ def usercash(request):
         if result: #用户充值成功
             flag=operator_cash(type_id, change_num, cashtype, operator_id, note,serial_no, group_id)
             if flag:
+                if developer_id!="":
+                    developer_cash(developer_id,club_id,change_num,cashtype, operator_id,"",serial_no,user_id)
                 tb_result = getUserAccountInfo(account_id, club_id)
                 tb_developer = getUserDeveloperByUserId(user_id, club_id)
                 if len(tb_developer) >0:
@@ -543,6 +550,8 @@ def usercash(request):
         if result:  # 用户充值成功
             flag = operator_cash(type_id, change_num, cashtype, operator_id, note, serial_no,group_id)
             if flag:
+                if developer_id!="":
+                    developer_cash(developer_id,club_id,change_num,cashtype, operator_id,"",serial_no,user_id)
                 tb_result = getUserAccountInfo(account_id, club_id)
                 tb_developer=getUserDeveloperByUserId(user_id,club_id)
                 if len(tb_developer) >0:
@@ -739,6 +748,39 @@ def check_balance(request):
         return HttpResponse(msg)
     msg=True
     return HttpResponse(msg)
+
+
+def check_developer_balance(request):
+    operator_info = request.session['operator_info']
+    club_id = operator_info['club_id']
+    developer_id=request.POST['developer_id']
+    change_num=request.POST['change_num']
+    cash_num_input=int(float(change_num)*1000)
+    usefulbalance=getDeveloperUsefulBalance(developer_id, club_id)
+    if cash_num_input>=usefulbalance:
+        return HttpResponse('False')
+    else:
+        return HttpResponse('True')
+
+
+def check_developer_balance_by_user(request):
+    operator_info = request.session['operator_info']
+    club_id = operator_info['club_id']
+    user_id=request.POST['user_id']
+    change_num = request.POST['change_num']
+    cash_num_input = int(float(change_num) * 1000)
+    try:
+        developer_id=ucs_club_developer.objects.filter(inactive_time='2037-01-01').get(user_id=user_id).developer_id
+        usefulbalance = getDeveloperUsefulBalance(developer_id, club_id)
+        if cash_num_input > usefulbalance:
+            return HttpResponse('False')
+        else:
+            return HttpResponse('True')
+    except:
+        return HttpResponse('True')
+
+
+
 
 def welcome(request):
 
