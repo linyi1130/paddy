@@ -1108,6 +1108,7 @@ def group_balance_list(request):
     tb_result= getClubBalanceByGroup(account_id)
     return render(request, 'group_balance_list_tb.html', {'tb_result': tb_result})
 
+
 def group_balance_search(request):
     operator_info = request.session['operator_info']
     club_id=operator_info['club_id']
