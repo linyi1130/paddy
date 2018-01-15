@@ -986,8 +986,13 @@ def union_account(request):
     tb_result=getClubListWithoutSelf(club_id)
     tb_account_list=ucs_club_account.objects.filter(inactive_time='2037-01-01')\
         .filter(group_id=group_id).filter(club_id=club_id).values('account_id','account_desc')
-    tb_union_balance=getUnionClubAccountList(club_id)
-    return render(request, 'union_account.html', {'tb_club': tb_result,'tb_account': tb_account_list, 'tb_union_balance':tb_union_balance})
+    tb_developer=ucs_developer.objects.filter(inactive_time='2037-01-01').filter(club_id=club_id).values('developer_id','developer_name')
+    tb_account=[]
+    for t in tb_result:
+        tb_account.append((t[0],t[1],t[2]))
+    for t in tb_developer:
+        tb_account.append((t['developer_id'],None,t['developer_name']))
+    return render(request, 'union_account2.html', {'tb_club': tb_account,'tb_account': tb_account_list})
 
 
 def union_account_list(request):
@@ -1026,15 +1031,15 @@ def club_cash(request):
         subs_account_id = ucs_union_account.objects.filter(inactive_time='2037-01-01').get(club_id=club_id).account_id
         balance=ucs_union_balance.objects.filter(inactive_time='2037-01-01').filter(account_id=subs_account_id)\
             .filter(main_club_id=own_club_id).order_by('-update_time')[0].balance
-        #if (balance - chance)<0:
-        #    result2=False
-        #    return HttpResponse(result2)
-        #else:
-        try:
-            balance=ucs_club_balance.objects.filter(inactive_time='2037-01-01').filter(account_id=account_id)\
-                .order_by('-update_time')[0].balance
-        except:
-            balance=0
+        if (balance - chance)<0:
+            result2=False
+            return HttpResponse(result2)
+        else:
+            try:
+                balance=ucs_club_balance.objects.filter(inactive_time='2037-01-01').filter(account_id=account_id)\
+                    .order_by('-update_time')[0].balance
+            except:
+                balance=0
         if balance-chance<0:
             result2 = False
             return HttpResponse(result2)
@@ -2153,3 +2158,50 @@ def credit_developer_modify(request):
     if creditDeveloperDisable(developer_id,club_id):
         result=creditDeveloperReg(developer_id, club_id,credit_num_input,note,operator_id)
     return HttpResponse(result)
+
+
+def union_balance_view(request):
+    operator_info = request.session['operator_info']
+    club_id = operator_info['club_id']
+    club_level=operator_info['club_level']
+    tb_balance_list =getUnionClubAccountList(club_id)
+    sum=getUnionBalanceTotal(club_id,club_level)
+    tb_balance_sum=round(sum/1000,2)
+    return render(request,'union_balance_view.html',{'tb_balance_list': tb_balance_list,'tb_balance_sum':tb_balance_sum})
+
+
+def developer_balance_view(request):
+    operator_info = request.session['operator_info']
+    club_id = operator_info['club_id']
+    tb_balance_list=getDeveloperBalanceList(club_id)
+    sum=getDeveloperBalanceSum(club_id)
+    tb_balance_sum=round(sum/1000,2)
+    return render(request, 'developer_balance_view.html',{'tb_balance_list':tb_balance_list,'tb_balance_sum': tb_balance_sum})
+
+
+def developer_balance_cash(request):
+    operator_info = request.session['operator_info']
+    club_id = operator_info['club_id']
+    group_id = operator_info['group_id']
+    operator_id=operator_info['operator_id']
+    developer_id=request.POST['developer_id']
+    chance=request.POST['chance']
+    chance_input=int(float(chance)*1000)
+    type_id=int(request.POST['type_id'])
+    if type_id==2002:
+        usefulbalance=getDeveloperRealBalance(developer_id, club_id)
+        if chance_input > usefulbalance:
+            return HttpResponse('False')
+    note=request.POST['note']
+    serial_no=createSerialNo(club_id,group_id,type_id)
+    result=developer_cash(developer_id,club_id,chance_input,type_id,operator_id,note,serial_no,None)
+    return HttpResponse(result)
+
+
+def developer_balance_list(request):
+    operator_info = request.session['operator_info']
+    club_id = operator_info['club_id']
+    developer_id=request.POST['developer_id']
+    developer_name=request.POST['developer_name']
+    tb_list=getDeveloperBalanceListByDeveloperId(club_id,developer_id)
+    return render(request,'club_account_list.html',{'tb_balance_list':tb_list,'club_name':developer_name})
