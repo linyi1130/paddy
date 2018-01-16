@@ -726,8 +726,8 @@ def club_account_info(request):
     group_id = operator_info['group_id']
     group_name=operator_info['group_name']
     tb_result=get_club_account_infoByGroup(club_id,group_id)
-    tb_union_list=getUnionClubAccountList(club_id)
-    return render(request, 'sidebar_account.html', {'tb_result': tb_result,'tb_union_list':tb_union_list, 'group_name': group_name})
+    #tb_union_list=getUnionClubAccountList(club_id)
+    return render(request, 'sidebar_account.html', {'tb_result': tb_result, 'group_name': group_name})
 
 
 def check_balance(request):
