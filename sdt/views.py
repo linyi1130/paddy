@@ -351,7 +351,7 @@ def loadtabletype(request):
     gametime=pm_gametime.objects.all()
     gamepeople=pm_gamepeople.objects.all()
     ante=pm_ante.objects.filter(blind_id=1).order_by('id')
-    return render(request, 'table.html', {'gametype':gametype,'blind':blind,"gametime":gametime,"gamepeople":gamepeople, "ante":ante})
+    return render(request, 'table2.html', {'gametype':gametype,'blind':blind,"gametime":gametime,"gamepeople":gamepeople, "ante":ante})
 
 def getante(request):
     blind_id=request.POST['blind_id']
@@ -918,13 +918,25 @@ def table_reg_mini(request):
 
 
 def getusefulbalance(request):
-    account_id=request.POST['account_id']
     operator_info = request.session['operator_info']
     club_id = operator_info['club_id']
+    account_id = request.POST['account_id']
+    user_id=request.POST['user_id']
+    try:
+        developer_id=ucs_club_developer.objects.filter(inactive_time='2037-01-01')\
+            .filter(club_id=club_id).get(user_id=user_id).developer_id
+        developer_useful=getDeveloperUsefulBalance(developer_id,club_id)
+    except:
+        developer_useful=0
     balance=getBalancebyaid(account_id, club_id)
     freeze_sum=getFreezeSumByAid(account_id,club_id)
-    balance_useful=round((balance-freeze_sum)/1000,2)
-    return HttpResponse(balance_useful)
+    credit=getUserCredit(account_id,club_id)
+    balance_useful=round((balance-freeze_sum+credit)/1000,2)
+    balance_list_tmp={}
+    balance_list_tmp['balance_useful']=balance_useful
+    balance_list_tmp['developer_useful']=round(developer_useful/1000,2)
+    balance_list= json.dumps(balance_list_tmp, cls=django.core.serializers.json.DjangoJSONEncoder)
+    return HttpResponse(balance_list)
 
 
 def userbuyin(request):
@@ -2206,3 +2218,18 @@ def developer_balance_list(request):
     developer_name=request.POST['developer_name']
     tb_list=getDeveloperBalanceListByDeveloperId(club_id,developer_id)
     return render(request,'club_account_list.html',{'tb_balance_list':tb_list,'club_name':developer_name})
+
+
+def operator_quick_view(request):
+    operator_info = request.session['operator_info']
+    club_id = operator_info['club_id']
+    group_id=operator_info['group_id']
+    tb_list=getOperatorGroupBalanceList(group_id,club_id)
+    return render(request,'account_quick_view.html',{'tb_list':tb_list})
+
+
+def user_balance_minus_list(request):
+    operator_info = request.session['operator_info']
+    club_id = operator_info['club_id']
+    tb_list=getUserBalanceMinusList(club_id)
+    return render(request, 'user_balance_minus_list.html',{'tb_list':tb_list})
