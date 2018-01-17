@@ -2055,9 +2055,12 @@ def result_img_show(request):
 
 
 def user_result_min_list(request):
-    user_name=request.POST['user_name']
-    operator_info = request.session['operator_info']
+    try:
+        operator_info = request.session['operator_info']
+    except:
+        return HttpResponseRedirect('/default/')
     club_id=operator_info['club_id']
+    user_name = request.POST['user_name']
     try:
         user_id=ucs_subs_user.objects.filter(inactive_time='2037-01-01').get(user_name=user_name).user_id
         account_id=ucs_account.objects.filter(inactive_time='2037-01-01').filter(club_id=club_id).get(user_id=user_id).account_id
@@ -2074,14 +2077,20 @@ def credit_manage(request):
 
 
 def load_credit_user_reg(request):
-    operator_info = request.session['operator_info']
+    try:
+        operator_info = request.session['operator_info']
+    except:
+        return HttpResponseRedirect('/default/')
     club_id = operator_info['club_id']
     tb_result=getUserListWithoutCredit(club_id)
     return render(request, 'credit_user_reg.html',{'tb_result':tb_result})
 
 
 def load_credit_user_list(request):
-    operator_info = request.session['operator_info']
+    try:
+        operator_info = request.session['operator_info']
+    except:
+        return HttpResponseRedirect('/default/')
     club_id = operator_info['club_id']
     tb_result=getCreditUserList(club_id)
     return render(request,'credit_user_list.html',{'tb_result':tb_result})
@@ -2221,7 +2230,10 @@ def developer_balance_list(request):
 
 
 def operator_quick_view(request):
-    operator_info = request.session['operator_info']
+    try:
+        operator_info = request.session['operator_info']
+    except:
+        return HttpResponseRedirect('/default/')
     club_id = operator_info['club_id']
     group_id=operator_info['group_id']
     tb_list=getOperatorGroupBalanceList(group_id,club_id)
