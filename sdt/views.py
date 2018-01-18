@@ -502,7 +502,7 @@ def useraccountview(request):
     else:tb_result['developer_name'] = ""
     tb_balance_list=getUserBalenceList(account_id,club_id)
     club_name=operator_info['club_name']
-    tb_freeze=getFreezeListByUid(user_id, club_id)
+    tb_freeze=getFreezeListByAid(account_id, club_id)
     return render(request, 'user_account_info.html',{'user_name':user_name,'tb_result':tb_result,
                                                      'club_name':club_name,'tb_balance_list':tb_balance_list, 'tb_freeze':tb_freeze})
 #玩家充值结算
@@ -732,13 +732,15 @@ def club_account_info(request):
 def check_balance(request):
     operator_info = request.session['operator_info']
     account_id = request.POST['account_id']
+    user_id=request.POST['user_id']
     club_id = operator_info['club_id']
     #group_id = operator_info['group_id']
     type_id = request.POST['pay_account']
     change_num = int(float(request.POST['change_num']) * 1000)
     #operator_account_id = get_operator_accountID(club_id, group_id, type_id)
+    freeze_sum = getUserFreezeSum(account_id,club_id)
     user_balance = getBalancebyaid(account_id,club_id)
-    if change_num>user_balance:
+    if change_num>user_balance-freeze_sum:
         msg=1
         return HttpResponse(msg)
     type_balance = get_club_balance_byType(type_id)
