@@ -189,4 +189,7 @@ urlpatterns = [
     url(r'^developer_balance_list/', developer_balance_list),
     url(r'^operator_quick_view/', operator_quick_view),
     url(r'^user_balance_minus_list/', user_balance_minus_list),
+    url(r'^developer_setup/', developer_setup),
+    url(r'^developer_manage_reg/', developer_manage_reg),
+    url(r'^developer_manage_list/', developer_manage_list),
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

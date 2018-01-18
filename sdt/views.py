@@ -651,7 +651,7 @@ def add_operator(request):
         permission_id=106
     else:
         permission_id=103
-    message=add_operator_func(operator_name, login_id, club_id,permission_id)
+    message=add_operator_func(operator_name, login_id, club_id,permission_id,None)
     return render(request, 'manage/operator_list.html')
 
 def operator_relation(request):
@@ -1547,7 +1547,12 @@ def developer_table_view(request):
         return HttpResponseRedirect('/warning/')
     operator_info = request.session['operator_info']
     club_id = operator_info['club_id']
-    developer_list=ucs_developer.objects.filter(inactive_time='2037-01-01').filter(club_id=club_id).values('developer_id', 'developer_name')
+    developer_id=operator_info['developer_id']
+    if developer_id is None:
+        developer_list=ucs_developer.objects.filter(inactive_time='2037-01-01').filter(club_id=club_id).values('developer_id', 'developer_name')
+    else:
+        developer_list = ucs_developer.objects.filter(inactive_time='2037-01-01').filter(developer_id=developer_id).filter(club_id=club_id).values(
+            'developer_id', 'developer_name')
 
     return render(request, 'developer_table_view.html', {'developer_list': developer_list})
 
@@ -1592,8 +1597,9 @@ def report_developer_result(request):
     club_id = operator_info['club_id']
     start_date=request.POST['start_date']
     end_date=request.POST['end_date']
-    tb_result=getDeveResultByDate(club_id, start_date, end_date)
-    tb_result_sum=getDeveResultSumBydate(club_id,start_date,end_date)
+    developer_id=operator_info['developer_id']
+    tb_result=getDeveResultByDate(club_id, start_date, end_date,developer_id)
+    tb_result_sum=getDeveResultSumBydate(club_id,start_date,end_date,developer_id)
     return render(request,'report/report_developer_sum.html',{'tb_result': tb_result, 'starttime': start_date, 'endtime': end_date,'tb_result_sum':tb_result_sum})
 
 
@@ -2245,3 +2251,28 @@ def user_balance_minus_list(request):
     club_id = operator_info['club_id']
     tb_list=getUserBalanceMinusList(club_id)
     return render(request, 'user_balance_minus_list.html',{'tb_list':tb_list})
+
+
+def developer_setup(request):
+    operator_info = request.session['operator_info']
+    club_id = operator_info['club_id']
+    tb_developer=ucs_developer.objects.filter(inactive_time='2037-01-01')\
+        .filter(club_id=club_id).values('developer_id','developer_name')
+    return render(request,'manage/developer_setup.html',{'tb_developer':tb_developer})
+
+
+def developer_manage_reg(request):
+    operator_info = request.session['operator_info']
+    club_id = operator_info['club_id']
+    developer_id=request.POST['developer_id']
+    operator_name=request.POST['operator_name']
+    login_id=request.POST['login_id']
+    result=add_operator_func(operator_name,login_id,club_id,107,developer_id)
+    return HttpResponse(result)
+
+
+def developer_manage_list(request):
+    operator_info = request.session['operator_info']
+    club_id = operator_info['club_id']
+    tb_list= getDeveloerManageList(club_id)
+    return render(request,'manage/developer_manage_list.html',{'tb_list':tb_list})

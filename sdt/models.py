@@ -352,6 +352,7 @@ class ucs_operator(models.Model):
     password = models.CharField(max_length=80)
     club_id = models.IntegerField(null=True)
     group_id = models.IntegerField(null=True)
+    developer_id = models.IntegerField(null=True)
     active_time = models.DateTimeField(auto_now_add=True)
     inactive_time = models.DateTimeField(default='2037-01-01')
     permission_group=models.IntegerField(null=True)
@@ -574,3 +575,4 @@ class ucs_developer_balance(models.Model):
     note=models.CharField(max_length=40)
     active_time=models.DateTimeField(auto_now_add=True)
     inactive_time=models.DateTimeField(default='2037-01-01')
+
