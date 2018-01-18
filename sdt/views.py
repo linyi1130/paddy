@@ -1077,13 +1077,14 @@ def union_check(request):
     account_balance=getClubAccountTotal(club_id)
     user_balance=getClubBalanceTotal(club_id)
     union_balance=getUnionBalanceTotal(club_id, club_level)
+    developer_balance=getDeveloperBalanceSum(club_id)
     club_income=getClubIncomeTotal(club_id, club_level)
     deposit_sum = getDepoistSumByClub(club_id)
     up_total=getUnionIncomeTotal(club_id)
     income_total=(club_income+up_total)
     company=getCompanyBalanceSum(club_id)
     companySum=company[2]
-    check=round((account_balance+deposit_sum-(user_balance+union_balance+club_income+up_total+companySum)),2)
+    check=round((account_balance+deposit_sum-(user_balance+union_balance+developer_balance+club_income+up_total+companySum))/1000,2)
     tb1={}
     tb1['account_balance']=round((account_balance+deposit_sum)/1000,2)
     tb1['user_balance'] = round(user_balance/1000,2)
@@ -1257,6 +1258,30 @@ def correct_club_list(request):
     club_id=operator_info['club_id']
     tb_result=getCorrectClubList(club_id, operator_id)
     return render(request, 'correct_club_list.html', {'tb_result': tb_result})
+
+
+def correct_developer_list(request):
+    operator_id=request.POST['operator_id']
+    operator_info = request.session['operator_info']
+    club_id=operator_info['club_id']
+    tb_result=getCorrectDeveloperList(club_id, operator_id)
+    return render(request, 'correct_developer_list.html', {'tb_result': tb_result})
+
+
+def correct_developer(request):
+    operator_info = request.session['operator_info']
+    operator_id = operator_info['operator_id']
+    club_id = operator_info['club_id']
+    group_id = operator_info['group_id']
+    serial_no = request.POST['serial_no']
+    note = request.POST['note']
+    new_serial_no = createSerialNo(club_id, group_id, 1002)
+    result=correctDeveloperFunc(serial_no,new_serial_no,note,operator_id,club_id)
+    if result:
+        result2=correctBalanceFunc(serial_no,new_serial_no,note,operator_id,group_id)
+        return HttpResponse(result2)
+    else:
+        return HttpResponse(result)
 
 
 def correct_club(request):
@@ -2234,6 +2259,7 @@ def developer_balance_cash(request):
     group_id = operator_info['group_id']
     operator_id=operator_info['operator_id']
     developer_id=request.POST['developer_id']
+    account_id = request.POST['account_id']
     chance=request.POST['chance']
     chance_input=int(float(chance)*1000)
     type_id=int(request.POST['type_id'])
@@ -2244,7 +2270,11 @@ def developer_balance_cash(request):
     note=request.POST['note']
     serial_no=createSerialNo(club_id,group_id,type_id)
     result=developer_cash(developer_id,club_id,chance_input,type_id,operator_id,note,serial_no,None)
-    return HttpResponse(result)
+    if result:
+        result2=operator_cash(account_id,chance_input,type_id,operator_id,note,serial_no,group_id)
+        return HttpResponse(result2)
+    else:
+        return HttpResponse(result)
 
 
 def developer_balance_list(request):

@@ -193,4 +193,6 @@ urlpatterns = [
     url(r'^developer_manage_reg/', developer_manage_reg),
     url(r'^developer_manage_list/', developer_manage_list),
     url(r'^logout/', logout),
+    url(r'^correct_developer_list/', correct_developer_list),
+    url(r'^correct_developer/', correct_developer),
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
