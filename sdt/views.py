@@ -1084,7 +1084,7 @@ def union_check(request):
     income_total=(club_income+up_total)
     company=getCompanyBalanceSum(club_id)
     companySum=company[2]
-    check=round((account_balance+deposit_sum-(user_balance+union_balance+developer_balance+club_income+up_total+companySum))/1000,2)
+    check=round((account_balance+deposit_sum-(user_balance+union_balance+club_income+up_total+companySum))/1000,2)
     tb1={}
     tb1['account_balance']=round((account_balance+deposit_sum)/1000,2)
     tb1['user_balance'] = round(user_balance/1000,2)
