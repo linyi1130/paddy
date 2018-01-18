@@ -171,20 +171,19 @@ def cash(request):
     return render(request, 'cash2.html', {'tb_user': tb_user,'operator_name':operator_name,
                                          'club_name':club_name, 'group_name':group_name, 'tb_type_list': tb_type_list})
 
-
+#获取单用户实际余额
 def getbalance(request):
-    try: user_id=request.POST['user_id']
-    except Exception as e:
-        return  e
-
+    operator_info = request.session['operator_info']
+    club_id=operator_info['club_id']
+    user_id=request.POST['user_id']
     #获取账户id
-    account_id=ucs_subs_user.objects.filter(user_id=user_id).get(inactive_time='2037-01-01').account_id
-    try:#暂时用第一个俱乐部当现有俱乐部
-        balancenum=ucs_balance.objects.filter(account_id=account_id).filter(inactive_time='2037-01-01') \
-                       .filter(club_id="1000").order_by('-updatetime')[0].balance/1000
-    except Exception as e:
-        balancenum=0
-    return HttpResponse(balancenum)
+    account_id=ucs_account.objects.filter(inactive_time='2037-01-01').filter(club_id=club_id).get(user_id=user_id).account_id
+    try:
+        balance=ucs_balance.objects.filter(inactive_time='2037-01-01')\
+            .filter(club_id=club_id).filter(account_id=account_id).order_by('-updatetime')[0].balance
+    except:
+        balance=0
+    return HttpResponse(balance)
 
 #作废
 def cashin(request):
@@ -1096,7 +1095,8 @@ def union_check(request):
     tb1['check'] = check
     usertype=getClubUserBalanceByType(club_id)
     clubtype=getUnionBalanceByType(club_id)
-    tb2=round((usertype['userplus']+usertype['userminus']+clubtype['clubplus']+clubtype['clubminus']),2)
+    tb2=round((usertype['userplus']+usertype['userminus']+usertype['developer_plus']+usertype['developer_minus']+
+               clubtype['clubplus']+clubtype['clubminus']),2)
     tb_income=getClubIncomeByType(club_id, club_level)
     tb3={}
     tb3['total']=round((tb_income['total']+tb_income['up_total']),2)
@@ -1436,10 +1436,12 @@ def developer_user(request):
 
 def developer_user_reg(request):
     operator_info = request.session['operator_info']
+    operator_id = operator_info['operator_id']
     developer_id=request.POST['developer_id']
     user_id=request.POST['user_id']
+    user_name=request.POST['user_name']
     club_id = operator_info['club_id']
-    result=UserDeveloperReg(developer_id, user_id, club_id)
+    result=UserDeveloperReg(developer_id, user_id,user_name, club_id,operator_id)
     return HttpResponse(result)
 
 
@@ -2295,3 +2297,11 @@ def developer_manage_list(request):
     club_id = operator_info['club_id']
     tb_list= getDeveloerManageList(club_id)
     return render(request,'manage/developer_manage_list.html',{'tb_list':tb_list})
+
+
+def logout(request):
+    try:
+        del request.session['operator_info']
+    except:
+        pass
+    return HttpResponseRedirect('/default/')
