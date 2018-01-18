@@ -1339,13 +1339,22 @@ def developer_manage(request):
     if operator_info['is_active']==False:
         return HttpResponseRedirect('/operator_disable/')
     permission = getPermission(operator_id)
-    if not permission.filter(type_id=8).exists():
+    if not permission.filter(type_id__in=[1,8]).exists():
         return HttpResponseRedirect('/warning/')
     return render(request, 'developer_manage.html')
 
 
 def developer_new(request):
-    operator_info = request.session['operator_info']
+    try:
+        operator_info = request.session['operator_info']
+    except:
+        return HttpResponseRedirect('/default/')
+    operator_id = operator_info['operator_id']
+    if operator_info['is_active']==False:
+        return HttpResponseRedirect('/operator_disable/')
+    permission = getPermission(operator_id)
+    if not permission.filter(type_id=8).exists():
+        return HttpResponseRedirect('/warning/')
     club_id = operator_info['club_id']
     club_list=ucs_subs_club.objects.filter(inactive_time='2037-01-01').filter(club_id=club_id).values('income_rate','insure_rate')
 
@@ -1382,7 +1391,17 @@ def developer_list(request):
 
 
 def developer_modify(request):
-    operator_info = request.session['operator_info']
+    try:
+        operator_info = request.session['operator_info']
+    except:
+        return HttpResponseRedirect('/default/')
+    operator_id = operator_info['operator_id']
+    if operator_info['is_active']==False:
+        return HttpResponseRedirect('/operator_disable/')
+    permission = getPermission(operator_id)
+    #type_id=permission.values('type_id')
+    if not permission.filter(type_id=8).exists():
+        return HttpResponseRedirect('/warning/')
     club_id = operator_info['club_id']
     tb=ucs_developer.objects.filter(inactive_time='2037-01-01').filter(club_id=club_id)\
                 .values('developer_id', 'developer_name')
