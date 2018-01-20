@@ -1,5 +1,5 @@
 from django.db import models
-
+import django.utils.timezone as timezone
 # Create your models here.
 class ucs_subs_club(models.Model):
     club_id = models.IntegerField(null=False)
@@ -23,12 +23,13 @@ class ucs_subs_user(models.Model):
     active_time = models.DateTimeField(auto_now_add=True)
     inactive_time = models.DateTimeField(default="2037-1-1")
     operator_id = models.IntegerField(null=True)
-    note = models.CharField(null=False, max_length=40)
+    note = models.CharField(null=True, max_length=40)
 
 
 class ucs_club_user(models.Model):
     club_id = models.IntegerField(null=False)
     user_id = models.IntegerField(null=False)
+    remark=models.CharField(null=True,max_length=20)
     active_time = models.DateTimeField(auto_now_add=True)
     inactive_time = models.DateTimeField(default="2037-1-1")
 
@@ -202,13 +203,14 @@ class ucs_result_table_l1(models.Model):
     delivery = models.IntegerField(null= False)
     game_no = models.CharField(max_length=40)
     operator_id = models.IntegerField(null=True)
-    active_time = models.DateTimeField(auto_now= True)
+    active_time = models.DateTimeField(default=timezone.now)
     inactive_time = models.DateTimeField(default='2037-01-01')
     flag=models.IntegerField(null=False)  #销账标志位 1代表已销账
     level=models.IntegerField(null=False)    #标志报表级别
     main_club_id=models.IntegerField(null=False)  #标志上交俱乐部ID
     reg_month=models.CharField(max_length=10)   #销账月份
-    developer_id = models.IntegerField(null=True)
+    developer_id = models.IntegerField(null=True)#托管俱乐部ID
+    is_modify=models.BooleanField(default=False)
 
 
 class ucs_result_table_l2(models.Model):
@@ -283,7 +285,7 @@ class ucs_result_table(models.Model):
     up_total = models.IntegerField(null=False)
     delivery = models.IntegerField(null= False)
     operator_id = models.IntegerField(null=True)
-    active_time = models.DateTimeField(auto_now= True)
+    active_time = models.DateTimeField(default=timezone.now)
     inactive_time = models.DateTimeField(default='2037-01-01')
 
 

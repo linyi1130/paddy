@@ -107,11 +107,11 @@ def user_add(request):
     operator_id=operator_info['operator_id']
     user_name=request.POST['user_name']
     wx_name=request.POST['wx_name']
-    note=request.POST['note']
+    remark=request.POST['remark']
     club_id=request.POST['club_id']
     result=checkUserExist(user_name,club_id)
     if result==0:
-        flag=user_reg(user_name, wx_name, club_id, note,operator_id)
+        flag=user_reg(user_name, wx_name, club_id, remark,operator_id)
 
         return HttpResponse(flag)
 
@@ -121,7 +121,8 @@ def user_add(request):
 def old_user_add(request):
     user_name=request.POST['user_name']
     club_id=request.POST['club_id']
-    result=user_old_reg(user_name, club_id)
+    remark=request.POST['remark']
+    result=user_old_reg(user_name, club_id,remark)
     return HttpResponse(result)
 
 
@@ -788,10 +789,10 @@ def welcome(request):
     return render(request,'notice.html')
 
 def searchUser(request):
-    user_name=request.POST['user_name']
+    user_id=request.POST['user_id']
     t=request.session['operator_info']
     club_id=t['club_id']
-    tb_result=getUserInfoByName(user_name,club_id)
+    tb_result=getUserInfoByName(user_id,club_id)
     if tb_result:
         #return HttpResponse(tb_result)
         tmp=json.dumps(tb_result)
@@ -806,18 +807,18 @@ def modifyUserInfo(request):
     user_id=request.POST['user_id']
     new_name=request.POST['user_name']
     new_wx_name=request.POST['wx_name']
-    new_note=request.POST['note']
+    remark=request.POST['remark']
     old_name = request.POST['old_name']
     if old_name!=new_name:
         if checkUserNameExist(new_name):
-            result=modifyUserInfoFunc(user_id, new_name, new_wx_name, new_note)
+            result=modifyUserInfoFunc(club_id,user_id, new_name, new_wx_name, remark)
             if result:
                 return HttpResponse(result)
         else:
             result="玩家名字已存在"
             return HttpResponse(result)
     else:
-        result = modifyUserInfoFunc(user_id, new_name, new_wx_name, new_note)
+        result = modifyUserInfoFunc(club_id,user_id, new_name, new_wx_name, remark)
         if result:
             return HttpResponse(result)
 
@@ -2337,3 +2338,26 @@ def logout(request):
     except:
         pass
     return HttpResponseRedirect('/default/')
+
+
+def correct_union_result_view(request):
+    tb_result=getRegisitedResultListByUnion('20180121HB00017')
+    game_no='20180121HB00017'
+    tb_club=ucs_subs_club.objects.filter(inactive_time='2037-01-01').values('club_id','income_rate','insure_rate','club_name')
+    return render(request,'correct_union_result.html',{'tb_result':tb_result,'tb_club':tb_club,'game_no':game_no})
+
+
+def correct_union_result(request):
+    operator_info = request.session['operator_info']
+    operator_id=operator_info['operator_id']
+    club_id = operator_info['club_id']
+    group_id=operator_info['group_id']
+    game_no = request.POST['game_no']
+    result_list=request.POST.getlist('result_list')
+    for t in result_list:
+        #t=str(p).split()
+        id=str(t).split(',')[0]
+        old_club_id=str(t).split(',')[1]
+        new_club_id=str(t).split(',')[2]
+        result=correctResultByUnion(game_no,id,old_club_id,new_club_id,operator_id,club_id,group_id)
+    return HttpResponse(result)
