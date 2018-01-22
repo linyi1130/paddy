@@ -232,13 +232,14 @@ class ucs_result_table_l2(models.Model):
     delivery = models.IntegerField(null= False)
     game_no = models.CharField(max_length=40)
     operator_id = models.IntegerField(null=True)
-    active_time = models.DateTimeField(auto_now= True)
+    active_time = models.DateTimeField(default=timezone.now)
     inactive_time = models.DateTimeField(default='2037-01-01')
     flag=models.IntegerField(null=False)  #销账标志位 1代表已销账
     level=models.IntegerField(null=False)    #标志报表级别
     main_club_id=models.IntegerField(null=False)  #标志上交俱乐部ID
     reg_month=models.CharField(max_length=10)   #销账月份
     developer_id = models.IntegerField(null=True)
+    is_modify=models.BooleanField(default=False)
 
 #二级账单分账临时表
 class ucs_result_table_tmp(models.Model):

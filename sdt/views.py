@@ -2354,6 +2354,7 @@ def correct_union_result(request):
     group_id=operator_info['group_id']
     game_no = request.POST['game_no']
     result_list=request.POST.getlist('result_list')
+    result=False
     for t in result_list:
         #t=str(p).split()
         id=str(t).split(',')[0]
@@ -2373,3 +2374,17 @@ def search_correct_list(request):
     end = request.POST['end']
     tb_result = getResultList(start, end)
     return render(request,'correct_result_list.html',{'tb_result':tb_result})
+
+
+def correct_union_result_all(request):
+    operator_info = request.session['operator_info']
+    operator_id = operator_info['operator_id']
+    club_id = operator_info['club_id']
+    group_id = operator_info['group_id']
+    game_no = request.POST['game_no']
+    if correctResultByUnionAll(game_no,operator_id,club_id,group_id):
+        ucs_gamerecord.objects.filter(inactive_time='2037-01-01').filter(game_no=game_no).filter(status_id=5)\
+            .update(status_id=2,status='进行中')
+        return HttpResponse('True')
+    else:
+        return HttpResponse('False')
