@@ -2341,8 +2341,8 @@ def logout(request):
 
 
 def correct_union_result_view(request):
-    tb_result=getRegisitedResultListByUnion('20180121HB00017')
-    game_no='20180121HB00017'
+    game_no=request.POST['game_no']
+    tb_result=getRegisitedResultListByUnion(game_no)
     tb_club=ucs_subs_club.objects.filter(inactive_time='2037-01-01').values('club_id','income_rate','insure_rate','club_name')
     return render(request,'correct_union_result.html',{'tb_result':tb_result,'tb_club':tb_club,'game_no':game_no})
 
@@ -2361,3 +2361,15 @@ def correct_union_result(request):
         new_club_id=str(t).split(',')[2]
         result=correctResultByUnion(game_no,id,old_club_id,new_club_id,operator_id,club_id,group_id)
     return HttpResponse(result)
+
+
+def correct_result(request):
+
+    return render(request,'correct_result.html')
+
+
+def search_correct_list(request):
+    start = request.POST['start']
+    end = request.POST['end']
+    tb_result = getResultList(start, end)
+    return render(request,'correct_result_list.html',{'tb_result':tb_result})
