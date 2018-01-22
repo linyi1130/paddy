@@ -211,7 +211,7 @@ class ucs_result_table_l1(models.Model):
     main_club_id=models.IntegerField(null=False)  #标志上交俱乐部ID
     reg_month=models.CharField(max_length=10)   #销账月份
     developer_id = models.IntegerField(null=True)#托管俱乐部ID
-    is_modify=models.BooleanField(default=False)
+    is_modify=models.IntegerField(default=0)
 
 
 class ucs_result_table_l2(models.Model):
@@ -239,7 +239,7 @@ class ucs_result_table_l2(models.Model):
     main_club_id=models.IntegerField(null=False)  #标志上交俱乐部ID
     reg_month=models.CharField(max_length=10)   #销账月份
     developer_id = models.IntegerField(null=True)
-    is_modify=models.BooleanField(default=False)
+    is_modify = models.IntegerField(default=0)#0代表未修改过，1代表修改后原纪录，2代表修改后冲正记录
 
 #二级账单分账临时表
 class ucs_result_table_tmp(models.Model):

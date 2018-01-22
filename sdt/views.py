@@ -2116,6 +2116,7 @@ def user_result_min_list(request):
         return HttpResponseRedirect('/default/')
     club_id=operator_info['club_id']
     user_name = request.POST['user_name']
+    club_name=operator_info['club_name']
     try:
         user_id=ucs_subs_user.objects.filter(inactive_time='2037-01-01').get(user_name=user_name).user_id
         account_id=ucs_account.objects.filter(inactive_time='2037-01-01').filter(club_id=club_id).get(user_id=user_id).account_id
@@ -2123,7 +2124,7 @@ def user_result_min_list(request):
         return HttpResponse('False')
     tb_balance_list=getUserBalenceList(account_id,club_id)
     tb_result = getUserAccountInfo(account_id, club_id)
-    return render(request,'user_result_min_list.html',{'tb_balance_list':tb_balance_list,'tb_result':tb_result,'user_name':user_name})
+    return render(request,'user_result_min_list.html',{'tb_balance_list':tb_balance_list,'tb_result':tb_result,'user_name':user_name,'club_name':club_name})
 
 def credit_manage(request):
 
