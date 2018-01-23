@@ -549,8 +549,8 @@ def usercash(request):
         if result: #用户充值成功
             flag=operator_cash(type_id, change_num, cashtype, operator_id, note,serial_no, group_id)
             if flag:
-                if developer_id!="":
-                    developer_cash(developer_id,club_id,change_num,cashtype, operator_id,"",serial_no,user_id)
+             #   if developer_id!="":
+             #       developer_cash(developer_id,club_id,change_num,cashtype, operator_id,"",serial_no,user_id)
                 tb_result = getUserAccountInfo(account_id, club_id)
                 tb_developer = getUserDeveloperByUserId(user_id, club_id)
                 if len(tb_developer) >0:
@@ -567,8 +567,8 @@ def usercash(request):
         if result:  # 用户充值成功
             flag = operator_cash(type_id, change_num, cashtype, operator_id, note, serial_no,group_id)
             if flag:
-                if developer_id!="":
-                    developer_cash(developer_id,club_id,change_num,cashtype, operator_id,"",serial_no,user_id)
+             #   if developer_id!="":
+             #       developer_cash(developer_id,club_id,change_num,cashtype, operator_id,"",serial_no,user_id)
                 tb_result = getUserAccountInfo(account_id, club_id)
                 tb_developer=getUserDeveloperByUserId(user_id,club_id)
                 if len(tb_developer) >0:
