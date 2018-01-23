@@ -201,4 +201,6 @@ urlpatterns = [
     url(r'^search_correct_list/', search_correct_list),
     url(r'^correct_union_result_all/', correct_union_result_all),
     url(r'^result_detail_L2/', result_detail_L2),
+    url(r'^correct_developer_view/', correct_developer_view),
+    url(r'^correct_developer_result/', correct_developer_result),
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

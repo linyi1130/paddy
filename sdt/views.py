@@ -1481,12 +1481,12 @@ def developer_user(request):
 
 def developer_user_reg(request):
     operator_info = request.session['operator_info']
-    operator_id = operator_info['operator_id']
+    #operator_id = operator_info['operator_id']
     developer_id=request.POST['developer_id']
     user_id=request.POST['user_id']
-    user_name=request.POST['user_name']
+    #user_name=request.POST['user_name']
     club_id = operator_info['club_id']
-    result=UserDeveloperReg(developer_id, user_id,user_name, club_id,operator_id)
+    result=UserDeveloperReg(developer_id, user_id, club_id)
     return HttpResponse(result)
 
 
@@ -2406,3 +2406,36 @@ def correct_union_result_all(request):
         return HttpResponse('True')
     else:
         return HttpResponse('False')
+
+
+def correct_developer_view(request):
+    operator_info = request.session['operator_info']
+    club_id = operator_info['club_id']
+    game_no=request.POST['game_no']
+    tb_result=getRegisitedResultListByL2(game_no,club_id)
+    tb_club=ucs_developer.objects.filter(club_id=club_id).filter(inactive_time='2037-01-01').values('developer_id','income_rate','insure_rate','developer_name')
+    return render(request,'correct_reslut_l2.html',{'tb_result':tb_result,'tb_club':tb_club,'game_no':game_no})
+
+
+def correct_developer_result(request):
+    operator_info = request.session['operator_info']
+    operator_id = operator_info['operator_id']
+    club_id = operator_info['club_id']
+    group_id = operator_info['group_id']
+    game_no = request.POST['game_no']
+    result_list = request.POST.getlist('result_list')
+    result = False
+    for t in result_list:
+        id = str(t).split(',')[0]
+        if str(t).split(',')[1]=='None':
+            old_club_id = None
+        else:
+            old_club_id = str(t).split(',')[1]
+        if str(t).split(',')[2]=='None':
+            old_developer_id = None
+        else:
+            old_developer_id = str(t).split(',')[2]
+        new_developer_id=str(t).split(',')[3]
+        result=correctResultL2(id,club_id,old_club_id,old_developer_id,new_developer_id,operator_id,group_id)
+
+    return HttpResponse(result)
