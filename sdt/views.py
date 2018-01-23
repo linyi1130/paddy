@@ -452,14 +452,31 @@ def result_post(request):
 def result_detail(request):
     gameno=request.POST['game_no']
 
-    club_list = ucs_result_table.objects.filter(inactive_time='2037-01-01').filter(game_no=gameno) \
-            .values('club_id').distinct()
+    club_list = ucs_result_table_l1.objects.filter(inactive_time='2037-01-01').filter(game_no=gameno) \
+            .filter(is_modify=0).filter(flag=0).values('club_id').distinct()
     tb_result=[]
     for t in club_list:
         club_id=t['club_id']
         tb_result.append(getResultDetailByGameno(gameno, club_id))
     return render(request, 'result_detail_tb.html', {'tb_result': tb_result})
 
+def result_detail_L2(request):
+    operator_info = request.session['operator_info']
+    main_club_id=operator_info['club_id']
+    game_no = request.POST['game_no']
+    club_list = ucs_result_table_l2.objects.filter(inactive_time='2037-01-01').filter(game_no=game_no) \
+        .filter(is_modify=0).filter(flag=0).filter(main_club_id=main_club_id).filter(developer_id = None).values('club_id').distinct()
+    tb_result=[]
+    tb_developer=[]
+    developer_list = ucs_result_table_l2.objects.filter(inactive_time='2037-01-01').filter(game_no=game_no) \
+        .filter(is_modify=0).filter(flag=0).filter(main_club_id=main_club_id).filter(club_id = None).values('developer_id').distinct()
+    for t in club_list:
+        club_id=t['club_id']
+        tb_result.append(getResultDetailL2ByGameno(game_no,main_club_id,club_id))
+    for t in developer_list:
+        developer_id=t['developer_id']
+        tb_developer.append(getResultDetailDeveloperL2ByGameno(game_no,main_club_id,developer_id))
+    return render(request,'result_detail_tb_l2.html',{'tb_result':tb_result,'tb_developer':tb_developer})
 
 def result_detailbyClub(request):
     gameno = request.POST['game_no']
