@@ -12,11 +12,15 @@ import django.core.serializers.json
 from django.forms.models import model_to_dict
 from django.core import serializers
 import os
+import copy
 from django.conf import settings
 # Create your views here.
 def loadsidebar(request):
-
-    return render(request,'sidebar.html')
+    operator_info = request.session['operator_info']
+    permission_group=operator_info['permission_group']
+    menu=createPermissionMenu(permission_group)
+    return render(request,'sidebar2.html',{'menu':menu})
+    #return HttpResponse()
 
 
 def loadnavigate(request):
@@ -1557,8 +1561,23 @@ def load_main_club(request):
 
 
 def test(request):
-
-    return render(request,'test01.html')
+    operator_info = request.session['operator_info']
+    group_id=operator_info['group_id']
+    menu_tree=getMenuTreeByGroupId(106)
+    menu_l1=menu_tree[0][2]
+    #menu=[]
+    menu={}
+    subs_menu=[]
+    for t in menu_tree:
+        if menu_l1==t[2]:
+            subs_menu.append((t[5],t[6]))
+        else:
+            menu[menu_l1]=(copy.deepcopy(subs_menu))
+            menu_l1=t[2]
+            subs_menu.clear()
+            subs_menu.append((t[5],t[6]))
+    menu[menu_l1] = (copy.deepcopy(subs_menu))
+    return render(request,'test01.html',{'menu':menu})
 
 def test02(request):
     return render(request, 'test02.html')
@@ -1579,7 +1598,7 @@ def app_operator_reg(request):
     login_id=request.POST['login_id']
     club_id=request.POST['club_id']
     permission_group_id=request.POST['permission_group_id']
-    result=add_operator_func(operator_name, login_id,club_id,permission_group_id)
+    result=add_operator_func(operator_name, login_id,club_id,permission_group_id,None)
     return HttpResponse(result)
 
 

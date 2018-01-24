@@ -580,3 +580,29 @@ class ucs_developer_balance(models.Model):
     active_time=models.DateTimeField(auto_now_add=True)
     inactive_time=models.DateTimeField(default='2037-01-01')
 
+
+
+class menu_tree_l1(models.Model):
+    tree_id=models.AutoField(primary_key=True)
+    title=models.CharField(max_length=20,null=True)
+    tree_desc=models.CharField(max_length=40,null=True)
+    url=models.CharField(max_length=80,null=True)
+    inactive_time=models.DateTimeField(default='2037-01-01')
+
+
+class menu_tree_l2(models.Model):
+    tree_id=models.AutoField(primary_key=True)
+    title=models.CharField(max_length=20, null=True)
+    tree_desc=models.CharField(max_length=40, null=True)
+    parent_id=models.IntegerField(null=False)
+    url=models.CharField(max_length=80, null=True)
+    inactive_time=models.DateTimeField(default='2037-01-01')
+
+
+class permission_menu(models.Model):
+    group_id=models.IntegerField(null=False)
+    tree_l1_id=models.IntegerField(null=True)
+    tree_l2_id=models.IntegerField(null=True)
+    inactive_time=models.DateTimeField(default='2037-01-01')
+
+
