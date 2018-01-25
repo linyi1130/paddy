@@ -294,7 +294,7 @@ def result_newuser(request):
     lenlist = len(newuser)
     i = 0
     while (i < lenlist):
-        if user_reg(newuser[i],newuser[i],newuser[i+1],"",operator_id) == True :
+        if user_reg(newuser[i],newuser[i],newuser[i+1],newuser[i],operator_id) :
             i=i+2
         #i=i+2
     split_club = result_attachclub(gameno)
@@ -1622,6 +1622,10 @@ def result_list(request):
     return render(request, 'result_list.html',{'tb_result': tb_result})
 
 
+def result_list_pre(request):
+    tb_result=getResultListPre()
+    return render(request, 'result_list.html',{'tb_result': tb_result})
+
 def developer_table_view(request):
     operator_info = request.session['operator_info']
     operator_id = operator_info['operator_id']
@@ -2402,7 +2406,16 @@ def correct_union_result(request):
 
 
 def correct_result(request):
-
+    try:
+        operator_info = request.session['operator_info']
+    except:
+        return HttpResponseRedirect('/default/')
+    operator_id = operator_info['operator_id']
+    permission = getPermission(operator_id)
+    if operator_info['is_active']==False:
+        return HttpResponseRedirect('/operator_disable/')
+    if not permission.filter(type_id=7).exists():
+        return HttpResponseRedirect('/warning/')
     return render(request,'correct_result.html')
 
 
@@ -2412,6 +2425,10 @@ def search_correct_list(request):
     tb_result = getResultList(start, end)
     return render(request,'correct_result_list.html',{'tb_result':tb_result})
 
+
+def search_correct_list_pre(request):
+    tb_result=getResultListPre()
+    return render(request, 'correct_result_list.html', {'tb_result': tb_result})
 
 def correct_union_result_all(request):
     operator_info = request.session['operator_info']
