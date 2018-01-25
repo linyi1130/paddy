@@ -205,4 +205,5 @@ urlpatterns = [
     url(r'^correct_developer_result/', correct_developer_result),
     url(r'^result_list_pre/', result_list_pre),
     url(r'^search_correct_list_pre/', search_correct_list_pre),
+    url(r'^add_user_exist_account/', add_user_exist_account),
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

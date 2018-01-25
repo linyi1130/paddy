@@ -99,9 +99,11 @@ def checkclub(request):
 
     return HttpResponse(message)
 
+#查联盟玩家同名
 def checkuser(request):
+    operator_info = request.session['operator_info']
     user_name=request.POST['user_name']
-    club_id=request.POST['club_id']
+    club_id=operator_info['club_id']
     result=checkUserExist(user_name, club_id)
     return HttpResponse(result)
 
@@ -856,6 +858,16 @@ def modify_user(request):
     tb_user = getUserListByClubId(club_id)
     return render(request,'user_modify.html', {'tb_user':tb_user,'club_id': club_id})
 
+
+def add_user_exist_account(request):
+    operator_info = request.session['operator_info']
+    operator_id = operator_info['operator_id']
+    club_id=operator_info['club_id']
+    user_id=request.POST['user_id']
+    remark=request.POST['remark']
+    new_user_name=request.POST['new_user_name']
+    result=user_exist_account(user_id,new_user_name,club_id,remark,operator_id)
+    return HttpResponse(result)
 
 def user_account_group(request):
     try:
