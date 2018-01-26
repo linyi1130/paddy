@@ -2491,6 +2491,12 @@ def correct_developer_result(request):
 
 def union_check_club_view(request):
     operator_info = request.session['operator_info']
+    operator_id = operator_info['operator_id']
+    if operator_info['is_active']==False:
+        return HttpResponseRedirect('/operator_disable/')
+    permission = getPermission(operator_id)
+    if not permission.filter(type_id=4).exists():
+        return HttpResponseRedirect('/warning/')
     club_id = operator_info['club_id']
     club_level=operator_info['club_level']
     tb_result=getClubIncomeByType(club_id,club_level)
@@ -2499,6 +2505,12 @@ def union_check_club_view(request):
 
 def union_check_union_view(request):
     operator_info = request.session['operator_info']
+    operator_id = operator_info['operator_id']
+    if operator_info['is_active']==False:
+        return HttpResponseRedirect('/operator_disable/')
+    permission = getPermission(operator_id)
+    if not permission.filter(type_id=4).exists():
+        return HttpResponseRedirect('/warning/')
     club_id = operator_info['club_id']
     club_level=operator_info['club_level']
     account_balance=getClubAccountTotal(club_id)
@@ -2526,6 +2538,12 @@ def union_check_union_view(request):
 
 def union_check_balance_view(request):
     operator_info = request.session['operator_info']
+    operator_id = operator_info['operator_id']
+    if operator_info['is_active']==False:
+        return HttpResponseRedirect('/operator_disable/')
+    permission = getPermission(operator_id)
+    if not permission.filter(type_id=4).exists():
+        return HttpResponseRedirect('/warning/')
     club_id = operator_info['club_id']
     usertype=getClubUserBalanceByType(club_id)
     clubtype=getUnionBalanceByType(club_id)
@@ -2536,6 +2554,12 @@ def union_check_balance_view(request):
 
 def union_check_club_balance_view(request):
     operator_info = request.session['operator_info']
+    operator_id = operator_info['operator_id']
+    if operator_info['is_active']==False:
+        return HttpResponseRedirect('/operator_disable/')
+    permission = getPermission(operator_id)
+    if not permission.filter(type_id=4).exists():
+        return HttpResponseRedirect('/warning/')
     club_id = operator_info['club_id']
     club_level=operator_info['club_level']
     tb_income=getClubIncomeByType(club_id, club_level)
