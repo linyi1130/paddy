@@ -2021,7 +2021,8 @@ def user_income_full_list(request):
     startdate=request.POST['startdate']
     enddate=request.POST['enddate']
     tb_result=getUserIncomeListByDate(club_id, user_id, startdate,enddate)
-    return render(request, 'user_income_full_list.html', {'tb_result': tb_result})
+    tb_sum=getUserIncomeSumByDate(club_id, user_id, startdate,enddate)
+    return render(request, 'user_income_full_list.html', {'tb_result': tb_result,'tb_sum':tb_sum})
 
 
 def warning(request):
