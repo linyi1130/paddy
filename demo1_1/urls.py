@@ -206,4 +206,8 @@ urlpatterns = [
     url(r'^result_list_pre/', result_list_pre),
     url(r'^search_correct_list_pre/', search_correct_list_pre),
     url(r'^add_user_exist_account/', add_user_exist_account),
+    url(r'^union_check_club_view/', union_check_club_view),
+    url(r'^union_check_union_view/', union_check_union_view),
+    url(r'^union_check_balance_view/', union_check_balance_view),
+    url(r'^union_check_club_balance_view/', union_check_club_balance_view),
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

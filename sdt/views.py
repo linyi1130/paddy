@@ -1100,7 +1100,7 @@ def club_cash(request):
         return HttpResponse(result_2)
 
 #俱乐部账目核对
-def union_check(request):
+def union_check_disable(request):
     operator_info = request.session['operator_info']
     operator_id = operator_info['operator_id']
     if operator_info['is_active']==False:
@@ -2487,3 +2487,79 @@ def correct_developer_result(request):
         result=correctResultL2(id,club_id,old_club_id,old_developer_id,new_developer_id,operator_id,group_id)
 
     return HttpResponse(result)
+
+
+def union_check_club_view(request):
+    operator_info = request.session['operator_info']
+    club_id = operator_info['club_id']
+    club_level=operator_info['club_level']
+    tb_result=getClubIncomeByType(club_id,club_level)
+    return render(request,'union_check_club_view.html',{'tb_result':tb_result})
+
+
+def union_check_union_view(request):
+    operator_info = request.session['operator_info']
+    club_id = operator_info['club_id']
+    club_level=operator_info['club_level']
+    account_balance=getClubAccountTotal(club_id)
+    user_balance=getClubBalanceTotal(club_id)
+    union_balance=getUnionBalanceTotal(club_id, club_level)
+    #developer_balance=getDeveloperBalanceSum(club_id)
+    club_income=getClubIncomeTotal(club_id, club_level)
+    deposit_sum = getDepoistSumByClub(club_id)
+    up_total=getUnionIncomeTotal(club_id)
+    income_total=(club_income+up_total)
+    company=getCompanyBalanceSum(club_id)
+    companySum=company[2]
+    check=round((account_balance+deposit_sum-(user_balance+union_balance+club_income+up_total+companySum))/1000,2)
+    tb1={}
+    tb1['account_balance']=round((account_balance+deposit_sum)/1000,2)
+    tb1['user_balance'] = round(user_balance/1000,2)
+    tb1['union_balance'] = round(union_balance/1000,2)
+    tb1['club_income'] = round(club_income/1000,2)
+    tb1['up_total'] = round(up_total/1000,2)
+    tb1['income_total'] = round(income_total/1000,2)
+    tb1['companysum']=round(companySum/1000,2)
+    tb1['check'] = check
+    return render(request, 'union_check_union_view.html', {'tb1': tb1})
+
+
+def union_check_balance_view(request):
+    operator_info = request.session['operator_info']
+    club_id = operator_info['club_id']
+    usertype=getClubUserBalanceByType(club_id)
+    clubtype=getUnionBalanceByType(club_id)
+    balance=round((usertype['userplus']+usertype['userminus']+usertype['developer_plus']+usertype['developer_minus']+
+               clubtype['clubplus']+clubtype['clubminus']),2)
+    return render(request,'union_check_balance_info.html',{'usertype':usertype,'clubtype':clubtype,'balance':balance})
+
+
+def union_check_club_balance_view(request):
+    operator_info = request.session['operator_info']
+    club_id = operator_info['club_id']
+    club_level=operator_info['club_level']
+    tb_income=getClubIncomeByType(club_id, club_level)
+    tb3={}
+    tb3['total']=round((tb_income['total']+tb_income['up_total']),2)
+    tb3['water']=round((tb_income['water']+tb_income['up_water']),2)
+    tb3['insure']=round((tb_income['insure']+tb_income['up_insure']),2)
+    tb4=getClubAccountBalanceByType(club_id)
+    deposit_list=getDepositSumByType(club_id)
+    tb4=list(tb4)
+    for t in deposit_list:
+        tb4.append(('提现中',t[0],t[1]))
+    tb4_sum=0
+    for t in tb4:
+        tb4_sum=tb4_sum+t[2]
+    return render(request,'union_check_club_balance.html',{'tb4':tb4,'tb4_sum':tb4_sum})
+
+#俱乐部账目核对
+def union_check(request):
+    operator_info = request.session['operator_info']
+    operator_id = operator_info['operator_id']
+    if operator_info['is_active']==False:
+        return HttpResponseRedirect('/operator_disable/')
+    permission = getPermission(operator_id)
+    if not permission.filter(type_id=4).exists():
+        return HttpResponseRedirect('/warning/')
+    return render(request,'union_check2.html')
