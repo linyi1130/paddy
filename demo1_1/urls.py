@@ -210,4 +210,7 @@ urlpatterns = [
     url(r'^union_check_union_view/', union_check_union_view),
     url(r'^union_check_balance_view/', union_check_balance_view),
     url(r'^union_check_club_balance_view/', union_check_club_balance_view),
+    url(r'^club_check_result/', club_check_result),
+    url(r'^club_check_result_search_balance/', club_check_result_search_balance),
+    url(r'^club_check_result_search_game/', club_check_result_search_game),
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
