@@ -2666,3 +2666,138 @@ def club_check_result_search_game(request):
     tb_result=resultSearchUnionBySingleClub(start,end,club_id)
     tb_result_sum=resultSearchUnionBySingleClubSum(start,end,club_id)
     return render(request,'club_check_result_search_game.html',{'tb_result': tb_result,'starttime':start,'endtime':end,'tb_result_sum': tb_result_sum })
+
+
+def init_club(request):
+
+    return render(request,'manage/init_club.html')
+
+def init_load_user(request):
+    operator_info = request.session['operator_info']
+    club_id = operator_info['club_id']
+    tb_user = SQL_user_list(club_id)
+    balance_sum=getClubBalanceTotal(club_id)
+    balance_sum=round(balance_sum/1000,2)
+    return render(request,'manage/init_user_balance.html',{'tb_user':tb_user,'balance_sum':balance_sum})
+
+
+def init_user_cash(request):
+    operator_info = request.session['operator_info']
+    club_id = operator_info['club_id']
+    balance=request.POST['balance']
+    user_id=request.POST['user_id']
+    operator_id=operator_info['operator_id']
+    account_id=request.POST['account_id']
+    balance=int(float(balance)*1000)
+    if initUserBalance(account_id,user_id,club_id,balance,operator_id):
+        result=getClubBalanceTotal(club_id)
+        result=round(result/1000,2)
+    else:
+        result=False
+    return HttpResponse(result)
+
+
+def init_load_user_balance_list(request):
+    operator_info = request.session['operator_info']
+    club_id = operator_info['club_id']
+    tb_result=getInitUserBalanceList(club_id)
+    return render(request,'manage/init_user_balance_list.html',{'tb_result':tb_result})
+
+
+def init_load_club(request):
+    operator_info = request.session['operator_info']
+    club_id = operator_info['club_id']
+    club_level=operator_info['club_level']
+    tb_club=getClubListWithoutSelf(club_id)
+    balance_sum=getUnionBalanceTotal(club_id,club_level)
+    balance_sum=round(balance_sum/1000,2)
+    return render(request,'manage/init_union_balance.html',{'tb_club':tb_club,'balance_sum':balance_sum})
+
+
+def init_club_cash(request):
+    operator_info = request.session['operator_info']
+    operator_id=operator_info['operator_id']
+    main_club_id=operator_info['club_id']
+    club_level=operator_info['club_level']
+    group_id=operator_info['group_id']
+    #op_club_id=request.POST['club_id']
+    account_id=request.POST['account_id']
+    balance=request.POST['balance']
+    balance=int(float(balance)*1000)
+    if initUnionBalance(account_id,balance,operator_id,group_id,main_club_id):
+        result=getUnionBalanceTotal(main_club_id,club_level)
+        result = round(result / 1000, 2)
+    else:
+        result=False
+    return HttpResponse(result)
+
+
+def init_union_balance_list(request):
+    operator_info = request.session['operator_info']
+    club_id = operator_info['club_id']
+    tb_reslut=getUnionClubAccountList(club_id)
+    return render(request,'manage/init_union_balance_list.html',{'tb_result':tb_reslut})
+
+
+def init_load_operator(request):
+    operator_info = request.session['operator_info']
+    club_id = operator_info['club_id']
+    tb_result=getOperatorAccountListByClubId(club_id)
+    balance_sum=getInitOperaterBalanceSum(club_id)
+    balance_sum=round(balance_sum/1000,2)
+    return render(request,'manage/init_operator_balance.html',{'tb_result':tb_result,'balance_sum':balance_sum})
+
+
+def init_operator_cash(request):
+    operator_info = request.session['operator_info']
+    operator_id=operator_info['operator_id']
+    club_id = operator_info['club_id']
+    account_id=request.POST['account_id']
+    group_id=request.POST['group_id']
+    balance=request.POST['balance']
+    balance=int(float(balance)*1000)
+    if initOperatorBalance(account_id,balance,operator_id,group_id):
+        result=getInitOperaterBalanceSum(club_id)
+        result=round(result/1000,2)
+    else:
+        result=False
+    return HttpResponse(result)
+
+
+def init_operator_balance_list(request):
+    operator_info = request.session['operator_info']
+    club_id = operator_info['club_id']
+    tb_result=getClubAccountBalanceByType(club_id)
+    tb4=list(tb_result)
+    tb4_sum=0
+    for t in tb4:
+        tb4_sum=tb4_sum+t[2]
+    return render(request,'union_check_club_balance.html',{'tb4':tb4,'tb4_sum':tb4_sum})
+
+
+def init_developer_balance(request):
+    operator_info = request.session['operator_info']
+    club_id = operator_info['club_id']
+    try:
+        tb_club=ucs_developer.objects.filter(inactive_time='2037-01-01').filter(club_id=club_id).values('developer_id','developer_name')
+    except:
+        tb_club=None
+    balance_sum=getInitDeveloperBalanceSum(club_id)
+    balance_sum=round(balance_sum/1000,2)
+    return render(request,'manage/init_developer_balance.html',{'tb_club':tb_club,'balance_sum':balance_sum})
+
+
+def init_developer_cash(request):
+    operator_info = request.session['operator_info']
+    club_id = operator_info['club_id']
+    operator_id=operator_info['operator_id']
+    developer_id=request.POST['developer_id']
+    balance=request.POST['balance']
+    balance=int(float(balance)*1000)
+    if initDeveloperCash(developer_id,club_id,balance,operator_id):
+        balance_sum = getInitDeveloperBalanceSum(club_id)
+        result=round(balance_sum/1000,2)
+        return HttpResponse(result)
+    else:
+        result=False
+    return HttpResponse(result)
