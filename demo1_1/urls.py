@@ -225,4 +225,5 @@ urlpatterns = [
     url(r'^init_operator_balance_list/', init_operator_balance_list),
     url(r'^init_developer_balance/', init_developer_balance),
     url(r'^init_developer_cash/', init_developer_cash),
+    url(r'^test03/', test03),
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

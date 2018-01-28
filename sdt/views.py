@@ -1579,26 +1579,21 @@ def load_main_club(request):
 
 
 def test(request):
-    operator_info = request.session['operator_info']
-    group_id=operator_info['group_id']
-    menu_tree=getMenuTreeByGroupId(106)
-    menu_l1=menu_tree[0][2]
-    #menu=[]
-    menu={}
-    subs_menu=[]
-    for t in menu_tree:
-        if menu_l1==t[2]:
-            subs_menu.append((t[5],t[6]))
-        else:
-            menu[menu_l1]=(copy.deepcopy(subs_menu))
-            menu_l1=t[2]
-            subs_menu.clear()
-            subs_menu.append((t[5],t[6]))
-    menu[menu_l1] = (copy.deepcopy(subs_menu))
-    return render(request,'test01.html',{'menu':menu})
+    club_id=1000
+    user_name = '诸葛亮'
+    club_name='荣耀联盟'
+    try:
+        user_id=ucs_subs_user.objects.filter(inactive_time='2037-01-01').get(user_name=user_name).user_id
+        account_id=ucs_account.objects.filter(inactive_time='2037-01-01').filter(club_id=club_id).get(user_id=user_id).account_id
+    except:
+        return HttpResponse('False')
+    tb_balance_list=getUserBalenceList(account_id,club_id)
+    tb_result = getUserAccountInfo(account_id, club_id)
+    return render(request,'test01.html',{'tb_balance_list':tb_balance_list,'tb_result':tb_result,'user_name':user_name,'club_name':club_name})
 
 def test02(request):
-    return render(request, 'test02.html')
+    result=qr_code_test()
+    return HttpResponse(result)
 
 
 def app_operator(request):
@@ -2801,3 +2796,8 @@ def init_developer_cash(request):
     else:
         result=False
     return HttpResponse(result)
+
+
+def test03(request):
+
+    return HttpResponse("测试一下")
