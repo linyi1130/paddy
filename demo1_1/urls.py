@@ -226,4 +226,6 @@ urlpatterns = [
     url(r'^init_developer_balance/', init_developer_balance),
     url(r'^init_developer_cash/', init_developer_cash),
     url(r'^test03/', test03),
+    url(r'^upload_reward_img/', upload_reward_img),
+    url(r'^load_reward_modal/', load_reward_modal),
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

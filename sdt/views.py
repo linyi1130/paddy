@@ -1784,8 +1784,10 @@ def reward_normal_reg(request):
     group_id = operator_info['group_id']
     operator_id=operator_info['operator_id']
     t_reward=request.POST['reward']
+    file_name=request.POST['file_name']
     user_flag=request.POST['user_flag']
     user_account_id=request.POST['user_account_id']
+    game_no=request.POST['game_no']
     user_id=request.POST['user_id']
     reward=int(float(t_reward)*1000)
     op_account_id=request.POST['op_account_id']
@@ -1793,6 +1795,7 @@ def reward_normal_reg(request):
     if operator_cash(op_account_id, reward, 2004,operator_id, '牌局奖励', serial_no, group_id):
         #serial_no = createSerialNo(club_id, group_id, 2008)
         result=companyCashFunc(club_id, op_account_id, reward, 2008, operator_id, serial_no, '牌局奖励')
+        reward_img_reg(game_no,club_id,file_name,operator_id,None,None,reward)
         if user_flag=='true':
             serial_no = createSerialNo(club_id, group_id, 1001)
             if userCashReg(user_account_id,user_id, club_id, 1001, operator_id, reward, '牌局奖励', serial_no):
@@ -2131,7 +2134,7 @@ def set_password(request):
     result=setOperatorPassword(operator_id,new_password)
     return HttpResponse(result)
 
-
+#上传战绩图片
 def upload_result_img(request):
     filetype=request.POST['type']
     strtype=filetype.split('/')
@@ -2151,6 +2154,24 @@ def upload_result_img(request):
             return HttpResponse(filename)
         except:
             return HttpResponse("False")
+
+
+def upload_reward_img(request):
+    filetype=request.POST['type']
+    strtype=filetype.split('/')
+    type=strtype[1]
+    #game_no=request.POST['game_no']
+    if request.method =='POST':
+        file=request.FILES.get("file",None)
+        if not file:
+            return HttpResponse("no files for upload")
+        filename=createUploadImgName(2)+"."+type
+        destination=open(os.path.join("sdt/static/upload",filename),'wb+');
+        for chunk in file.chunks():
+            destination.write(chunk)
+        destination.close()
+    return HttpResponse(filename)
+
 
 
 def result_img_show(request):
@@ -2800,4 +2821,9 @@ def init_developer_cash(request):
 
 def test03(request):
 
-    return HttpResponse("测试一下")
+    return render(request,'test03.html')
+
+
+def load_reward_modal(request):
+
+    return render(request,'reward_modal.html')

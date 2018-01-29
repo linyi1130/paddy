@@ -606,3 +606,13 @@ class permission_menu(models.Model):
     inactive_time=models.DateTimeField(default='2037-01-01')
 
 
+class ucs_game_reward_record(models.Model):
+    game_no=models.CharField(max_length=30)
+    file_url=models.CharField(max_length=20)
+    club_id=models.IntegerField(null=False)
+    blind_id=models.IntegerField(null=True)
+    type_id=models.IntegerField(null=True)
+    reward=models.IntegerField(null=False)
+    operator_id=models.IntegerField(null=False)
+    active_time=models.DateTimeField(default=timezone.now)
+    inactive_time=models.DateTimeField(default='2037-01-01')
