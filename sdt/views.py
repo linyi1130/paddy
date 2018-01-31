@@ -1789,13 +1789,15 @@ def reward_normal_reg(request):
     user_account_id=request.POST['user_account_id']
     game_no=request.POST['game_no']
     user_id=request.POST['user_id']
+    type_id=request.POST['type_id']
+    blind_id=request.POST['blind_id']
     reward=int(float(t_reward)*1000)
     op_account_id=request.POST['op_account_id']
     serial_no=createSerialNo(club_id,group_id,2004)
     if operator_cash(op_account_id, reward, 2004,operator_id, '牌局奖励', serial_no, group_id):
         #serial_no = createSerialNo(club_id, group_id, 2008)
         result=companyCashFunc(club_id, op_account_id, reward, 2008, operator_id, serial_no, '牌局奖励')
-        reward_img_reg(game_no,club_id,file_name,operator_id,None,None,reward)
+        reward_img_reg(game_no,club_id,file_name,operator_id,blind_id,type_id,reward)
         if user_flag=='true':
             serial_no = createSerialNo(club_id, group_id, 1001)
             if userCashReg(user_account_id,user_id, club_id, 1001, operator_id, reward, '牌局奖励', serial_no):
@@ -2145,7 +2147,7 @@ def upload_result_img(request):
         if not file:
             return HttpResponse("no files for upload")
         filename=createUploadImgName(1)+"."+type
-        destination=open(os.path.join("sdt/static/upload",filename),'wb+');
+        destination=open(os.path.join("sdt/static/upload/game",filename),'wb+');
         for chunk in file.chunks():
             destination.write(chunk)
         destination.close()
@@ -2166,7 +2168,7 @@ def upload_reward_img(request):
         if not file:
             return HttpResponse("no files for upload")
         filename=createUploadImgName(2)+"."+type
-        destination=open(os.path.join("sdt/static/upload",filename),'wb+');
+        destination=open(os.path.join("sdt/static/upload/reward",filename),'wb+');
         for chunk in file.chunks():
             destination.write(chunk)
         destination.close()
@@ -2513,7 +2515,10 @@ def correct_developer_result(request):
 
 
 def union_check_club_view(request):
-    operator_info = request.session['operator_info']
+    try:
+        operator_info = request.session['operator_info']
+    except:
+        return HttpResponseRedirect('/default/')
     operator_id = operator_info['operator_id']
     if operator_info['is_active']==False:
         return HttpResponseRedirect('/operator_disable/')
@@ -2527,7 +2532,10 @@ def union_check_club_view(request):
 
 
 def union_check_union_view(request):
-    operator_info = request.session['operator_info']
+    try:
+        operator_info = request.session['operator_info']
+    except:
+        return HttpResponseRedirect('/default/')
     operator_id = operator_info['operator_id']
     if operator_info['is_active']==False:
         return HttpResponseRedirect('/operator_disable/')
@@ -2560,7 +2568,10 @@ def union_check_union_view(request):
 
 
 def union_check_balance_view(request):
-    operator_info = request.session['operator_info']
+    try:
+        operator_info = request.session['operator_info']
+    except:
+        return HttpResponseRedirect('/default/')
     operator_id = operator_info['operator_id']
     if operator_info['is_active']==False:
         return HttpResponseRedirect('/operator_disable/')
@@ -2576,7 +2587,10 @@ def union_check_balance_view(request):
 
 
 def union_check_club_balance_view(request):
-    operator_info = request.session['operator_info']
+    try:
+        operator_info = request.session['operator_info']
+    except:
+        return HttpResponseRedirect('/default/')
     operator_id = operator_info['operator_id']
     if operator_info['is_active']==False:
         return HttpResponseRedirect('/operator_disable/')
@@ -2602,7 +2616,10 @@ def union_check_club_balance_view(request):
 
 #俱乐部账目核对
 def union_check(request):
-    operator_info = request.session['operator_info']
+    try:
+        operator_info = request.session['operator_info']
+    except:
+        return HttpResponseRedirect('/default/')
     operator_id = operator_info['operator_id']
     if operator_info['is_active']==False:
         return HttpResponseRedirect('/operator_disable/')
@@ -2613,7 +2630,10 @@ def union_check(request):
 
 
 def club_check_result(request):
-    operator_info = request.session['operator_info']
+    try:
+        operator_info = request.session['operator_info']
+    except:
+        return HttpResponseRedirect('/default/')
     operator_id = operator_info['operator_id']
     if operator_info['is_active'] == False:
         return HttpResponseRedirect('/operator_disable/')
@@ -2804,7 +2824,10 @@ def init_developer_balance(request):
 
 
 def init_developer_cash(request):
-    operator_info = request.session['operator_info']
+    try:
+        operator_info = request.session['operator_info']
+    except:
+        return HttpResponseRedirect('/default/')
     club_id = operator_info['club_id']
     operator_id=operator_info['operator_id']
     developer_id=request.POST['developer_id']
@@ -2827,3 +2850,38 @@ def test03(request):
 def load_reward_modal(request):
 
     return render(request,'reward_modal.html')
+
+
+def reward(request):
+    try:
+        operator_info = request.session['operator_info']
+    except:
+        return HttpResponseRedirect('/default/')
+    operator_id = operator_info['operator_id']
+    permission = getPermission(operator_id)
+    if operator_info['is_active']==False:
+        return HttpResponseRedirect('/operator_disable/')
+    if not permission.filter(type_id=13).exists():
+        return HttpResponseRedirect('/warning/')
+    return render(request,'reward.html')
+
+
+def reward_list(request):
+    try:
+        operator_info = request.session['operator_info']
+    except:
+        return HttpResponseRedirect('/default/')
+    operator_id = operator_info['operator_id']
+    permission = getPermission(operator_id)
+    if operator_info['is_active']==False:
+        return HttpResponseRedirect('/operator_disable/')
+    if not permission.filter(type_id=13).exists():
+        return HttpResponseRedirect('/warning/')
+    club_id = operator_info['club_id']
+    try:
+        start=request.POST['start']
+        end=request.POST['end']
+        tb_list=getRewardListByDate(club_id,start,end)
+    except:
+        tb_list = getRewardListPre(club_id)
+    return render(request, 'reward_list.html', {'tb_list': tb_list})
