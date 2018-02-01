@@ -230,4 +230,6 @@ urlpatterns = [
     url(r'^load_reward_modal/', load_reward_modal),
     url(r'^reward/', reward),
     url(r'^reward_list/', reward_list),
+    url(r'^init_income/', init_income),
+    url(r'^init_income_reg/', init_income_reg),
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

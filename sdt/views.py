@@ -1380,20 +1380,21 @@ def company_income_manage(request):
     year=time.strftime("%Y", time.localtime())
     month=time.strftime("%Y%m", time.localtime())
     last_mothly=time.localtime()[1]-1 or 12
-    last_moth=str(year)+str(last_mothly)
+    last_moth=str(year)+str(last_mothly).zfill(2)
     month_list=(last_moth, month)
-    income_list=getClubIncomeByType(club_id, club_level)
-    return render(request, 'company_income_reg.html', {'month_list': month_list, 'income_list': income_list})
+    #income_list=getClubIncomeByType(club_id, club_level)
+    return render(request, 'company_income_reg.html', {'month_list': month_list})
 
 
 def company_income_reg(request):
     operator_info = request.session['operator_info']
     operator_id = operator_info['operator_id']
     club_id = operator_info['club_id']
+    club_level=operator_info['club_level']
     reg_month=request.POST['reg_month']
-    flag=companyIncomeGameReg(club_id, reg_month)
+    flag=companyIncomeRegAccount(club_id, reg_month, operator_id, club_level)
     if flag:
-        result=companyIncomeRegAccount(club_id, reg_month,operator_id)
+        result=companyIncomeGameReg(club_id, reg_month)
         return HttpResponse(result)
 
 
@@ -2546,20 +2547,24 @@ def union_check_union_view(request):
     club_level=operator_info['club_level']
     account_balance=getClubAccountTotal(club_id)
     user_balance=getClubBalanceTotal(club_id)
-    union_balance=getUnionBalanceTotal(club_id, club_level)
+    union_balance=getUnionBalanceTotal(club_id, club_level)#联盟未结款合计
+    developer_balance=getDeveloperBalanceSum(club_id)#托管未结款合计
     #developer_balance=getDeveloperBalanceSum(club_id)
-    club_income=getClubIncomeTotal(club_id, club_level)
+    #club_income=getClubIncomeTotal(club_id, club_level)
+    union_up_total=getUnionUpIncomeTotal(club_id)#联盟上交合计
+    club_up_total=getClubUpIncomeTotal(club_id)#俱乐部内上交合计
+    self_income_total=getSelfIncomeTotal(club_id)#自身玩家收益合计
     deposit_sum = getDepoistSumByClub(club_id)
-    up_total=getUnionIncomeTotal(club_id)
-    income_total=(club_income+up_total)
+    up_total=union_up_total+club_up_total
+    income_total=(up_total+self_income_total)
     company=getCompanyBalanceSum(club_id)
     companySum=company[2]
-    check=round((account_balance+deposit_sum-(user_balance+union_balance+club_income+up_total+companySum))/1000,2)
+    check=round((account_balance+deposit_sum-(user_balance+developer_balance+union_balance+self_income_total+up_total+companySum))/1000,2)
     tb1={}
     tb1['account_balance']=round((account_balance+deposit_sum)/1000,2)
     tb1['user_balance'] = round(user_balance/1000,2)
-    tb1['union_balance'] = round(union_balance/1000,2)
-    tb1['club_income'] = round(club_income/1000,2)
+    tb1['union_balance'] = round((union_balance+developer_balance)/1000,2)
+    tb1['club_income'] = round(self_income_total/1000,2)
     tb1['up_total'] = round(up_total/1000,2)
     tb1['income_total'] = round(income_total/1000,2)
     tb1['companysum']=round(companySum/1000,2)
@@ -2841,6 +2846,24 @@ def init_developer_cash(request):
         result=False
     return HttpResponse(result)
 
+
+def init_income(request):
+    operator_info = request.session['operator_info']
+    club_id = operator_info['club_id']
+    tb_result=getInitIncomeTotal(club_id)
+    return render(request,'manage/init_income.html',{'tb_result':tb_result})
+
+
+def init_income_reg(request):
+    operator_info = request.session['operator_info']
+    club_id = operator_info['club_id']
+    club_name = operator_info['club_name']
+    water=request.POST['water']
+    water=int(float(water)*1000)
+    insure = request.POST['insure']
+    insure=int(float(insure)*1000)
+    result=initClubIncomeCash(club_id,club_name,water,insure)
+    return HttpResponse(result)
 
 def test03(request):
 
