@@ -259,8 +259,14 @@ def result_split(request):
 
 
 def result_pretreat_step1(request):
-    strResult = request.POST['result']
-    gameno = request.POST['gameno']
+    try:
+        strResult = request.POST['result']
+    except:
+        strResult=""
+    try:
+        gameno = request.POST['gameno']
+    except:
+        gameno=""
     tmp_result.objects.filter(game_no=gameno).delete()
     tmp_result_attachclub_pre.objects.filter(gameno=gameno).delete()
     if result_preload(strResult, gameno):
