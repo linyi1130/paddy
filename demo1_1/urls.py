@@ -232,4 +232,7 @@ urlpatterns = [
     url(r'^reward_list/', reward_list),
     url(r'^init_income/', init_income),
     url(r'^init_income_reg/', init_income_reg),
+    url(r'^manage_load_permission_menu/', manage_load_permission_menu),
+    url(r'^get_treel2/', get_treel2),
+    url(r'^modify_permission_menu/', modify_permission_menu),
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

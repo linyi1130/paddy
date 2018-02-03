@@ -2914,3 +2914,34 @@ def reward_list(request):
     except:
         tb_list = getRewardListPre(club_id)
     return render(request, 'reward_list.html', {'tb_list': tb_list})
+
+
+def manage_load_permission_menu(request):
+    menu=getAllMenuTree()
+    tb_group=ucs_permission_group.objects.filter(inactive_time='2037-01-01').values('group_id','group_name')
+    return render(request,'manage/permission_menu.html',{'menu':menu,'tb_group':tb_group})
+
+
+def get_treel2(request):
+    group_id=request.POST['group_id']
+    tree_list=getMenuTreeL2IdByGroupId(group_id)
+    tree_list = json.dumps(tree_list, cls=django.core.serializers.json.DjangoJSONEncoder)
+    return HttpResponse(tree_list)
+
+def modify_permission_menu(request):
+    permission_list = request.POST.getlist('list')
+    group_id=request.POST['group_id']
+    tree_l2_list=[]  #需要开通的权限
+    for t in permission_list:
+        if t!="":
+            t=t.split(',')
+            if t[1] == 'true':
+                tree_l2_list.append(t[0])
+    tree_l2_list_del=[]  #需要关闭的权限
+    for t in permission_list:
+        if t!="":
+            t=t.split(',')
+            if t[1] == 'false':
+                tree_l2_list_del.append(t[0])
+    cnt=modifyGroupMenu(tree_l2_list,group_id,tree_l2_list_del)
+    return HttpResponse(cnt)
