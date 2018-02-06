@@ -115,9 +115,12 @@ def user_add(request):
     wx_name=request.POST['wx_name']
     remark=request.POST['remark']
     club_id=request.POST['club_id']
+    feedback=request.POST['feedback']
+    feedback=int(float(feedback)*1000)
+    feedback_type=request.POST['feedback_type']
     result=checkUserExist(user_name,club_id)
     if result==0:
-        flag=user_reg(user_name, wx_name, club_id, remark,operator_id)
+        flag=user_reg(user_name, wx_name, club_id, remark,operator_id,feedback,feedback_type)
 
         return HttpResponse(flag)
 
@@ -128,7 +131,10 @@ def old_user_add(request):
     user_name=request.POST['user_name']
     club_id=request.POST['club_id']
     remark=request.POST['remark']
-    result=user_old_reg(user_name, club_id,remark)
+    feedback = request.POST['feedback']
+    feedback = int(float(feedback) * 1000)
+    feedback_type = request.POST['feedback_type']
+    result=user_old_reg(user_name, club_id,remark,feedback,feedback_type)
     return HttpResponse(result)
 
 
@@ -461,6 +467,7 @@ def result_post(request):
     else :
         return HttpResponse("添加失败")
 
+
 def result_detail(request):
     gameno=request.POST['game_no']
 
@@ -471,6 +478,7 @@ def result_detail(request):
         club_id=t['club_id']
         tb_result.append(getResultDetailByGameno(gameno, club_id))
     return render(request, 'result_detail_tb.html', {'tb_result': tb_result})
+
 
 def result_detail_L2(request):
     operator_info = request.session['operator_info']
@@ -839,16 +847,19 @@ def modifyUserInfo(request):
     new_wx_name=request.POST['wx_name']
     remark=request.POST['remark']
     old_name = request.POST['old_name']
+    feedback=request.POST['feedback']
+    feedback=int(float(feedback)*1000)
+    feedback_type=request.POST['feedback_type']
     if old_name!=new_name:
         if checkUserNameExist(new_name):
-            result=modifyUserInfoFunc(club_id,user_id, new_name, new_wx_name, remark)
+            result=modifyUserInfoFunc(club_id,user_id, new_name, new_wx_name, remark,feedback,feedback_type)
             if result:
                 return HttpResponse(result)
         else:
             result="玩家名字已存在"
             return HttpResponse(result)
     else:
-        result = modifyUserInfoFunc(club_id,user_id, new_name, new_wx_name, remark)
+        result = modifyUserInfoFunc(club_id,user_id, new_name, new_wx_name, remark,feedback,feedback_type)
         if result:
             return HttpResponse(result)
 
@@ -873,7 +884,9 @@ def add_user_exist_account(request):
     user_id=request.POST['user_id']
     remark=request.POST['remark']
     new_user_name=request.POST['new_user_name']
-    result=user_exist_account(user_id,new_user_name,club_id,remark,operator_id)
+    feedback=request.POST['feedback']
+    feedback_type=request.POST['feedback_type']
+    result=user_exist_account(user_id,new_user_name,club_id,remark,operator_id,feedback,feedback_type)
     return HttpResponse(result)
 
 def user_account_group(request):

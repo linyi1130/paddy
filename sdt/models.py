@@ -30,6 +30,8 @@ class ucs_club_user(models.Model):
     club_id = models.IntegerField(null=False)
     user_id = models.IntegerField(null=False)
     remark=models.CharField(null=True,max_length=20)
+    feedback=models.IntegerField(default=0)
+    feedback_type=models.IntegerField(default=0) #返水类型  0代表水上水下返水，1代表仅水上返水
     active_time = models.DateTimeField(auto_now_add=True)
     inactive_time = models.DateTimeField(default="2037-1-1")
 
@@ -215,6 +217,35 @@ class ucs_result_table_l1(models.Model):
 
 
 class ucs_result_table_l2(models.Model):
+    user_id = models.IntegerField(null=False)
+    account_id = models.IntegerField(null=False)
+    user_name = models.CharField(max_length=20)
+    club_id = models.IntegerField(null=True)
+    club_name = models.CharField(max_length=20)
+    score = models.IntegerField(null= False)
+    score_final = models.IntegerField(null=False)
+    income_water=models.IntegerField(null=False)
+    waterup = models.IntegerField(null=False)
+    insure= models.IntegerField(null=False)
+    income_insure = models.IntegerField(null=False)
+    insure_up=models.IntegerField(null= False)
+    income_total = models.IntegerField(null= False)
+    up_total = models.IntegerField(null=False)
+    delivery = models.IntegerField(null= False)
+    feedback = models.IntegerField(null=False)
+    game_no = models.CharField(max_length=40)
+    operator_id = models.IntegerField(null=True)
+    active_time = models.DateTimeField(default=timezone.now)
+    inactive_time = models.DateTimeField(default='2037-01-01')
+    flag=models.IntegerField(null=False)  #销账标志位 1代表已销账
+    level=models.IntegerField(null=False)    #标志报表级别
+    main_club_id=models.IntegerField(null=False)  #标志上交俱乐部ID
+    reg_month=models.CharField(max_length=10)   #销账月份
+    developer_id = models.IntegerField(null=True)
+    is_modify = models.IntegerField(default=0)#0代表未修改过，1代表修改后原纪录，2代表修改后冲正记录
+
+#分账前返水临时表
+class ucs_result_table_l2_tmp(models.Model):
     user_id = models.IntegerField(null=False)
     account_id = models.IntegerField(null=False)
     user_name = models.CharField(max_length=20)
