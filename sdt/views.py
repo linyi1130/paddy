@@ -1731,26 +1731,32 @@ def reward_normal(request):
 
 
 def reward_normal_add(request):
+    operator_info = request.session['operator_info']
+    club_id=operator_info['club_id']
     blind_id=request.POST['blind_id']
     type_id=request.POST['type_id']
     reward=request.POST['reward']
     reward_input=int(float(reward)*1000)
-    result=reward_normal_add_func(blind_id, type_id, reward_input)
+    result=reward_normal_add_func(blind_id, type_id, reward_input,club_id)
     return HttpResponse(result)
 
 
 def reward_normal_list(request):
-    tb_result=getRewardNormalList()
+    operator_info = request.session['operator_info']
+    club_id=operator_info['club_id']
+    tb_result=getRewardNormalList(club_id)
 
     return render(request,'manage/game_normal_list.html',{'tb_result': tb_result})
 
 
 def reward_normal_modify(request):
+    operator_info = request.session['operator_info']
+    club_id = operator_info['club_id']
     blind_id=request.POST['blind_id']
     type_id=request.POST['type_id']
     reward=request.POST['reward']
     reward_input = int(float(reward) * 1000)
-    result=rewardNormalModify(blind_id,type_id,reward_input)
+    result=rewardNormalModify(blind_id,type_id,reward_input,club_id)
     return HttpResponse(result)
 
 
@@ -1773,7 +1779,7 @@ def reward_normal_form(request):
     except:
         return HttpResponse('False')
 
-    reward_list=getRewardByGameno(game_no)
+    reward_list=getRewardByGameno(game_no,club_id)
     tb_user=getRewardFromUserList(game_no, club_id)
     account_list=getGroupAccountList(club_id,group_id)
     tb_result={}

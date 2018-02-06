@@ -530,6 +530,7 @@ class ucs_game_reward(models.Model):
     blind_id=models.IntegerField(null=False)
     type_id=models.IntegerField(null=False)
     reward = models.IntegerField(null=False)
+    club_id=models.IntegerField(null=False)
     inactive_time=models.DateTimeField(default='2037-01-01')
 
 
