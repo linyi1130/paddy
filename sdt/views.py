@@ -1621,7 +1621,8 @@ def app_operator(request):
     if supper=='paddy':
         tb_club=ucs_subs_club.objects.filter(inactive_time='2037-01-01').values('club_id', 'club_name')
         tb_permission=ucs_permission_group.objects.filter(inactive_time='2037-01-01').values('group_id','group_name')
-        return render(request,'manage/app_operator.html',{'tb_club': tb_club,'tb_permission':tb_permission})
+        tb_developer=ucs_developer.objects.filter(inactive_time='2037-01-01').values('developer_id','developer_name')
+        return render(request,'manage/app_operator.html',{'tb_club': tb_club,'tb_permission':tb_permission,'tb_developer':tb_developer})
     else:
         return HttpResponse("请重新登录")
 
@@ -1630,8 +1631,9 @@ def app_operator_reg(request):
     operator_name=request.POST['operator_name']
     login_id=request.POST['login_id']
     club_id=request.POST['club_id']
+    developer_id = request.POST['developer_id']
     permission_group_id=request.POST['permission_group_id']
-    result=add_operator_func(operator_name, login_id,club_id,permission_group_id,None)
+    result=add_operator_func(operator_name, login_id,club_id,permission_group_id,developer_id)
     return HttpResponse(result)
 
 
