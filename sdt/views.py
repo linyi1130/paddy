@@ -885,6 +885,7 @@ def add_user_exist_account(request):
     remark=request.POST['remark']
     new_user_name=request.POST['new_user_name']
     feedback=request.POST['feedback']
+    feedback = int(float(feedback) * 1000)
     feedback_type=request.POST['feedback_type']
     result=user_exist_account(user_id,new_user_name,club_id,remark,operator_id,feedback,feedback_type)
     return HttpResponse(result)
