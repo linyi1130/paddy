@@ -1631,7 +1631,12 @@ def app_operator_reg(request):
     operator_name=request.POST['operator_name']
     login_id=request.POST['login_id']
     club_id=request.POST['club_id']
-    developer_id = request.POST['developer_id']
+    try:
+        developer_id = request.POST['developer_id']
+    except:
+        developer_id=None
+    if developer_id=='':
+        developer_id=None
     permission_group_id=request.POST['permission_group_id']
     result=add_operator_func(operator_name, login_id,club_id,permission_group_id,developer_id)
     return HttpResponse(result)
