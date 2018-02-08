@@ -3010,3 +3010,8 @@ def union_muti_user_disable(request):
     club_id=request.POST['club_id']
     result=disableUnionMutiUser(club_id,user_id)
     return HttpResponse(result)
+
+
+def load_union_user_all(request):
+    tb_user=getUnionUserAll()
+    return render(request,'union_user.html',{'tb_user': tb_user})

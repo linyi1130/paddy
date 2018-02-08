@@ -238,4 +238,5 @@ urlpatterns = [
     url(r'^union_user/', union_user),
     url(r'^load_union_user/', load_union_user),
     url(r'^union_muti_user_disable/', union_muti_user_disable),
+    url(r'^load_union_user_all/', load_union_user_all),
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
