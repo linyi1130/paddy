@@ -390,7 +390,7 @@ def table_list(request):
         return HttpResponseRedirect('/warning/')
     permission_flag=permission.filter(type_id=7).exists()
     tb_result=getTableList()
-    return render(request,'table_list.html', {'table_list': tb_result,'permission_flag':permission_flag})
+    return render(request,'table_list2.html', {'table_list': tb_result,'permission_flag':permission_flag})
 
 
 def game_reg(request):
