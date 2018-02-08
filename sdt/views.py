@@ -2974,3 +2974,39 @@ def modify_permission_menu(request):
                 tree_l2_list_del.append(t[0])
     cnt=modifyGroupMenu(tree_l2_list,group_id,tree_l2_list_del)
     return HttpResponse(cnt)
+
+
+def union_user(request):
+    try:
+        operator_info = request.session['operator_info']
+    except:
+        return HttpResponseRedirect('/default/')
+    operator_id = operator_info['operator_id']
+    if operator_info['is_active']==False:
+        return HttpResponseRedirect('/operator_disable/')
+    permission = getPermission(operator_id)
+    if not permission.filter(type_id=14).exists():
+        return HttpResponseRedirect('/warning/')
+    return render(request,'union_user_disable.html')
+
+
+def load_union_user(request):
+    try:
+        operator_info = request.session['operator_info']
+    except:
+        return HttpResponseRedirect('/default/')
+    operator_id = operator_info['operator_id']
+    if operator_info['is_active'] == False:
+        return HttpResponseRedirect('/operator_disable/')
+    permission = getPermission(operator_id)
+    if not permission.filter(type_id=14).exists():
+        return HttpResponseRedirect('/warning/')
+    tb_result=getUnionMultiUserList()
+    return render(request,'multi_user_list.html',{'tb_result':tb_result})
+
+
+def union_muti_user_disable(request):
+    user_id=request.POST['user_id']
+    club_id=request.POST['club_id']
+    result=disableUnionMutiUser(club_id,user_id)
+    return HttpResponse(result)

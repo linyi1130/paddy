@@ -235,4 +235,7 @@ urlpatterns = [
     url(r'^manage_load_permission_menu/', manage_load_permission_menu),
     url(r'^get_treel2/', get_treel2),
     url(r'^modify_permission_menu/', modify_permission_menu),
+    url(r'^union_user/', union_user),
+    url(r'^load_union_user/', load_union_user),
+    url(r'^union_muti_user_disable/', union_muti_user_disable),
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
