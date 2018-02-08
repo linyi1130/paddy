@@ -410,12 +410,13 @@ def game_reg(request):
     ante=request.POST['ante']
     duration=request.POST['duration']
     straddle_tmp=request.POST['straddle']
+
     if straddle_tmp=="true":
         straddle=1
     else:straddle=0
     game_no=createGameNo(gametype,blind,ante)
     if game_no:
-        result=gameRegFunc(game_no,gametype,blind,ante,straddle,0,duration,now(),1,"进行中",operator_id,group_name)
+        result=gameRegFunc(game_no,gametype,blind,ante,straddle,0,duration,datetime.datetime.now(),1,"进行中",operator_id,group_name)
         return HttpResponse(result)
     result=False
     return HttpResponse(result)
