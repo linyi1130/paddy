@@ -556,6 +556,7 @@ def usercash(request):
     change_num=int(float(request.POST['change_num'])*1000)
     chang_type=request.POST['change_type']
     note=request.POST['note']
+    operator_note=note+user_name
     type_id=request.POST['pay_account']
     try:
         developer_id=ucs_club_developer.objects.filter(inactive_time='2037-01-01').filter(club_id=club_id).get(user_id=user_id).developer_id
@@ -567,7 +568,7 @@ def usercash(request):
         serial_no = createSerialNo(club_id, group_id, cashtype)
         result=userCashReg(account_id, user_id, club_id, cashtype, operator_id, change_num, note,serial_no)
         if result: #用户充值成功
-            flag=operator_cash(type_id, change_num, cashtype, operator_id, note,serial_no, group_id)
+            flag=operator_cash(type_id, change_num, cashtype, operator_id, operator_note,serial_no, group_id)
             if flag:
              #   if developer_id!="":
              #       developer_cash(developer_id,club_id,change_num,cashtype, operator_id,"",serial_no,user_id)
