@@ -2901,7 +2901,7 @@ def init_income_reg(request):
 
 def test03(request):
 
-    return render(request,'test03.html')
+    return render(request,'test02.html')
 
 
 def load_reward_modal(request):
