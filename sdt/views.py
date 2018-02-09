@@ -1822,17 +1822,24 @@ def reward_normal_reg(request):
     reward=int(float(t_reward)*1000)
     op_account_id=request.POST['op_account_id']
     serial_no=createSerialNo(club_id,group_id,2004)
-    if operator_cash(op_account_id, reward, 2004,operator_id, '牌局奖励', serial_no, group_id):
-        #serial_no = createSerialNo(club_id, group_id, 2008)
-        result=companyCashFunc(club_id, op_account_id, reward, 2008, operator_id, serial_no, '牌局奖励')
-        reward_img_reg(game_no,club_id,file_name,operator_id,blind_id,type_id,reward)
-        if user_flag=='true':
-            serial_no = createSerialNo(club_id, group_id, 1001)
-            if userCashReg(user_account_id,user_id, club_id, 1001, operator_id, reward, '牌局奖励', serial_no):
-                result=operator_cash(op_account_id, reward, 1001, operator_id, '牌局奖励', serial_no, group_id)
-            return HttpResponse(result)
+    #if operator_cash(op_account_id, reward, 2004,operator_id, '牌局奖励', serial_no, group_id):
+    #    #serial_no = createSerialNo(club_id, group_id, 2008)
+    #    result=companyCashFunc(club_id, op_account_id, reward, 2008, operator_id, serial_no, '牌局奖励')
+     #   reward_img_reg(game_no,club_id,file_name,operator_id,blind_id,type_id,reward)
+    #    if user_flag=='true':
+    #        serial_no = createSerialNo(club_id, group_id, 1001)
+    #        if userCashReg(user_account_id,user_id, club_id, 1001, operator_id, reward, '牌局奖励', serial_no):
+    #            result=operator_cash(op_account_id, reward, 1001, operator_id, '牌局奖励', serial_no, group_id)
+    #        return HttpResponse(result)
+    #else:
+    #    result=False
+    if user_flag=='true':
+        if  userRewardReg(club_id, user_id, reward, serial_no, operator_id, game_no):
+            result = companyCashFunc(club_id, op_account_id, reward, 2008, operator_id, serial_no, '牌局奖励')
+            reward_img_reg(game_no, club_id, file_name, operator_id, blind_id, type_id, reward)
     else:
-        result=False
+        if operator_cash(op_account_id, reward, 2004, operator_id, '牌局奖励', serial_no, group_id):
+             result=companyCashFunc(club_id, op_account_id, reward, 2008, operator_id, serial_no, '牌局奖励')
     return HttpResponse(result)
 
 
@@ -2912,6 +2919,11 @@ def test03(request):
 def load_reward_modal(request):
 
     return render(request,'reward_modal.html')
+
+
+def reward_after(request):
+
+    return render(request,'reward_after.html')
 
 
 def reward(request):

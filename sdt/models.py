@@ -493,7 +493,7 @@ class ucs_company_balance(models.Model):
     active_time=models.DateTimeField(auto_now_add=True)
     inactive_time=models.DateTimeField(default='2037-01-01')
     note=models.CharField(max_length=80)
-    op_account_id=models.IntegerField(null=False)
+    op_account_id=models.IntegerField(null=True)
 
 
 #俱乐部收入户流水类型
