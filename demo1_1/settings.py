@@ -78,10 +78,10 @@ WSGI_APPLICATION = 'demo1_1.wsgi.application'
 
 DATABASES = {
     'default':{'ENGINE': 'django.db.backends.mysql',
-    'NAME': 'sdt',
-    'USER':'root',
-    'PASSWORD':'1q2w3e..',
-    'HOST':'127.0.0.1',
+    'NAME': 'diamond',
+    'USER':'diamond',
+    'PASSWORD':'KDdp0429',
+    'HOST':'rm-bp1bpr1gyl3h832q8fo.mysql.rds.aliyuncs.com',
     'PORT':'3306',},
     }
 
