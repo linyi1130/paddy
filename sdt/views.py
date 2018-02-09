@@ -2908,7 +2908,10 @@ def test03(request):
         return False
     for t in account_list:
         account_id=t['account_id']
-        balance=ucs_balance.objects.filter(inactive_time='2037-01-01').filter(club_id=1000).filter(account_id=account_id).order_by('-updatetime')[0].balance
+        try:
+            balance=ucs_balance.objects.filter(inactive_time='2037-01-01').filter(club_id=1000).filter(account_id=account_id).order_by('-updatetime')[0].balance
+        except:
+            balance=0
         sum=sum+balance
     sum=float(sum)/1000
     return HttpResponse(sum)
