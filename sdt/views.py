@@ -905,8 +905,9 @@ def user_account_group(request):
         return HttpResponseRedirect('/warning/')
     club_id=operator_info['club_id']
 
-    tb_user = getUserListWithOutDeveByClubId(club_id)
+    tb_user = getUserListByClubIdAll(club_id)
     return render(request, 'user_account_group.html', {'tb_user': tb_user, 'club_id': club_id})
+
 
 
 def user_group_search(request):
@@ -1602,16 +1603,7 @@ def load_main_club(request):
 
 
 def test(request):
-    club_id=1000
-    user_name = '诸葛亮'
-    club_name='荣耀联盟'
-    try:
-        user_id=ucs_subs_user.objects.filter(inactive_time='2037-01-01').get(user_name=user_name).user_id
-        account_id=ucs_account.objects.filter(inactive_time='2037-01-01').filter(club_id=club_id).get(user_id=user_id).account_id
-    except:
-        return HttpResponse('False')
-    tb_balance_list=getUserBalenceList(account_id,club_id)
-    tb_result = getUserAccountInfo(account_id, club_id)
+
     return render(request,'test01.html',{'tb_balance_list':tb_balance_list,'tb_result':tb_result,'user_name':user_name,'club_name':club_name})
 
 def test02(request):
