@@ -2901,8 +2901,17 @@ def init_income_reg(request):
     return HttpResponse(result)
 
 def test03(request):
-
-    return render(request,'test02.html')
+    sum=0
+    try:
+        account_list=ucs_account.objects.filter(inactive_time='2037-01-01').filter(club_id=1000).values('account_id')
+    except Exception as e:
+        return False
+    for t in account_list:
+        account_id=t['account_id']
+        balance=ucs_balance.objects.filter(inactive_time='2037-01-01').filter(club_id=1000).filter(account_id=account_id).order_by('-updatetime')[0].balance
+        sum=sum+balance
+    sum=float(sum)/1000
+    return HttpResponse(sum)
 
 
 def load_reward_modal(request):
