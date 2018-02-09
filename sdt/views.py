@@ -193,7 +193,7 @@ def getbalance(request):
     account_id=ucs_account.objects.filter(inactive_time='2037-01-01').filter(club_id=club_id).get(user_id=user_id).account_id
     try:
         balance=ucs_balance.objects.filter(inactive_time='2037-01-01')\
-            .filter(club_id=club_id).filter(account_id=account_id).order_by('-updatetime')[0].balance
+            .filter(club_id=club_id).filter(account_id=account_id).order_by('-id')[0].balance
     except:
         balance=0
     return HttpResponse(balance)
