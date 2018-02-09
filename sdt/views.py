@@ -875,7 +875,7 @@ def modify_user(request):
         return HttpResponseRedirect('/warning/')
     club_id=operator_info['club_id']
 
-    tb_user = getUserListByClubId(club_id)
+    tb_user = getUserListByClubId_1(club_id)
     return render(request,'user_modify.html', {'tb_user':tb_user,'club_id': club_id})
 
 
