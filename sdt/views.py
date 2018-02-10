@@ -558,7 +558,11 @@ def usercash(request):
     chang_type=request.POST['change_type']
     note=request.POST['note']
     operator_note=note+user_name
+    group_name=operator_info['group_name']
+    operator_name = operator_info['operator_name']
     type_id=request.POST['pay_account']
+    pay_account_desc=request.POST['pay_account_desc']
+    note=note+group_name+operator_name+pay_account_desc
     try:
         developer_id=ucs_club_developer.objects.filter(inactive_time='2037-01-01').filter(club_id=club_id).get(user_id=user_id).developer_id
     except:
