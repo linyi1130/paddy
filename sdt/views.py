@@ -1311,10 +1311,12 @@ def correct_user(request):
     serial_no=request.POST['serial_no']
     note = request.POST['note']
     new_serial_no=createSerialNo(club_id, group_id, 1002)
+
     result=correctUserFunc(serial_no, new_serial_no, note, operator_id)
     if result:
-        result2=correctBalanceFunc(serial_no, new_serial_no, note, operator_id, group_id)
-        return HttpResponse(result2)
+        correctBalanceFunc(serial_no, new_serial_no, note, operator_id, group_id)
+        correctCompany(serial_no,new_serial_no,operator_id,club_id)
+    return HttpResponse(result)
 
 
 def correct_club_list(request):
