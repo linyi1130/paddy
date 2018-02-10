@@ -241,4 +241,6 @@ urlpatterns = [
     url(r'^load_union_user_all/', load_union_user_all),
     url(r'^union_check_disable/', union_check_disable),
     url(r'^reward_after/', reward_after),
+    url(r'^disable_user_club/', disable_user_club),
+    url(r'^check_exist_user_balance/', check_exist_user_balance),
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

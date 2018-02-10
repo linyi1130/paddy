@@ -3033,3 +3033,19 @@ def union_muti_user_disable(request):
 def load_union_user_all(request):
     tb_user=getUnionUserAll()
     return render(request,'union_user.html',{'tb_user': tb_user})
+
+
+def disable_user_club(request):
+    user_id=request.POST['user_id']
+    operator_info = request.session['operator_info']
+    club_id=operator_info['club_id']
+    result=disableUserFromClub(user_id,club_id)
+    return HttpResponse(result)
+
+
+def check_exist_user_balance(request):
+    user_id = request.POST['user_id']
+    operator_info = request.session['operator_info']
+    club_id = operator_info['club_id']
+    result=checkExistUserBalance(user_id,club_id)
+    return HttpResponse(result)
