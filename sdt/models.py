@@ -648,3 +648,10 @@ class ucs_game_reward_record(models.Model):
     operator_id=models.IntegerField(null=False)
     active_time=models.DateTimeField(default=timezone.now)
     inactive_time=models.DateTimeField(default='2037-01-01')
+
+
+class operator_log(models.Model):
+    operator_id=models.IntegerField(null=False)
+    op_type_id=models.IntegerField(null=True)
+    op_desc=models.CharField(max_length=100)
+    active_time=models.DateTimeField(default=timezone.now)

@@ -62,6 +62,7 @@ def club_add(request):
         return HttpResponseRedirect('/default/')
     club_id=operator_info['club_id']
     club_level = operator_info['club_level']
+    operator_id=operator_info['operator_id']
     if club_level>4:
         return False
     subs_club_level=int(club_level)+1
@@ -78,6 +79,7 @@ def club_add(request):
                           subs_club_id=subs_club_id,
                             club_level=club_level)
         t.save()
+        addOperatorLog(operator_id,None,'创建俱乐部'+club_name)
         return HttpResponseRedirect('/club/')
     else:
         result=False
@@ -119,9 +121,10 @@ def user_add(request):
     feedback=int(float(feedback)*1000)
     feedback_type=request.POST['feedback_type']
     result=checkUserExist(user_name,club_id)
+    log="新增玩家"+user_name
     if result==0:
         flag=user_reg(user_name, wx_name, club_id, remark,operator_id,feedback,feedback_type)
-
+        addOperatorLog(operator_id,None,log)
         return HttpResponse(flag)
 
     else:
@@ -131,10 +134,16 @@ def old_user_add(request):
     user_name=request.POST['user_name']
     club_id=request.POST['club_id']
     remark=request.POST['remark']
+    operator_info = request.session['operator_info']
+    operator_id = operator_info['operator_id']
     feedback = request.POST['feedback']
     feedback = int(float(feedback) * 1000)
     feedback_type = request.POST['feedback_type']
     result=user_old_reg(user_name, club_id,remark,feedback,feedback_type)
+    if result==True:
+        addOperatorLog(operator_id,None,"新增玩家"+user_name+"成功")
+    else:
+        addOperatorLog(operator_id, None, "新增玩家" + user_name + "失败")
     return HttpResponse(result)
 
 
@@ -851,6 +860,8 @@ def searchUser(request):
         message="没有匹配到玩家"
         return HttpResponse(message)
 def modifyUserInfo(request):
+    operator_info = request.session['operator_info']
+    operator_id = operator_info['operator_id']
     t=request.session['operator_info']
     club_id=t['club_id']
     user_id=request.POST['user_id']
@@ -864,6 +875,7 @@ def modifyUserInfo(request):
     if old_name!=new_name:
         if checkUserNameExist(new_name):
             result=modifyUserInfoFunc(club_id,user_id, new_name, new_wx_name, remark,feedback,feedback_type)
+            addOperatorLog(operator_id,None,"修改玩家信息"+new_name+str(result))
             if result:
                 return HttpResponse(result)
         else:
@@ -871,6 +883,7 @@ def modifyUserInfo(request):
             return HttpResponse(result)
     else:
         result = modifyUserInfoFunc(club_id,user_id, new_name, new_wx_name, remark,feedback,feedback_type)
+        addOperatorLog(operator_id, None, "修改玩家信息" + new_name + str(result))
         if result:
             return HttpResponse(result)
 
@@ -937,7 +950,7 @@ def account_migrate(request):
     club_id=t['club_id']
     operator_id=t['operator_id']
     result=userAccountMigrate(o_account_id,t_account_id,t_account_name, t_user_id,club_id,operator_id)
-
+    addOperatorLog(operator_id,None,"合并账户"+t_account_name+str(result))
     return HttpResponse(result)
 
 
@@ -961,6 +974,8 @@ def club_info(request):
     return HttpResponse(result)
 
 def modify_club(request):
+    operator_info = request.session['operator_info']
+    operator_id = operator_info['operator_id']
     club_id=request.POST['club_id']
     club_name=request.POST['club_name']
     club_shortname = request.POST['club_shortname']
@@ -968,6 +983,8 @@ def modify_club(request):
     income_rate=request.POST['income_rate']
     insure_rate=request.POST['insure_rate']
     result=modifyClubInfo(club_id, club_name,club_shortname, club_desc, income_rate, insure_rate)
+    log='修改俱乐部信息'+club_name+str(result)
+    addOperatorLog(operator_id,None,log)
     return HttpResponse(result)
 
 
@@ -1110,26 +1127,30 @@ def club_cash(request):
         type_id=2002
         subs_account_id = ucs_union_account.objects.filter(inactive_time='2037-01-01').get(club_id=club_id).account_id
         balance=ucs_union_balance.objects.filter(inactive_time='2037-01-01').filter(account_id=subs_account_id)\
-            .filter(main_club_id=own_club_id).order_by('-update_time')[0].balance
+            .filter(main_club_id=own_club_id).order_by('-id')[0].balance
         if (balance - chance)<0:
             result2=False
+            addOperatorLog(operator_id,type_id,"俱乐部"+str(club_id)+"结算"+str(round(chance/1000,2))+"失败")
             return HttpResponse(result2)
         else:
             try:
                 balance=ucs_club_balance.objects.filter(inactive_time='2037-01-01').filter(account_id=account_id)\
-                    .order_by('-update_time')[0].balance
+                    .order_by('-id')[0].balance
             except:
                 balance=0
         if balance-chance<0:
             result2 = False
+            addOperatorLog(operator_id, type_id, "俱乐部" + str(club_id) + "结算" + str(round(chance/1000,2)) + "失败")
             return HttpResponse(result2)
     serialno=createSerialNo(own_club_id,group_id, type_id)
     result=operator_cash(account_id, chance, type_id, operator_id, note, serialno, group_id)
     if result:
         result_2=club_cash_func(operator_id,group_id,club_id,chance, type_id, serialno, note, own_club_id)
+        addOperatorLog(operator_id, type_id, "俱乐部" + str(club_id) + "结算" + str(round(chance/1000,2)) + "成功")
         return HttpResponse(result_2)
     else:
         result_2=False
+        addOperatorLog(operator_id, op_type, "俱乐部" + str(club_id) + "结算" + str(round(chance/1000,2)) + "失败")
         return HttpResponse(result_2)
 
 #俱乐部账目核对
@@ -1253,10 +1274,14 @@ def company_cash(request):
 
         companyCashFunc(club_id, account_id, cash_num, op_type_id, operator_id,serial_no, note)
         result=True
+        log="公司存款"+ str(cash_num)+str(result)
+        addOperatorLog(operator_id,None,log)
         return HttpResponse(result)
 
     else:
         result = False
+        log="公司存款"+ str(cash_num)+str(result)
+        addOperatorLog(operator_id,None,log)
         return HttpResponse(result)
 
 
@@ -1325,6 +1350,8 @@ def correct_user(request):
     if result:
         correctBalanceFunc(serial_no, new_serial_no, note, operator_id, group_id)
         correctCompany(serial_no,new_serial_no,operator_id,club_id)
+    log="玩家"+serial_no+"冲正"+str(result)
+    addOperatorLog(operator_id,None,log)
     return HttpResponse(result)
 
 
@@ -1355,8 +1382,12 @@ def correct_developer(request):
     result=correctDeveloperFunc(serial_no,new_serial_no,note,operator_id,club_id)
     if result:
         result2=correctBalanceFunc(serial_no,new_serial_no,note,operator_id,group_id)
+        log="托管"+serial_no+"冲正"+str(result2)
+        addOperatorLog(operator_id,None,log)
         return HttpResponse(result2)
     else:
+        log = "托管" + serial_no + "冲正" + str(result)
+        addOperatorLog(operator_id, None, log)
         return HttpResponse(result)
 
 
@@ -1371,6 +1402,8 @@ def correct_club(request):
     result=correctClubFunc(serial_no, new_serial_no, note, operator_id, club_id, group_id)
     if result:
         result2 = correctBalanceFunc(serial_no, new_serial_no, note, operator_id, group_id)
+        log="俱乐部"+serial_no+"冲正"+str(result2)
+        addOperatorLog(operator_id,None,log)
         return HttpResponse(result2)
 
 
@@ -1393,8 +1426,12 @@ def correct_company(request):
     result=correctBalanceFunc(serial_no, new_serial_no, note, operator_id, group_id)
     if result:
         result2 = correctCompanyFunc(serial_no, new_serial_no, note, operator_id)
+        log="公司"+serial_no+"冲正"+str(result2)
+        addOperatorLog(operator_id,None,log)
         return HttpResponse(result2)
     else:
+        log="公司"+serial_no+"冲正"+str(result)
+        addOperatorLog(operator_id,None,log)
         return HttpResponse(result)
 
 
@@ -1476,12 +1513,15 @@ def check_developer(request):
 
 def developer_reg(request):
     operator_info = request.session['operator_info']
+    operator_id=operator_info['operator_id']
     club_id = operator_info['club_id']
     developer_name=request.POST['developer_name']
     developer_desc=request.POST['note']
     income_rate=request.POST['income_rate']
     insure_rate=request.POST['insure_rate']
     result=developerRegFunc(club_id, developer_name, income_rate, insure_rate, developer_desc)
+    log="新增托管"+developer_name+"水钱"+str(income_rate)+"保险"+str(insure_rate)+str(result)
+    addOperatorLog(operator_id,None,log)
     return HttpResponse(result)
 
 
@@ -1538,12 +1578,14 @@ def developer_user(request):
 
 def developer_user_reg(request):
     operator_info = request.session['operator_info']
-    #operator_id = operator_info['operator_id']
+    operator_id = operator_info['operator_id']
     developer_id=request.POST['developer_id']
     user_id=request.POST['user_id']
-    #user_name=request.POST['user_name']
+    user_name=request.POST['user_name']
     club_id = operator_info['club_id']
     result=UserDeveloperReg(developer_id, user_id, club_id)
+    log='托管玩家注册'+ user_name + '托管ID:'+ str(developer_id)+str(result)
+    addOperatorLog(operator_id,None,log)
     return HttpResponse(result)
 
 
@@ -1564,11 +1606,15 @@ def developer_user_club_list(request):
 
 def developer_unband(request):
     operator_info = request.session['operator_info']
+    operator_id=operator_info['operator_id']
     club_id = operator_info['club_id']
     developer_id=request.POST['developer_id']
     user_id=request.POST['user_id']
+    user_name=request.POST['user_name']
+    developer_name=request.POST['developer_name']
     result=developerUserUnband(club_id, developer_id, user_id)
-
+    log="托管"+developer_name+"玩家"+user_name+"解绑"+str(result)
+    addOperatorLog(operator_id,None,log)
     return HttpResponse(result)
 
 
@@ -1941,7 +1987,7 @@ def deposit_reg(request):
     deposit=request.POST['deposit']
     deposit_input=int(deposit)*1000
     fee=request.POST['fee']
-    fee_input=int(fee)*1000
+    fee_input=int(float(fee))*1000
     chance=deposit_input+fee_input
     account_id = request.POST['account_id']
     account_target_id = request.POST['account_target_id']
@@ -1952,12 +1998,16 @@ def deposit_reg(request):
         if depositReg(serial_no, club_id, group_id, account_id, type_id, deposit_input, fee_input, operator_id,account_target_id):
             if operator_cash(account_id, chance, 2005, operator_id, '提现', serial_no, group_id):
                 result=companyCashFunc(club_id, account_id, fee_input, 2009, operator_id, serial_no, '提现')
+                addOperatorLog(operator_id,type_id,"提现"+str(round(chance/1000,2))+str(result))
                 return HttpResponse(result)
             else:
+                addOperatorLog(operator_id, type_id, "提现" + str(round(chance / 1000, 2)) + "失败")
                 return HttpResponse('False')
         else:
+            addOperatorLog(operator_id, type_id, "提现" + str(round(chance / 1000, 2)) + "失败")
             return HttpResponse('False')
     else:
+        addOperatorLog(operator_id, type_id, "提现" + str(round(chance / 1000, 2)) + "失败")
         return HttpResponse('False')
 
 
@@ -2485,6 +2535,8 @@ def correct_union_result(request):
         old_club_id=str(t).split(',')[1]
         new_club_id=str(t).split(',')[2]
         result=correctResultByUnion(game_no,id,old_club_id,new_club_id,operator_id,club_id,group_id)
+        log="联盟牌局"+game_no+"冲正"+str(result)
+        addOperatorLog(operator_id,None,log)
     return HttpResponse(result)
 
 
@@ -2522,8 +2574,12 @@ def correct_union_result_all(request):
     if correctResultByUnionAll(game_no,operator_id,club_id,group_id):
         ucs_gamerecord.objects.filter(inactive_time='2037-01-01').filter(game_no=game_no).filter(status_id=5)\
             .update(status_id=2,status='进行中')
+        log="牌局全部冲正"+game_no+"成功"
+        addOperatorLog(operator_id,None,log)
         return HttpResponse('True')
     else:
+        log = "牌局全部冲正" + game_no + "失败"
+        addOperatorLog(operator_id, None, log)
         return HttpResponse('False')
 
 
@@ -2556,7 +2612,8 @@ def correct_developer_result(request):
             old_developer_id = str(t).split(',')[2]
         new_developer_id=str(t).split(',')[3]
         result=correctResultL2(id,club_id,old_club_id,old_developer_id,new_developer_id,operator_id,group_id)
-
+        log="俱乐部内"+game_no+"牌局冲正"+str(result)
+        addOperatorLog(operator_id,None,log)
     return HttpResponse(result)
 
 
@@ -3033,9 +3090,13 @@ def load_union_user(request):
 
 
 def union_muti_user_disable(request):
+    operator_info = request.session['operator_info']
+    operator_id = operator_info['operator_id']
     user_id=request.POST['user_id']
     club_id=request.POST['club_id']
     result=disableUnionMutiUser(club_id,user_id)
+    log="联盟玩家停用"+"user_id:"+str(user_id)+"club_id:"+str(club_id)+str(result)
+    addOperatorLog(operator_id,None,log)
     return HttpResponse(result)
 
 
@@ -3046,9 +3107,15 @@ def load_union_user_all(request):
 
 def disable_user_club(request):
     user_id=request.POST['user_id']
+    user_name=request.POST['user_name']
     operator_info = request.session['operator_info']
     club_id=operator_info['club_id']
+    operator_id=operator_info['operator_id']
     result=disableUserFromClub(user_id,club_id)
+    if result==True:
+        addOperatorLog(operator_id,None,user_name+'账户停用成功')
+    else:
+        addOperatorLog(operator_id, None, user_name + '账户停用失败')
     return HttpResponse(result)
 
 
