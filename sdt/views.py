@@ -594,7 +594,7 @@ def usercash(request):
     elif chang_type=='true':
         cashtype = 2001
         serial_no=createSerialNo(club_id, group_id,cashtype)
-        result = userCashReg(account_id, user_id, club_id, cashtype, operator_id, change_num, note, serial_no)
+        result = userCashReg(account_id, user_id, club_id, cashtype, operator_id, change_num, operator_note, serial_no)
         if result:  # 用户充值成功
             flag = operator_cash(type_id, change_num, cashtype, operator_id, note, serial_no,group_id)
             if flag:
