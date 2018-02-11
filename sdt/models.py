@@ -413,7 +413,7 @@ class ucs_balance(models.Model):
     type_id=models.IntegerField(null=True)
     chance_desc = models.CharField(null=False, max_length=20)
     serial_no = models.CharField(max_length=25)
-    updatetime = models.DateTimeField(auto_now_add=True)
+    updatetime = models.DateTimeField(default=timezone.now)
     inactive_time = models.DateTimeField(default='2037-1-1')
     operator_id = models.IntegerField(null=True)
     note = models.CharField(max_length=80)
