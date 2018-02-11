@@ -546,10 +546,15 @@ def useraccountview(request):
                                                      'club_name':club_name,'tb_balance_list':tb_balance_list, 'tb_freeze':tb_freeze})
 #玩家充值结算
 def usercash(request):
+    operator_info = request.session['operator_info']
+    club_id = operator_info['club_id']
     user_id=request.POST['user_id']
-    account_id=request.POST['account_id']
-    operator_info=request.session['operator_info']
-    club_id=operator_info['club_id']
+    #account_id=request.POST['account_id']
+    try:
+        account_id=ucs_account.objects.filter(inactive_time='2037-01-01').filter(club_id=club_id).get(user_id=user_id).account_id
+    except:
+        return HttpResponse("出错了")
+
     operator_id=operator_info['operator_id']
     group_id=operator_info['group_id']
     club_name = operator_info['club_name']
