@@ -568,6 +568,7 @@ def usercash(request):
     group_id=operator_info['group_id']
     club_name = operator_info['club_name']
     user_name=request.POST['user_name']
+    chance=request.POST['change_num']
     change_num=int(float(request.POST['change_num'])*1000)
     chang_type=request.POST['change_type']
     note=request.POST['note']
@@ -596,16 +597,24 @@ def usercash(request):
                 if len(tb_developer) >0:
                     tb_result['developer_name'] = tb_developer[0][1]
                 tb_balance_list = getUserBalenceList(account_id, club_id)
+                log="玩家"+user_name+"充值"+chance+"成功"+serial_no
+                addOperatorLog(operator_id,cashtype,log)
                 return render(request, 'user_account_info.html', {'user_name': user_name, 'tb_result': tb_result,
                                                     'club_name':club_name, 'tb_balance_list': tb_balance_list})
+            log = "玩家" + user_name + "充值" + chance + "失败"
+            addOperatorLog(operator_id, cashtype, log)
             return HttpResponse("出错了")
-        else: return HttpResponse("出错了")
+
+        else:
+            log = "玩家" + user_name + "充值" + chance + "失败"
+            addOperatorLog(operator_id, cashtype, log)
+            return HttpResponse("出错了")
     elif chang_type=='true':
         cashtype = 2001
         serial_no=createSerialNo(club_id, group_id,cashtype)
-        result = userCashReg(account_id, user_id, club_id, cashtype, operator_id, change_num, operator_note, serial_no)
+        result = userCashReg(account_id, user_id, club_id, cashtype, operator_id, change_num, note, serial_no)
         if result:  # 用户充值成功
-            flag = operator_cash(type_id, change_num, cashtype, operator_id, note, serial_no,group_id)
+            flag = operator_cash(type_id, change_num, cashtype, operator_id, operator_note, serial_no,group_id)
             if flag:
              #   if developer_id!="":
              #       developer_cash(developer_id,club_id,change_num,cashtype, operator_id,"",serial_no,user_id)
@@ -614,11 +623,17 @@ def usercash(request):
                 if len(tb_developer) >0:
                     tb_result['developer_name']=tb_developer[0][1]
                 tb_balance_list = getUserBalenceList(account_id, club_id)
+                log = "玩家" + user_name + "结算" + chance + "成功" + serial_no
+                addOperatorLog(operator_id, cashtype, log)
                 return render(request, 'user_account_info.html', {'user_name': user_name, 'tb_result': tb_result,
                                                                   'club_name': club_name,
                                                                   'tb_balance_list': tb_balance_list})
+            log = "玩家" + user_name + "结算" + chance + "失败"
+            addOperatorLog(operator_id, cashtype, log)
             return HttpResponse("出错了")
         else:
+            log = "玩家" + user_name + "结算" + chance + "失败"
+            addOperatorLog(operator_id, cashtype, log)
             return HttpResponse("出错了")
 
     return HttpResponse("/cash/")
