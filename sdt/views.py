@@ -317,8 +317,14 @@ def result_newuser(request):
     lenlist = len(newuser)
     i = 0
     while (i < lenlist):
-        if user_reg(newuser[i],newuser[i],newuser[i+1],newuser[i],operator_id,0,0) :
+        user_name=newuser[i]
+        flag=ucs_subs_user.objects.filter(inactive_time='2037-01-01').filter(user_name=user_name).exists()
+        if flag:
+            user_old_reg(user_name,newuser[i+1],user_name,0,0)
             i=i+2
+        else:
+            if user_reg(newuser[i],newuser[i],newuser[i+1],newuser[i],operator_id,0,0) :
+                i=i+2
         #i=i+2
     split_club = result_attachclub(gameno)
     if len(split_club) > 0:
