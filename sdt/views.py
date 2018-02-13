@@ -1692,7 +1692,7 @@ def load_main_club(request):
 
 def test(request):
 
-    return render(request,'test01.html')
+    return HttpResponse("hello")
 
 def test02(request):
     result=qr_code_test()
