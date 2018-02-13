@@ -243,4 +243,7 @@ urlpatterns = [
     url(r'^reward_after/', reward_after),
     url(r'^disable_user_club/', disable_user_club),
     url(r'^check_exist_user_balance/', check_exist_user_balance),
+    url(r'^club_check_statement/', club_check_statement),
+    url(r'^club_check_result_get_union_balance/', club_check_result_get_union_balance),
+    url(r'^result_l1_time/', result_l1_time),
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

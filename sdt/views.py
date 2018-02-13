@@ -10,6 +10,7 @@ import datetime
 import json
 import django.core.serializers.json
 from django.forms.models import model_to_dict
+from django.db.models import Q
 from django.core import serializers
 import os
 import copy
@@ -457,6 +458,15 @@ def result_l1(request):
     enddate=request.POST['end']
     tb_result=result_searchByclub(club_id,startdate,enddate)
     tb_sum = result_searchByclubSum(club_id,startdate,enddate)
+    return  render(request,'result_l1.html',{'tb_result':tb_result, 'club_name': club_name,'tb_sum' : tb_sum,'club_id':club_id } )
+
+def result_l1_time(request):
+    club_id=request.POST['club_id']
+    club_name=request.POST['club_name']
+    startdate=request.POST['start']
+    enddate=request.POST['end']
+    tb_result=result_searchByclubTime(club_id,startdate,enddate)
+    tb_sum = result_searchByclubSumTime(club_id,startdate,enddate)
     return  render(request,'result_l1.html',{'tb_result':tb_result, 'club_name': club_name,'tb_sum' : tb_sum,'club_id':club_id } )
 
 def result_post(request):
@@ -2771,65 +2781,152 @@ def club_check_result(request):
     club_id = operator_info['club_id']
     club_name=operator_info['club_name']
     club_level = operator_info['club_level']
-    club_level = int(club_level) - 1
+    up_club_level = int(club_level) - 1
     own_account_id = ucs_union_account.objects.filter(inactive_time='2037-01-01').get(club_id=club_id).account_id
-    up_club_id = ucs_club_relation.objects.filter(inactive_time='2037-01-01').filter(club_level=club_level).get(
-        subs_club_id=club_id).club_id
-    up_account_id = ucs_union_account.objects.filter(inactive_time='2037-01-01').get(club_id=up_club_id).account_id
-    try:
-        up_balance=ucs_union_balance.objects.filter(inactive_time='2037-01-01').filter(account_id=own_account_id)\
-            .filter(main_club_id=up_club_id).order_by('-update_time')[0].balance
-    except:
+    if int(club_level)==0:
+        up_club_id=club_id
         up_balance=0
-    try:
-        own_balance=ucs_union_balance.objects.filter(inactive_time='2037-01-01').filter(account_id=up_account_id)\
-            .filter(main_club_id=club_id).order_by('-update_time')[0].balance
-    except:
-        own_balance=0
+    else:
+        up_club_id = ucs_club_relation.objects.filter(inactive_time='2037-01-01').filter(club_level=up_club_level).get(
+                                    subs_club_id=club_id).club_id
+
+
+    #up_account_id = ucs_union_account.objects.filter(inactive_time='2037-01-01').get(club_id=up_club_id).account_id
+
+        try:
+
+            up_balance=ucs_union_balance.objects.filter(inactive_time='2037-01-01').filter(account_id=own_account_id)\
+                    .filter(main_club_id=up_club_id).order_by('-update_time')[0].balance
+        except:
+            up_balance=0
     balance_list={}
     balance_list['up_balance']=round(up_balance/1000,2)
-    balance_list['own_balance']=round(own_balance/1000,2)
-    balance_list['check']=round((up_balance+own_balance)/1000,2)
-    return render(request,'club_check_result.html',{'balance_list':balance_list,'club_name':club_name})
+    if int(club_level)==0:
+        tb_club=ucs_subs_club.objects.filter(inactive_time='2037-01-01').filter(~Q(club_id=club_id)).values('club_id','club_name')
+
+    else:
+        tb_club_tmp={}
+        tb_club=[]
+        tb_club_tmp['club_id']=club_id
+        tb_club_tmp['club_name']=club_name
+        tb_club.append(tb_club_tmp)
+    return render(request,'club_check_result.html',{'balance_list':balance_list,'tb_club':tb_club})
 
 
 def club_check_result_search_balance(request):
-    operator_info = request.session['operator_info']
-    club_id=operator_info['club_id']
+    try:
+        operator_info = request.session['operator_info']
+    except:
+        return HttpResponseRedirect('/default/')
+    operator_id = operator_info['operator_id']
+    if operator_info['is_active'] == False:
+        return HttpResponseRedirect('/operator_disable/')
+    permission = getPermission(operator_id)
+    if not permission.filter(type_id=12).exists():
+        return HttpResponseRedirect('/warning/')
+    try:
+        club_id=request.POST['club_id']
+        flag=0    #判断预加载标志
+    except:
+        club_id=operator_info['club_id']
+        flag=1
     club_level=operator_info['club_level']
-    club_level=int(club_level)-1
+    #club_level=int(club_level)-1
+    if flag == 1:
+        if club_level==0:
+             return HttpResponse(None)
     start=request.POST['start']
     end=request.POST['end']
     own_account_id=ucs_union_account.objects.filter(inactive_time='2037-01-01').get(club_id=club_id).account_id
-    up_club_id=ucs_club_relation.objects.filter(inactive_time='2037-01-01').filter(club_level=club_level).get(subs_club_id=club_id).club_id
-    up_account_id=ucs_union_account.objects.filter(inactive_time='2037-01-01').get(club_id=up_club_id).account_id
-    tb_own=getUnionBalanceListByDate(club_id,up_account_id,start,end)
+
+    if club_level==0:
+         up_club_id=ucs_club_relation.objects.filter(inactive_time='2037-01-01').filter(club_level=club_level).get(subs_club_id=club_id).club_id
+    else:
+        up_club_id = ucs_club_relation.objects.filter(inactive_time='2037-01-01').filter(club_level=club_level-1).get(
+            subs_club_id=club_id).club_id
     tb_up=getUnionBalanceListByDate(up_club_id,own_account_id,start,end)
     try:
         up_balance=ucs_union_balance.objects.filter(inactive_time='2037-01-01').filter(account_id=own_account_id)\
             .filter(main_club_id=up_club_id).order_by('-update_time')[0].balance
     except:
         up_balance=0
-    try:
-        own_balance=ucs_union_balance.objects.filter(inactive_time='2037-01-01').filter(account_id=up_account_id)\
-            .filter(main_club_id=club_id).order_by('-update_time')[0].balance
-    except:
-        own_balance=0
     balance_list={}
     balance_list['up_balance']=round(up_balance/1000,2)
-    balance_list['own_balance']=round(own_balance/1000,2)
-    balance_list['check']=round((up_balance+own_balance)/1000,2)
-    return render(request,'club_check_balance_list.html',{'tb_own':tb_own,'tb_up':tb_up,'balance_list':balance_list})
+    return render(request,'club_check_balance_list.html',{'tb_up':tb_up,'balance_list':balance_list})
+
+
+def club_check_result_get_union_balance(request):
+    try:
+        operator_info = request.session['operator_info']
+    except:
+        return HttpResponseRedirect('/default/')
+    operator_id = operator_info['operator_id']
+    if operator_info['is_active'] == False:
+        return HttpResponseRedirect('/operator_disable/')
+    permission = getPermission(operator_id)
+    if not permission.filter(type_id=12).exists():
+        return HttpResponseRedirect('/warning/')
+    club_id=request.POST['club_id']
+    club_level = operator_info['club_level']
+    own_account_id = ucs_union_account.objects.filter(inactive_time='2037-01-01').get(club_id=club_id).account_id
+    if club_level==0:
+         up_club_id=ucs_club_relation.objects.filter(inactive_time='2037-01-01').filter(club_level=club_level).get(subs_club_id=club_id).club_id
+    else:
+        up_club_id = ucs_club_relation.objects.filter(inactive_time='2037-01-01').filter(club_level=club_level-1).get(
+            subs_club_id=club_id).club_id
+    try:
+        up_balance=ucs_union_balance.objects.filter(inactive_time='2037-01-01').filter(account_id=own_account_id)\
+            .filter(main_club_id=up_club_id).order_by('-update_time')[0].balance
+    except:
+        up_balance=0
+    up_balance=round(up_balance/1000,2)
+    return HttpResponse(up_balance)
 
 
 def club_check_result_search_game(request):
     operator_info = request.session['operator_info']
-    club_id = operator_info['club_id']
+    try:
+        club_id=request.POST['club_id']
+        flag=0
+    except:
+        club_id = operator_info['club_id']
+        flag=1
+    club_level=operator_info['club_level']
     start = request.POST['start']
     end = request.POST['end']
+    if flag !=0:
+        if club_level==0:
+            return HttpResponse(None)
     tb_result=resultSearchUnionBySingleClub(start,end,club_id)
     tb_result_sum=resultSearchUnionBySingleClubSum(start,end,club_id)
     return render(request,'club_check_result_search_game.html',{'tb_result': tb_result,'starttime':start,'endtime':end,'tb_result_sum': tb_result_sum })
+
+
+def club_check_statement(request):
+    try:
+        operator_info = request.session['operator_info']
+    except:
+        return HttpResponseRedirect('/default/')
+    operator_id = operator_info['operator_id']
+    if operator_info['is_active'] == False:
+        return HttpResponseRedirect('/operator_disable/')
+    permission = getPermission(operator_id)
+    if not permission.filter(type_id=12).exists():
+        return HttpResponseRedirect('/warning/')
+    club_id=operator_info['club_id']
+    club_level=operator_info['club_level']
+    club_name=operator_info['club_name']
+    if int(club_level)==0:
+        tb_club=ucs_subs_club.objects.filter(inactive_time='2037-01-01').filter(~Q(club_id=club_id)).values('club_id','club_name')
+
+    else:
+        tb_club_tmp={}
+        tb_club=[]
+        tb_club_tmp['club_id']=club_id
+        tb_club_tmp['club_name']=club_name
+        tb_club.append(tb_club_tmp)
+    return render(request,'check_statement.html',{'tb_club':tb_club})
+
 
 
 def init_club(request):
