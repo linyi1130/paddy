@@ -1692,7 +1692,7 @@ def load_main_club(request):
 
 def test(request):
 
-    return render(request,'test01.html',{'tb_balance_list':tb_balance_list,'tb_result':tb_result,'user_name':user_name,'club_name':club_name})
+    return render(request,'test01.html')
 
 def test02(request):
     result=qr_code_test()
