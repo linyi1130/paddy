@@ -2833,7 +2833,7 @@ def club_check_result_search_game(request):
 
 
 def init_club(request):
-
+    operator_info = request.session['operator_info']
     return render(request,'manage/init_club.html')
 
 def init_load_user(request):
