@@ -1371,6 +1371,10 @@ def correct_user_list(request):
     return render(request, 'correct_user_list.html',{'tb_result': tb_result})
 
 
+def correct_model(request):
+    return render(request,'correct_model.html')
+
+
 def correct_user(request):
     operator_info = request.session['operator_info']
     operator_id=operator_info['operator_id']
