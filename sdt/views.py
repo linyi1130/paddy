@@ -16,6 +16,8 @@ import os
 import copy
 from django.conf import settings
 # Create your views here.
+
+
 def loadsidebar(request):
     operator_info = request.session['operator_info']
     permission_group=operator_info['permission_group']
@@ -130,6 +132,7 @@ def user_add(request):
 
     else:
         return HttpResponse("False")
+
 
 def old_user_add(request):
     user_name=request.POST['user_name']
