@@ -536,7 +536,10 @@ def result_detailbyClub(request):
 
 
 def result_union(request):
-    operator_info = request.session['operator_info']
+    try:
+        operator_info = request.session['operator_info']
+    except:
+        return HttpResponseRedirect('/default/')
     operator_id = operator_info['operator_id']
     permission = getPermission(operator_id)
     if operator_info['is_active']==False:
