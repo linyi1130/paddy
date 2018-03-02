@@ -3269,3 +3269,26 @@ def user_full_list(request):
     club_id = operator_info['club_id']
     tb_result=getUserFullList(club_id)
     return render(request,'user_full_list.html',{'tb_result':tb_result})
+
+
+def result_inner_club(request):
+    try:
+        operator_info = request.session['operator_info']
+    except:
+        return HttpResponseRedirect('/default/')
+    operator_id = operator_info['operator_id']
+    if operator_info['is_active']==False:
+        return HttpResponseRedirect('/operator_disable/')
+    permission = getPermission(operator_id)
+    if not permission.filter(type_id=16).exists():
+        return HttpResponseRedirect('/warning/')
+    return render(request,'result_inner_club.html')
+
+
+def get_inner_club_result(request):
+    start=request.POST['start_time']
+    end=request.POST['end_time']
+    operator_info = request.session['operator_info']
+    club_id = operator_info['club_id']
+    tb_result=getResultInnerClub(club_id,start,end)
+    return render(request,'result_inner_club_list.html',{'tb_result':tb_result,'starttime':start,'endtime':end})

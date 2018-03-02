@@ -248,4 +248,6 @@ urlpatterns = [
     url(r'^result_l1_time/', result_l1_time),
     url(r'^correct_model/', correct_model),
     url(r'^user_full_list/', user_full_list),
+    url(r'^result_inner_club/', result_inner_club),
+    url(r'^get_inner_club_result/', get_inner_club_result),
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
