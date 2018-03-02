@@ -247,4 +247,5 @@ urlpatterns = [
     url(r'^club_check_result_get_union_balance/', club_check_result_get_union_balance),
     url(r'^result_l1_time/', result_l1_time),
     url(r'^correct_model/', correct_model),
+    url(r'^user_full_list/', user_full_list),
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

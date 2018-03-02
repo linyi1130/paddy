@@ -3253,3 +3253,19 @@ def check_exist_user_balance(request):
     club_id = operator_info['club_id']
     result=checkExistUserBalance(user_id,club_id)
     return HttpResponse(result)
+
+
+def user_full_list(request):
+    try:
+        operator_info = request.session['operator_info']
+    except:
+        return HttpResponseRedirect('/default/')
+    operator_id = operator_info['operator_id']
+    if operator_info['is_active']==False:
+        return HttpResponseRedirect('/operator_disable/')
+    permission = getPermission(operator_id)
+    if not permission.filter(type_id=15).exists():
+        return HttpResponseRedirect('/warning/')
+    club_id = operator_info['club_id']
+    tb_result=getUserFullList(club_id)
+    return render(request,'user_full_list.html',{'tb_result':tb_result})
