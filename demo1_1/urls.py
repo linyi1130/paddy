@@ -250,4 +250,5 @@ urlpatterns = [
     url(r'^user_full_list/', user_full_list),
     url(r'^result_inner_club/', result_inner_club),
     url(r'^get_inner_club_result/', get_inner_club_result),
+    url(r'^get_club_income_by_date/', get_club_income_by_date),
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

@@ -1502,9 +1502,10 @@ def company_income_reg(request):
     operator_info = request.session['operator_info']
     operator_id = operator_info['operator_id']
     club_id = operator_info['club_id']
-    club_level=operator_info['club_level']
+    start = request.POST['start_time']
+    end = request.POST['end_time']
     reg_month=request.POST['reg_month']
-    flag=companyIncomeRegAccount(club_id, reg_month, operator_id, club_level)
+    flag=companyIncomeRegAccount(club_id, reg_month, operator_id,start,end )
     if flag:
         result=companyIncomeGameReg(club_id, reg_month)
         return HttpResponse(result)
@@ -3292,3 +3293,12 @@ def get_inner_club_result(request):
     club_id = operator_info['club_id']
     tb_result=getResultInnerClub(club_id,start,end)
     return render(request,'result_inner_club_list.html',{'tb_result':tb_result,'starttime':start,'endtime':end})
+
+
+def get_club_income_by_date(request):
+    start = request.POST['start_time']
+    end = request.POST['end_time']
+    operator_info = request.session['operator_info']
+    club_id = operator_info['club_id']
+    tb_result=getClubIncomeByDate(start, end, club_id)
+    return render(request,'club_income_by_date.html',{'tb_result':tb_result})
