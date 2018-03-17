@@ -2763,7 +2763,7 @@ def union_check_club_balance_view(request):
         tb4_sum=tb4_sum+t[2]
     return render(request,'union_check_club_balance.html',{'tb4':tb4,'tb4_sum':tb4_sum})
 
-#俱乐部账目核对
+#  俱乐部账目核对
 def union_check(request):
     try:
         operator_info = request.session['operator_info']
